@@ -22,57 +22,57 @@ Enhancing user interaction patterns requires advanced component specialization w
 - The footer section aligns symmetrically at the bottom, rendering localized buttons and dynamic placeholder calculations for statistics.
 
 ## 📚 UML Diagram:
-![MyAssistantDiagram](src/resources/images/MyAssistantDiagram.png)
+![MyAssistantDiagram](src/main/resources/images/MyAssistantDiagram.png)
 
 ## 💻 Code Example
 
 ### Project Structure:
 
     JavaBasics_Task_538/
-    ├── src/
-    │   └── com/yurii/pavlenko/
-    │                 ├── app/
-    │                 │   └── MyAssistantApp.java
-    │                 │
-    │                 ├── ui/
-    │                 │   ├── frames/
-    │                 │   │   └── TaskFrame.java
-    │                 │   ├── panels/
-    │                 │   │   ├── TaskPanel.java
-    │                 │   │   └── MainTabbedPanel.java
-    │                 │   ├── renderers/
-    │                 │   │   └── TaskCellRenderer.java
-    │                 │   ├── components/
-    │                 │   │   └── TaskFooterPanel.java
-    │                 │   ├── dialogs/
-    │                 │   │   └── TaskDialog.java
-    │                 │   └── actions/
-    │                 │       ├── AddTaskAction.java
-    │                 │       ├── DeleteTaskAction.java
-    │                 │       ├── DeleteCompletedTasksAction.java
-    │                 │       ├── ClearAllTasksAction.java
-    │                 │       └── EditTaskAction.java
-    │                 │
-    │                 ├── controller/
-    │                 │   └── TaskController.java
-    │                 │
-    │                 ├── service/
-    │                 │   ├── impl/
-    │                 │   │   └── TaskServiceImpl.java
-    │                 │   └── TaskService.java
-    │                 │
-    │                 ├── repository/
-    │                 │   ├── impl/
-    │                 │   │   ├── InMemoryTaskRepositoryImpl.java
-    │                 │   │   ├── JsonTaskRepositoryImpl.java
-    │                 │   │   └── DatabaseTaskRepositoryImpl.java
-    │                 │   └── TaskRepository.java
-    │                 │
-    │                 ├── model/
-    │                 │   └── Task.java
-    │                 │
-    │                 └── util/
-    │                     └── Util.java
+    ├── src/main/
+    │       └── com/yurii/pavlenko/
+    │                     ├── app/
+    │                     │   └── MyAssistantApp.java
+    │                     │
+    │                     ├── ui/
+    │                     │   ├── frames/
+    │                     │   │   └── TaskFrame.java
+    │                     │   ├── panels/
+    │                     │   │   ├── TaskPanel.java
+    │                     │   │   └── MainTabbedPanel.java
+    │                     │   ├── renderers/
+    │                     │   │   └── TaskCellRenderer.java
+    │                     │   ├── components/
+    │                     │   │   └── TaskFooterPanel.java
+    │                     │   ├── dialogs/
+    │                     │   │   └── TaskDialog.java
+    │                     │   └── actions/
+    │                     │       ├── AddTaskAction.java
+    │                     │       ├── DeleteTaskAction.java
+    │                     │       ├── DeleteCompletedTasksAction.java
+    │                     │       ├── ClearAllTasksAction.java
+    │                     │       └── EditTaskAction.java
+    │                     │
+    │                     ├── controller/
+    │                     │   └── TaskController.java
+    │                     │
+    │                     ├── service/
+    │                     │   ├── impl/
+    │                     │   │   └── TaskServiceImpl.java
+    │                     │   └── TaskService.java
+    │                     │
+    │                     ├── repository/
+    │                     │   ├── impl/
+    │                     │   │   ├── InMemoryTaskRepositoryImpl.java
+    │                     │   │   ├── JsonTaskRepositoryImpl.java
+    │                     │   │   └── DatabaseTaskRepositoryImpl.java
+    │                     │   └── TaskRepository.java
+    │                     │
+    │                     ├── model/
+    │                     │   └── Task.java
+    │                     │
+    │                     └── util/
+    │                         └── Util.java
     │
     ├── LICENSE
     ├── TASK.md
@@ -80,18 +80,19 @@ Enhancing user interaction patterns requires advanced component specialization w
     └── README.md
 
 Code
+
 ```java
 package com.yurii.pavlenko.app;
 
-import com.yurii.pavlenko.controller.TaskController;
-import com.yurii.pavlenko.repository.TaskRepository;
-import com.yurii.pavlenko.repository.impl.InMemoryTaskRepositoryImpl;
-// import com.yurii.pavlenko.repository.impl.JsonTaskRepositoryImpl;
-// import com.yurii.pavlenko.repository.impl.DatabaseTaskRepositoryImpl;
-import com.yurii.pavlenko.service.TaskService;
-import com.yurii.pavlenko.service.impl.TaskServiceImpl;
-import com.yurii.pavlenko.ui.frames.TaskFrame;
-import com.yurii.pavlenko.util.Util;
+import controller.main.com.yurii.pavlenko.TaskController;
+import repository.main.com.yurii.pavlenko.TaskRepository;
+import impl.repository.main.com.yurii.pavlenko.InMemoryTaskRepositoryImpl;
+// import impl.repository.main.com.yurii.pavlenko.JsonTaskRepositoryImpl;
+// import impl.repository.main.com.yurii.pavlenko.DatabaseTaskRepositoryImpl;
+import service.main.com.yurii.pavlenko.TaskService;
+import impl.service.main.com.yurii.pavlenko.TaskServiceImpl;
+import frames.ui.main.com.yurii.pavlenko.TaskFrame;
+import util.main.com.yurii.pavlenko.Util;
 
 import javax.swing.*;
 
