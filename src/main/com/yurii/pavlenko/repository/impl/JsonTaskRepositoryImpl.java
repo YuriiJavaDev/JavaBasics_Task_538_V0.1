@@ -58,9 +58,9 @@ public class JsonTaskRepositoryImpl implements TaskRepository {
         executeUpdate("Update task at index: " + index, tasks -> {
             if (index >= 0 && index < tasks.size()) {
                 tasks.set(index, task);
-                logger.info("DEBUG: Задача в списке заменена. Новый статус: {}", task.isCompleted());
+                logger.info("DEBUG: The task in the list has been replaced. New status: {}", task.isCompleted());
             } else {
-                logger.error("DEBUG: ОШИБКА: Индекс {} вне границ списка размера {}", index, tasks.size());
+                logger.error("DEBUG: ERROR: Index {} out of bounds of size list {}", index, tasks.size());
             }
         });
     }

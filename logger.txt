@@ -1,1 +1,9 @@
-2026-06-11 14:16:47 [INFO] TaskController - TaskController initialized.
+2026-06-13 10:27:13 [INFO] TaskController - TaskController initialized.
+2026-06-13 10:27:22 [INFO] TaskController - Adding new task: 'фывеи р5462786 оьл гшщ4ь87ик риат'
+2026-06-13 10:27:22 [INFO] JsonTaskRepositoryImpl - SUCCESS: Save task: фывеи р5462786 оьл гшщ4ь87ик риат
+2026-06-13 10:27:29 [INFO] TaskController - Editing task at index: 4 with status: false
+2026-06-13 10:27:29 [INFO] JsonTaskRepositoryImpl - DEBUG: The task in the list has been replaced. New status: false
+2026-06-13 10:27:29 [INFO] JsonTaskRepositoryImpl - SUCCESS: Update task at index: 4
+2026-06-13 10:27:31 [INFO] TaskController - Editing task at index: 4 with status: true
+2026-06-13 10:27:31 [INFO] JsonTaskRepositoryImpl - DEBUG: The task in the list has been replaced. New status: true
+2026-06-13 10:27:31 [INFO] JsonTaskRepositoryImpl - SUCCESS: Update task at index: 4

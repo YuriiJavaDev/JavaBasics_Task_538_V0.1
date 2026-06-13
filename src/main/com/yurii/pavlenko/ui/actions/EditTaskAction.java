@@ -8,6 +8,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
+import java.time.LocalDateTime;
 
 /**
  * Standalone action handling modal task description adjustments and validation sync.
@@ -37,16 +38,18 @@ public class EditTaskAction extends AbstractAction {
             return;
         }
 
-        // 1. Получаем актуальный объект задачи из контроллера
+        // Fetch the domain model instance from the data source
         Task task = controller.getTasks().get(selectedIndex);
 
-        // 2. Показываем диалог с текущим текстом
+        // Display modal prompt pre-filled with the current title
         String newText = TaskDialog.showEditDialog(parentComponent, task.getTitle(), "Edit task");
 
-        // 3. Если текст изменился, обновляем объект и отправляем в контроллер
+        // Validate text and apply structural update parameters if safe
         if (newText != null && !newText.isBlank()) {
-            task.setTitle(newText.trim()); // Обновляем поле title в объекте
-            controller.editTask(selectedIndex, task); // Передаем объект целиком
+            task.setTitle(newText.trim());
+            task.setUpdatedAt(LocalDateTime.now()); // Capture the exact modification timestamp
+
+            controller.editTask(selectedIndex, task);
             refreshCallback.run();
         }
     }

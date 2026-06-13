@@ -10,6 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -80,11 +81,19 @@ public class TaskPanel extends JPanel {
                 int index = taskList.locationToIndex(e.getPoint());
                 if (index >= 0) {
                     Rectangle cellBounds = taskList.getCellBounds(index, index);
-                    // Проверка клика по чекбоксу
                     if (e.getX() - cellBounds.x < 30) {
                         Task task = controller.getTasks().get(index);
-                        task.setCompleted(!task.isCompleted());
-                        // Исправлено: передаем объект целиком
+                        boolean newStatus = !task.isCompleted();
+                        // task.setCompleted(!task.isCompleted());
+                        task.setCompleted(newStatus);
+
+                        // Dynamically manage completion timestamp based on the new status
+                        if (newStatus) {
+                            task.setCompletedAt(LocalDateTime.now());
+                        } else {
+                            task.setCompletedAt(null); // Clear timestamp if task is uncompleted
+                        }
+
                         controller.editTask(index, task);
                         refreshTasks(controller);
                         taskList.repaint();

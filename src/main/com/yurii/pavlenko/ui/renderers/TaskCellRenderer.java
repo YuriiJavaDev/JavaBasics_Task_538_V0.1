@@ -2,6 +2,7 @@ package main.com.yurii.pavlenko.ui.renderers;
 
 import main.com.yurii.pavlenko.controller.TaskController;
 import main.com.yurii.pavlenko.model.Task;
+import main.com.yurii.pavlenko.util.DateFormatterUtil;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -38,10 +39,15 @@ public class TaskCellRenderer extends JPanel implements ListCellRenderer<String>
             Task task = controller.getTasks().get(index);
             checkBox.setSelected(task.isCompleted());
 
+            // Generate metadata date suffix using centralized utility class
+            String dateInfo = DateFormatterUtil.getFormattedDatesInfo(task);
+
+            // Construct final display content with specific conditional HTML typography rules
             if (task.isCompleted()) {
-                textLabel.setText("<html><s>" + value + "</s></html>");
+                // Apply strikethrough styling to core task title text only, preserving plain text for meta dates
+                textLabel.setText("<html><s>" + task.getTitle() + "</s>" + dateInfo + "</html>");
             } else {
-                textLabel.setText(value == null ? "" : value);
+                textLabel.setText("<html>" + task.getTitle() + dateInfo + "</html>");
             }
         } else {
             textLabel.setText(value == null ? "" : value);
