@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.UUID;
 
 public class TaskController {
 
@@ -27,9 +28,9 @@ public class TaskController {
         return service.getTasks();
     }
 
-    public void deleteTask(int index) {
-        logger.info("Attempting to delete task at index: {}", index);
-        service.deleteTask(index);
+    public void deleteTask(UUID id) {
+        logger.info("Attempting to delete task at index: {}", id);
+        service.deleteTask(id);
     }
 
     public void deleteCompletedTasks() {
@@ -42,8 +43,8 @@ public class TaskController {
         service.clearAllTasks();
     }
 
-    public void editTask(int index, Task task) {
-        logger.info("Editing task at index: {} with status: {}", index, task.isCompleted());
-        service.editTask(index, task);
+    public void editTask(UUID id, Task task) {
+        logger.info("Editing task at index: {} with status: {}", id, task.isCompleted());
+        service.editTask(id, task);
     }
 }

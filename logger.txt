@@ -1,9 +1,21 @@
-2026-06-13 10:27:13 [INFO] TaskController - TaskController initialized.
-2026-06-13 10:27:22 [INFO] TaskController - Adding new task: 'фывеи р5462786 оьл гшщ4ь87ик риат'
-2026-06-13 10:27:22 [INFO] JsonTaskRepositoryImpl - SUCCESS: Save task: фывеи р5462786 оьл гшщ4ь87ик риат
-2026-06-13 10:27:29 [INFO] TaskController - Editing task at index: 4 with status: false
-2026-06-13 10:27:29 [INFO] JsonTaskRepositoryImpl - DEBUG: The task in the list has been replaced. New status: false
-2026-06-13 10:27:29 [INFO] JsonTaskRepositoryImpl - SUCCESS: Update task at index: 4
-2026-06-13 10:27:31 [INFO] TaskController - Editing task at index: 4 with status: true
-2026-06-13 10:27:31 [INFO] JsonTaskRepositoryImpl - DEBUG: The task in the list has been replaced. New status: true
-2026-06-13 10:27:31 [INFO] JsonTaskRepositoryImpl - SUCCESS: Update task at index: 4
+2026-06-13 11:15:59 [INFO] TaskController - TaskController initialized.
+2026-06-13 11:16:05 [INFO] TaskController - Adding new task: '1. уа у4п уф5р 54р'
+2026-06-13 11:16:05 [INFO] JsonTaskRepositoryImpl - SUCCESS: Save task: 1. уа у4п уф5р 54р
+2026-06-13 11:16:09 [INFO] TaskController - Adding new task: 'кап йукп уй'
+2026-06-13 11:16:09 [INFO] JsonTaskRepositoryImpl - SUCCESS: Save task: кап йукп уй
+2026-06-13 11:16:11 [INFO] TaskController - Adding new task: 'укп423е пим прйуркр'
+2026-06-13 11:16:11 [INFO] JsonTaskRepositoryImpl - SUCCESS: Save task: укп423е пим прйуркр
+2026-06-13 11:16:18 [INFO] TaskController - Adding new task: '4. вфпм уйп йупи'
+2026-06-13 11:16:18 [INFO] JsonTaskRepositoryImpl - SUCCESS: Save task: 4. вфпм уйп йупи
+2026-06-13 11:16:26 [INFO] TaskController - Editing task at index: 07f47b2e-97eb-464e-99eb-967cf987b629 with status: false
+2026-06-13 11:16:26 [INFO] JsonTaskRepositoryImpl - DEBUG: The task in the list has been replaced. New status: false
+2026-06-13 11:16:26 [INFO] JsonTaskRepositoryImpl - SUCCESS: Update task with ID: 07f47b2e-97eb-464e-99eb-967cf987b629
+2026-06-13 11:16:33 [INFO] TaskController - Editing task at index: 5de0346e-02b6-430a-ad42-37383432ad4c with status: false
+2026-06-13 11:16:33 [INFO] JsonTaskRepositoryImpl - DEBUG: The task in the list has been replaced. New status: false
+2026-06-13 11:16:33 [INFO] JsonTaskRepositoryImpl - SUCCESS: Update task with ID: 5de0346e-02b6-430a-ad42-37383432ad4c
+2026-06-13 11:16:38 [INFO] TaskController - Editing task at index: 07f47b2e-97eb-464e-99eb-967cf987b629 with status: true
+2026-06-13 11:16:38 [INFO] JsonTaskRepositoryImpl - DEBUG: The task in the list has been replaced. New status: true
+2026-06-13 11:16:38 [INFO] JsonTaskRepositoryImpl - SUCCESS: Update task with ID: 07f47b2e-97eb-464e-99eb-967cf987b629
+2026-06-13 11:16:40 [INFO] TaskController - Editing task at index: bc974622-776a-4af4-a070-8301915ec21d with status: true
+2026-06-13 11:16:40 [INFO] JsonTaskRepositoryImpl - DEBUG: The task in the list has been replaced. New status: true
+2026-06-13 11:16:40 [INFO] JsonTaskRepositoryImpl - SUCCESS: Update task with ID: bc974622-776a-4af4-a070-8301915ec21d

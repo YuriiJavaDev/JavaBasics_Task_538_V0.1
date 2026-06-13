@@ -94,7 +94,7 @@ public class TaskPanel extends JPanel {
                             task.setCompletedAt(null); // Clear timestamp if task is uncompleted
                         }
 
-                        controller.editTask(index, task);
+                        controller.editTask(task.getId(), task);
                         refreshTasks(controller);
                         taskList.repaint();
                     } else if (e.getClickCount() == 2) {

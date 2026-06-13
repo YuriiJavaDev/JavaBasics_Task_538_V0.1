@@ -49,7 +49,7 @@ public class EditTaskAction extends AbstractAction {
             task.setTitle(newText.trim());
             task.setUpdatedAt(LocalDateTime.now()); // Capture the exact modification timestamp
 
-            controller.editTask(selectedIndex, task);
+            controller.editTask(task.getId(), task);
             refreshCallback.run();
         }
     }

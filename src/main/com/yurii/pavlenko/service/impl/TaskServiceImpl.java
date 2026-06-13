@@ -4,6 +4,7 @@ import main.com.yurii.pavlenko.model.Task;
 import main.com.yurii.pavlenko.repository.TaskRepository;
 import main.com.yurii.pavlenko.service.TaskService;
 import java.util.List;
+import java.util.UUID;
 
 public class TaskServiceImpl implements TaskService {
     private final TaskRepository repo;
@@ -22,7 +23,7 @@ public class TaskServiceImpl implements TaskService {
     public List<Task> getTasks() { return repo.findAll(); }
 
     @Override
-    public void deleteTask(int index) { repo.delete(index); }
+    public void deleteTask(UUID id) { repo.delete(id); }
 
     @Override
     public void deleteCompletedTasks() { repo.deleteCompleted(); }
@@ -31,8 +32,8 @@ public class TaskServiceImpl implements TaskService {
     public void clearAllTasks() { repo.clear(); }
 
     @Override
-    public void editTask(int index, Task task) {
+    public void editTask(UUID id, Task task) {
         if (task == null || task.getTitle().isBlank()) return;
-        repo.update(index, task);
+        repo.update(id, task);
     }
 }

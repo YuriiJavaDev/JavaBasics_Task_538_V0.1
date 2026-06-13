@@ -3,6 +3,7 @@ package main.com.yurii.pavlenko.service;
 import main.com.yurii.pavlenko.model.Task;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface TaskService {
 
@@ -10,12 +11,11 @@ public interface TaskService {
 
     List<Task> getTasks();
 
-    void deleteTask(int index);
+    void deleteTask(UUID id);
 
     void deleteCompletedTasks();
 
     void clearAllTasks();
 
-    // Исправлено: принимаем объект Task
-    void editTask(int index, Task task);
+    void editTask(UUID id, Task task);
 }

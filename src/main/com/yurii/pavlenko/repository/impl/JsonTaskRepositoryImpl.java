@@ -11,8 +11,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Consumer;
 
+/**
+ * JSON-backed implementation of the TaskRepository using Jackson for object serialization.
+ */
 public class JsonTaskRepositoryImpl implements TaskRepository {
     private static final Logger logger = LoggerFactory.getLogger(JsonTaskRepositoryImpl.class);
     private final File file = new File("tasks.json");
@@ -34,10 +38,17 @@ public class JsonTaskRepositoryImpl implements TaskRepository {
         executeUpdate("Save task: " + task.getTitle(), tasks -> tasks.add(task));
     }
 
+    // UPDATED: Now removes tasks matching the unique identity key
     @Override
-    public void delete(int index) {
-        executeUpdate("Delete task at index: " + index, tasks -> {
-            if (index >= 0 && index < tasks.size()) tasks.remove(index);
+    public void delete(UUID id) {
+        if (id == null) return;
+        executeUpdate("Delete task with ID: " + id, tasks -> {
+            boolean removed = tasks.removeIf(task -> id.equals(task.getId()));
+            if (removed) {
+                logger.info("DEBUG: Task with ID {} successfully removed from the temporary list.", id);
+            } else {
+                logger.error("DEBUG: ERROR: Task with ID {} not found for deletion.", id);
+            }
         });
     }
 
@@ -51,16 +62,22 @@ public class JsonTaskRepositoryImpl implements TaskRepository {
         executeUpdate("Clear all tasks", List::clear);
     }
 
+    // UPDATED: Now replaces tasks based on matching UUID tokens instead of volatile indices
     @Override
-    public void update(int index, Task task) {
-        // Мы просто передаем действие в executeUpdate.
-        // Он сам считает список, применит наше изменение и сам запишет файл.
-        executeUpdate("Update task at index: " + index, tasks -> {
-            if (index >= 0 && index < tasks.size()) {
-                tasks.set(index, task);
-                logger.info("DEBUG: The task in the list has been replaced. New status: {}", task.isCompleted());
-            } else {
-                logger.error("DEBUG: ERROR: Index {} out of bounds of size list {}", index, tasks.size());
+    public void update(UUID id, Task updatedTask) {
+        if (id == null || updatedTask == null) return;
+        executeUpdate("Update task with ID: " + id, tasks -> {
+            boolean found = false;
+            for (int i = 0; i < tasks.size(); i++) {
+                if (id.equals(tasks.get(i).getId())) {
+                    tasks.set(i, updatedTask);
+                    logger.info("DEBUG: The task in the list has been replaced. New status: {}", updatedTask.isCompleted());
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                logger.error("DEBUG: ERROR: Task with ID {} not found for updating operations.", id);
             }
         });
     }
