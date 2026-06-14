@@ -38,16 +38,13 @@ public class EditTaskAction extends AbstractAction {
             return;
         }
 
-        // Fetch the domain model instance from the data source
-        Task task = controller.getTasks().get(selectedIndex);
+        Task task = listModel.getElementAt(selectedIndex);
 
-        // Display modal prompt pre-filled with the current title
         String newText = TaskDialog.showEditDialog(parentComponent, task.getTitle(), "Edit task");
 
-        // Validate text and apply structural update parameters if safe
         if (newText != null && !newText.isBlank()) {
             task.setTitle(newText.trim());
-            task.setUpdatedAt(LocalDateTime.now()); // Capture the exact modification timestamp
+            task.setUpdatedAt(LocalDateTime.now());
 
             controller.editTask(task.getId(), task);
             refreshCallback.run();

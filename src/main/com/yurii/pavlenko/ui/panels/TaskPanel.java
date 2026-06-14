@@ -6,6 +6,7 @@ import main.com.yurii.pavlenko.ui.actions.pressingbuttons.*;
 import main.com.yurii.pavlenko.ui.actions.filtration.TaskFilterService;
 import main.com.yurii.pavlenko.ui.actions.sorting.TaskComparatorFactory;
 import main.com.yurii.pavlenko.ui.components.TaskFooterPanel;
+import main.com.yurii.pavlenko.ui.renderers.SortComboBoxRenderer;
 import main.com.yurii.pavlenko.ui.renderers.TaskCellRenderer;
 import main.com.yurii.pavlenko.util.FilterStatus;
 import main.com.yurii.pavlenko.util.SortOrderOption;
@@ -53,6 +54,8 @@ public class TaskPanel extends JPanel {
 
         filterComboBox = new JComboBox<>(FilterStatus.values());
         sortComboBox = new JComboBox<>(SortOrderOption.values());
+
+        sortComboBox.setRenderer(new SortComboBoxRenderer(() -> (FilterStatus) filterComboBox.getSelectedItem()));
 
         listModel = new DefaultListModel<>();
         taskList = new JList<>(listModel);
@@ -118,8 +121,30 @@ public class TaskPanel extends JPanel {
             }
         });
 
-        filterComboBox.addActionListener(e -> refreshTasks(controller));
-        sortComboBox.addActionListener(e -> refreshTasks(controller));
+        filterComboBox.addActionListener(e -> {
+            FilterStatus selectedFilter = (FilterStatus) filterComboBox.getSelectedItem();
+            SortOrderOption selectedSort = (SortOrderOption) sortComboBox.getSelectedItem();
+
+            // UX Guard: If filtering is turned on and "By Status" was selected, auto-reset to Alphabetical
+            if (selectedFilter != FilterStatus.ALL && selectedSort == SortOrderOption.BY_STATUS) {
+                sortComboBox.setSelectedItem(SortOrderOption.A_Z);
+            }
+
+            refreshTasks(controller);
+        });
+
+        sortComboBox.addActionListener(e -> {
+            FilterStatus selectedFilter = (FilterStatus) filterComboBox.getSelectedItem();
+            SortOrderOption selectedSort = (SortOrderOption) sortComboBox.getSelectedItem();
+
+            // Action Guard: Prevent user from forcing the disabled item via keyboard or fast clicks
+            if (selectedFilter != FilterStatus.ALL && selectedSort == SortOrderOption.BY_STATUS) {
+                sortComboBox.setSelectedItem(SortOrderOption.A_Z);
+                return;
+            }
+
+            refreshTasks(controller);
+        });
 
         // ====================================
         // SETTING THE ENTER KEY (KEY BINDINGS)
