@@ -125,8 +125,10 @@ public class TaskPanel extends JPanel {
             FilterStatus selectedFilter = (FilterStatus) filterComboBox.getSelectedItem();
             SortOrderOption selectedSort = (SortOrderOption) sortComboBox.getSelectedItem();
 
-            // UX Guard: If filtering is turned on and "By Status" was selected, auto-reset to Alphabetical
+            // UX Guard: Reset sorting to A_Z if the selected sort option becomes invalid for the new filter
             if (selectedFilter != FilterStatus.ALL && selectedSort == SortOrderOption.BY_STATUS) {
+                sortComboBox.setSelectedItem(SortOrderOption.A_Z);
+            } else if (selectedFilter == FilterStatus.ACTIVE && selectedSort == SortOrderOption.BY_COMPLETED) {
                 sortComboBox.setSelectedItem(SortOrderOption.A_Z);
             }
 
@@ -137,8 +139,12 @@ public class TaskPanel extends JPanel {
             FilterStatus selectedFilter = (FilterStatus) filterComboBox.getSelectedItem();
             SortOrderOption selectedSort = (SortOrderOption) sortComboBox.getSelectedItem();
 
-            // Action Guard: Prevent user from forcing the disabled item via keyboard or fast clicks
+            // Action Guard: Prevent forcing disabled items via keyboard navigation shifts
             if (selectedFilter != FilterStatus.ALL && selectedSort == SortOrderOption.BY_STATUS) {
+                sortComboBox.setSelectedItem(SortOrderOption.A_Z);
+                return;
+            }
+            if (selectedFilter == FilterStatus.ACTIVE && selectedSort == SortOrderOption.BY_COMPLETED) {
                 sortComboBox.setSelectedItem(SortOrderOption.A_Z);
                 return;
             }

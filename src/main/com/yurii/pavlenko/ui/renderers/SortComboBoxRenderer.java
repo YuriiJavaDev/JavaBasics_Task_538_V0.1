@@ -8,7 +8,7 @@ import java.awt.*;
 import java.util.function.Supplier;
 
 /**
- * Custom renderer for the sorting dropdown that disables status sorting when filtering is active.
+ * Custom renderer for the sorting dropdown that disables status and completion sorting based on active filters.
  */
 public class SortComboBoxRenderer extends DefaultListCellRenderer {
 
@@ -26,12 +26,17 @@ public class SortComboBoxRenderer extends DefaultListCellRenderer {
         if (value instanceof SortOrderOption option) {
             FilterStatus currentFilter = filterStatusSupplier.get();
 
-            // If any filter is active, "By Status" sorting becomes irrelevant
-            if (currentFilter != FilterStatus.ALL && option == SortOrderOption.BY_STATUS) {
+            // Condition 1: "By Status" is irrelevant if ANY filter is applied
+            boolean isStatusDisabled = (currentFilter != FilterStatus.ALL && option == SortOrderOption.BY_STATUS);
+
+            // Condition 2: "By Completion Date" is irrelevant if we filter only "ACTIVE" tasks
+            boolean isCompletionDisabled = (currentFilter == FilterStatus.ACTIVE && option == SortOrderOption.BY_COMPLETED);
+
+            if (isStatusDisabled || isCompletionDisabled) {
                 comp.setEnabled(false);
                 comp.setForeground(Color.LIGHT_GRAY);
 
-                // Prevent background highlighting for the disabled item when hovering
+                // Prevent background highlights on hover for disabled entries
                 if (isSelected && index >= 0) {
                     comp.setBackground(list.getBackground());
                 }
