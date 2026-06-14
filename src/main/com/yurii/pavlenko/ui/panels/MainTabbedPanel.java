@@ -23,7 +23,7 @@ public class MainTabbedPanel extends JPanel {
     private void initializeTabs(TaskController controller) {
 
         tabbedPane.addTab("Tasks", new TaskPanel(controller));
-        tabbedPane.addTab("Tools", new JPanel());
+        tabbedPane.addTab("Tools", new ToolsPanel());
         tabbedPane.addTab("AI Chat", new JPanel());
     }
 }
