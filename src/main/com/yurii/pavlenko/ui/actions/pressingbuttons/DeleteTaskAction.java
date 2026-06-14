@@ -1,4 +1,4 @@
-package main.com.yurii.pavlenko.ui.actions;
+package main.com.yurii.pavlenko.ui.actions.pressingbuttons;
 
 import main.com.yurii.pavlenko.controller.TaskController;
 import main.com.yurii.pavlenko.model.Task;
@@ -16,10 +16,10 @@ public class DeleteTaskAction extends AbstractAction {
 
     private final TaskController controller;
     private final Component parentComponent;
-    private final JList<String> taskList;
+    private final JList<Task> taskList;
     private final Runnable refreshCallback;
 
-    public DeleteTaskAction(TaskController controller, Component parentComponent, JList<String> taskList, Runnable refreshCallback) {
+    public DeleteTaskAction(TaskController controller, Component parentComponent, JList<Task> taskList, Runnable refreshCallback) {
         super("Delete");
         this.controller = controller;
         this.parentComponent = parentComponent;

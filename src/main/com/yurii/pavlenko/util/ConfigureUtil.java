@@ -7,7 +7,7 @@ import java.awt.*;
 /**
  * Global operational utilities handling interface initialization, text styling configurations, and theme parameters.
  */
-public class Util {
+public class ConfigureUtil {
 
     /**
      * Bootstraps clean global Look and Feel themes and forces text edge smoothing routines.

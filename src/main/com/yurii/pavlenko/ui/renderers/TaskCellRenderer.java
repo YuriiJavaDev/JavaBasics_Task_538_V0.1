@@ -1,6 +1,5 @@
 package main.com.yurii.pavlenko.ui.renderers;
 
-import main.com.yurii.pavlenko.controller.TaskController;
 import main.com.yurii.pavlenko.model.Task;
 import main.com.yurii.pavlenko.util.DateFormatterUtil;
 
@@ -11,14 +10,12 @@ import java.awt.*;
 /**
  * Custom full-row list cell renderer ensuring unified background highlights and dynamic HTML task text strikethrough styling.
  */
-public class TaskCellRenderer extends JPanel implements ListCellRenderer<String> {
+public class TaskCellRenderer extends JPanel implements ListCellRenderer<Task> { // Updated to Task
 
     private final JCheckBox checkBox;
     private final JLabel textLabel;
-    private final TaskController controller;
 
-    public TaskCellRenderer(TaskController controller) {
-        this.controller = controller;
+    public TaskCellRenderer() { // Controller dependency removed
         setLayout(new BorderLayout(8, 0));
         setBorder(new EmptyBorder(4, 6, 4, 6));
 
@@ -33,10 +30,10 @@ public class TaskCellRenderer extends JPanel implements ListCellRenderer<String>
     }
 
     @Override
-    public Component getListCellRendererComponent(JList<? extends String> list, String value, int index,
+    public Component getListCellRendererComponent(JList<? extends Task> list, Task task, int index,
                                                   boolean isSelected, boolean cellHasFocus) {
-        if (index >= 0 && index < controller.getTasks().size()) {
-            Task task = controller.getTasks().get(index);
+        // Fix: Use the direct task object supplied by the JList model instead of index-based controller fetching
+        if (task != null) {
             checkBox.setSelected(task.isCompleted());
 
             // Generate metadata date suffix using centralized utility class
@@ -50,7 +47,7 @@ public class TaskCellRenderer extends JPanel implements ListCellRenderer<String>
                 textLabel.setText("<html>" + task.getTitle() + dateInfo + "</html>");
             }
         } else {
-            textLabel.setText(value == null ? "" : value);
+            textLabel.setText("");
             checkBox.setSelected(false);
         }
 

@@ -2,9 +2,13 @@ package main.com.yurii.pavlenko.ui.panels;
 
 import main.com.yurii.pavlenko.controller.TaskController;
 import main.com.yurii.pavlenko.model.Task;
-import main.com.yurii.pavlenko.ui.actions.*;
+import main.com.yurii.pavlenko.ui.actions.pressingbuttons.*;
+import main.com.yurii.pavlenko.ui.actions.filtration.TaskFilterService;
+import main.com.yurii.pavlenko.ui.actions.sorting.TaskComparatorFactory;
 import main.com.yurii.pavlenko.ui.components.TaskFooterPanel;
 import main.com.yurii.pavlenko.ui.renderers.TaskCellRenderer;
+import main.com.yurii.pavlenko.util.FilterStatus;
+import main.com.yurii.pavlenko.util.SortOrderOption;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,8 +25,12 @@ public class TaskPanel extends JPanel {
     private JTextField input;
     private JButton addButton;
     private JButton deleteButton;
-    private DefaultListModel<String> listModel;
-    private JList<String> taskList;
+
+    private JComboBox<FilterStatus> filterComboBox;
+    private JComboBox<SortOrderOption> sortComboBox;
+
+    private DefaultListModel<Task> listModel;
+    private JList<Task> taskList;
     private TaskFooterPanel footerPanel;
 
     private AddTaskAction addTaskAction;
@@ -42,9 +50,13 @@ public class TaskPanel extends JPanel {
 
     private void initializeComponents(TaskController controller) {
         input = new JTextField(50);
+
+        filterComboBox = new JComboBox<>(FilterStatus.values());
+        sortComboBox = new JComboBox<>(SortOrderOption.values());
+
         listModel = new DefaultListModel<>();
         taskList = new JList<>(listModel);
-        taskList.setCellRenderer(new TaskCellRenderer(controller));
+        taskList.setCellRenderer(new TaskCellRenderer());
         footerPanel = new TaskFooterPanel();
     }
 
@@ -66,9 +78,13 @@ public class TaskPanel extends JPanel {
     private void initializeLayout() {
         setLayout(new BorderLayout());
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+
         topPanel.add(input);
         topPanel.add(addButton);
         topPanel.add(deleteButton);
+        topPanel.add(filterComboBox);
+        topPanel.add(sortComboBox);
+
         add(topPanel, BorderLayout.NORTH);
         add(new JScrollPane(taskList), BorderLayout.CENTER);
         add(footerPanel, BorderLayout.SOUTH);
@@ -82,16 +98,14 @@ public class TaskPanel extends JPanel {
                 if (index >= 0) {
                     Rectangle cellBounds = taskList.getCellBounds(index, index);
                     if (e.getX() - cellBounds.x < 30) {
-                        Task task = controller.getTasks().get(index);
+                        Task task = listModel.getElementAt(index);
                         boolean newStatus = !task.isCompleted();
-                        // task.setCompleted(!task.isCompleted());
                         task.setCompleted(newStatus);
 
-                        // Dynamically manage completion timestamp based on the new status
                         if (newStatus) {
                             task.setCompletedAt(LocalDateTime.now());
                         } else {
-                            task.setCompletedAt(null); // Clear timestamp if task is uncompleted
+                            task.setCompletedAt(null);
                         }
 
                         controller.editTask(task.getId(), task);
@@ -103,6 +117,9 @@ public class TaskPanel extends JPanel {
                 }
             }
         });
+
+        filterComboBox.addActionListener(e -> refreshTasks(controller));
+        sortComboBox.addActionListener(e -> refreshTasks(controller));
 
         // ====================================
         // SETTING THE ENTER KEY (KEY BINDINGS)
@@ -118,10 +135,21 @@ public class TaskPanel extends JPanel {
 
     public void refreshTasks(TaskController controller) {
         listModel.clear();
-        List<Task> tasks = controller.getTasks();
-        tasks.forEach(task -> listModel.addElement(task.getTitle()));
-        int total = tasks.size();
-        int completed = (int) tasks.stream().filter(Task::isCompleted).count();
-        footerPanel.updateStatistics(total, completed, total - completed, total > 0 ? (completed * 100) / total : 0);
+
+        FilterStatus selectedFilter = (FilterStatus) filterComboBox.getSelectedItem();
+        SortOrderOption selectedSort = (SortOrderOption) sortComboBox.getSelectedItem();
+
+        // 1. Calculate global footer statistics using pure dataset state
+        List<Task> allTasks = controller.getTasks();
+        int total = allTasks.size();
+        int completedCount = (int) allTasks.stream().filter(Task::isCompleted).count();
+        footerPanel.updateStatistics(total, completedCount, total - completedCount, total > 0 ? (completedCount * 100) / total : 0);
+
+        // 2. Delegate data manipulations to isolated dedicated service sub-packages
+        List<Task> processedTasks = TaskFilterService.filter(allTasks, selectedFilter);
+        processedTasks.sort(TaskComparatorFactory.getComparator(selectedSort));
+
+        // 3. Output pipeline results onto the interactive UI layer
+        processedTasks.forEach(task -> listModel.addElement(task));
     }
 }

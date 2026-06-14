@@ -7,7 +7,7 @@ import main.com.yurii.pavlenko.repository.impl.JsonTaskRepositoryImpl;
 import main.com.yurii.pavlenko.service.TaskService;
 import main.com.yurii.pavlenko.service.impl.TaskServiceImpl;
 import main.com.yurii.pavlenko.ui.frames.TaskFrame;
-import main.com.yurii.pavlenko.util.Util;
+import main.com.yurii.pavlenko.util.ConfigureUtil;
 
 import javax.swing.*;
 
@@ -15,8 +15,8 @@ public class MyAssistantApp {
 
     public static void main(String[] args) {
 
-        Util.configureLookAndFeel();
-        Util.configureGlobalFonts();
+        ConfigureUtil.configureLookAndFeel();
+        ConfigureUtil.configureGlobalFonts();
 
         TaskRepository repo = new JsonTaskRepositoryImpl();
         // TaskRepository repo = new DatabaseTaskRepositoryImpl();

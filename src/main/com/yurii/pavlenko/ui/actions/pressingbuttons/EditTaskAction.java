@@ -1,4 +1,4 @@
-package main.com.yurii.pavlenko.ui.actions;
+package main.com.yurii.pavlenko.ui.actions.pressingbuttons;
 
 import main.com.yurii.pavlenko.controller.TaskController;
 import main.com.yurii.pavlenko.model.Task;
@@ -16,13 +16,13 @@ import java.time.LocalDateTime;
 public class EditTaskAction extends AbstractAction {
 
     private final TaskController controller;
-    private final JList<String> taskList;
-    private final DefaultListModel<String> listModel;
+    private final JList<Task> taskList;
+    private final DefaultListModel<Task> listModel;
     private final Component parentComponent;
     private final Runnable refreshCallback;
 
-    public EditTaskAction(TaskController controller, JList<String> taskList,
-                          DefaultListModel<String> listModel, Component parentComponent, Runnable refreshCallback) {
+    public EditTaskAction(TaskController controller, JList<Task> taskList,
+                          DefaultListModel<Task> listModel, Component parentComponent, Runnable refreshCallback) {
         super("Edit");
         this.controller = controller;
         this.taskList = taskList;

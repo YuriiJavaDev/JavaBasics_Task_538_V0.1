@@ -1,4 +1,4 @@
-package main.com.yurii.pavlenko.ui.actions;
+package main.com.yurii.pavlenko.ui.actions.pressingbuttons;
 
 import main.com.yurii.pavlenko.controller.TaskController;
 import main.com.yurii.pavlenko.ui.dialogs.DialogHelper;
