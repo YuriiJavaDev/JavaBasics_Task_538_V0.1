@@ -8,6 +8,11 @@ import main.com.yurii.pavlenko.service.tools.calculator.CalculatorService;
 import main.com.yurii.pavlenko.service.tools.calculator.impl.CalculatorServiceImpl;
 import main.com.yurii.pavlenko.controller.tools.calculator.CalculatorController;
 
+// New weather architectural imports
+import main.com.yurii.pavlenko.service.tools.weather.WeatherService;
+import main.com.yurii.pavlenko.service.tools.weather.impl.WeatherServiceImpl;
+import main.com.yurii.pavlenko.controller.tools.weather.WeatherController;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -22,8 +27,14 @@ public class ToolsPanel extends JPanel {
         setLayout(new BorderLayout(12, 0));
         setBorder(new EmptyBorder(12, 12, 12, 12));
 
-        // Left Area: Large Weather Widget (RUBBER - takes all center-west space fluidly)
+        // =====================================================================
+        // CLEAN ARCHITECTURE INITIALIZATION FOR WEATHER FORECAST TOOL
+        // =====================================================================
         WeatherPanel weatherPanel = new WeatherPanel();
+        WeatherService weatherService = new WeatherServiceImpl();
+        WeatherController weatherController = new WeatherController(weatherService, weatherPanel);
+
+        // Left Area: Large Weather Widget (RUBBER - takes all center-west space fluidly)
         weatherPanel.setPreferredSize(new Dimension(450, 0)); // Fluid height, elastic stretch
         add(weatherPanel, BorderLayout.CENTER);
 
