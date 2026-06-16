@@ -8,10 +8,15 @@ import main.com.yurii.pavlenko.service.tools.calculator.CalculatorService;
 import main.com.yurii.pavlenko.service.tools.calculator.impl.CalculatorServiceImpl;
 import main.com.yurii.pavlenko.controller.tools.calculator.CalculatorController;
 
-// New weather architectural imports
+// Weather architectural imports
 import main.com.yurii.pavlenko.service.tools.weather.WeatherService;
 import main.com.yurii.pavlenko.service.tools.weather.impl.WeatherServiceImpl;
 import main.com.yurii.pavlenko.controller.tools.weather.WeatherController;
+
+// New currency architectural imports
+import main.com.yurii.pavlenko.service.tools.currency.CurrencyService;
+import main.com.yurii.pavlenko.service.tools.currency.impl.CurrencyServiceImpl;
+import main.com.yurii.pavlenko.controller.tools.currency.CurrencyController;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -48,10 +53,16 @@ public class ToolsPanel extends JPanel {
         gridBagConstr.weightx = 1.0;
 
         // =====================================================================
+        // CLEAN ARCHITECTURE INITIALIZATION FOR CURRENCY CONVERTER TOOL
+        // =====================================================================
+        CurrencyService currencyService = new CurrencyServiceImpl();
+        CurrencyConverterPanel currencyPanel = new CurrencyConverterPanel();
+        CurrencyController currencyController = new CurrencyController(currencyPanel, currencyService);
+        currencyPanel.registerController(currencyController);
+
+        // =====================================================================
         // Row 1: Currency Converter (RUBBER - Absorbs all vertical variations)
         // =====================================================================
-        CurrencyConverterPanel currencyPanel = new CurrencyConverterPanel();
-
         gridBagConstr.gridy = 0;
         gridBagConstr.weighty = 1.0;    // Elastic vertical stretch behavior enabled
         gridBagConstr.insets = new Insets(0, 0, 12, 0); // Bottom margin spacing before calculator

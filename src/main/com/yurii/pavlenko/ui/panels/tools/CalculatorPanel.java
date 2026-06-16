@@ -34,7 +34,8 @@ public class CalculatorPanel extends JPanel {
         ));
 
         // Small top-left memory status indicator
-        memoryLabel = new JLabel("");
+        // MONOLITHIC: We init with an empty string to ensure the layout allocates space immediately
+        memoryLabel = new JLabel(" ");
         memoryLabel.setFont(new Font("Consolas", Font.PLAIN, 14));
         memoryLabel.setForeground(Color.GRAY);
         displayPanel.add(memoryLabel, BorderLayout.NORTH);
@@ -247,10 +248,17 @@ public class CalculatorPanel extends JPanel {
         display.setText(text);
     }
 
+    /**
+     * Updates memory status based on logic.
+     * FIX (BUG 404): Removed parent removal, keeping monolithic size structure intact.
+     */
     public void updateMemoryDisplay(String memoryValue) {
         if (memoryValue == null || memoryValue.isEmpty() || "0".equals(memoryValue) || "0.0".equals(memoryValue)) {
-            memoryLabel.setText("");
+            // BUGFIX: Instead of removal, we set a single space to force the layout to keep allocating vertical height.
+            // parent.remove(memoryLabel); <- Removed
+            memoryLabel.setText(" ");
         } else {
+            // BUGFIX: Keeps the monolithic size structure consistent when adding value
             memoryLabel.setText("M: " + memoryValue);
         }
     }
