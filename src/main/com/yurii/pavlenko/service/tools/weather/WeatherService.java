@@ -7,5 +7,5 @@ import main.com.yurii.pavlenko.model.tools.weather.WeatherModelDTO;
  */
 public interface WeatherService {
 
-    WeatherModelDTO fetchCurrentWeather(String latitude, String longitude);
+    WeatherModelDTO getWeather(String city) throws Exception;
 }

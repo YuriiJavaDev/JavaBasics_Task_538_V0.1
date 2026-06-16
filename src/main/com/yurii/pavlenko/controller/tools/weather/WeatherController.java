@@ -30,20 +30,20 @@ public class WeatherController implements ActionListener {
     }
 
     private void executeWeatherFetch() {
-        String lat = view.getLatitudeInput();
-        String lon = view.getLongitudeInput();
+        String city = view.getCityInput();
 
-        if (lat.isEmpty() || lon.isEmpty()) {
-            view.displayError("Empty coordinates");
+        if (city.isEmpty()) {
+            view.displayError("Укажите город");
             return;
         }
 
         view.setButtonsEnabled(false);
 
+        // Запуск SwingWorker: HTTP уходит в фон, а EDT продолжает крутить интерфейс
         new SwingWorker<WeatherModelDTO, Void>() {
             @Override
-            protected WeatherModelDTO doInBackground() {
-                return service.fetchCurrentWeather(lat, lon);
+            protected WeatherModelDTO doInBackground() throws Exception {
+                return service.getWeather(city);
             }
 
             @Override
@@ -52,7 +52,9 @@ public class WeatherController implements ActionListener {
                     WeatherModelDTO result = get();
                     view.updateWeatherDisplay(result);
                 } catch (Exception ex) {
-                    view.displayError("Connection failed");
+                    // Достаем реальное текстовое сообщение об ошибке, прилетевшее из сервиса
+                    String message = ex.getCause() != null ? ex.getCause().getMessage() : "Ошибка сети";
+                    view.displayError(message);
                 } finally {
                     view.setButtonsEnabled(true);
                 }
