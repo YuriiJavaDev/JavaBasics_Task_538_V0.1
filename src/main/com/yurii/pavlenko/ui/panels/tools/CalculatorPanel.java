@@ -3,8 +3,11 @@ package main.com.yurii.pavlenko.ui.panels.tools;
 import main.com.yurii.pavlenko.utils.CalculatorHotkeyConfigurator;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
+import java.awt.event.AWTEventListener;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,8 +22,15 @@ public class CalculatorPanel extends JPanel {
     private JPanel engineeringGrid;
     private JPanel classicPad;
 
+    // Панель дисплея для точечной подсветки рамки
+    private JPanel displayPanel;
+
     private final Map<String, JButton> buttonMap = new HashMap<>();
     private ActionListener globalController;
+
+    // Цвета для рамки табло
+    private final Color focusBorderColor = new Color(145, 175, 205);
+    private final Color defaultBorderColor = Color.GRAY;
 
     public CalculatorPanel() {
         setBorder(BorderFactory.createTitledBorder("Arithmetic & Engineering Calculator"));
@@ -29,49 +39,102 @@ public class CalculatorPanel extends JPanel {
         initializeDisplay();
         initializeCalculatorBody();
 
-        // Делегируем настройку горячих клавиш внешней утилите
+        // Настройка горячих клавиш (с защитой от воровства фокуса текстовыми полями)
         CalculatorHotkeyConfigurator.configureHotkeys(this, buttonMap);
 
-        setFocusable(true); // Делаем саму панель способной принимать фокус
+        // ФИКС: Саму панель больше не делаем фокусной, чтобы она не ловила "призрачный" фокус при перескоках
+        setFocusable(false);
 
-        // При клике мышкой в любую пустую зону панели калькулятора — забираем фокус на себя
+        // Клик по пустым зонам калькулятора активирует рамку
         this.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent e) {
-                requestFocusInWindow();
+            public void mousePressed(MouseEvent e) {
+                activateCalculatorFocus();
             }
         });
+
+        // ГЛОБАЛЬНЫЙ ТРЕКЕР КЛИКОВ: Идеальное решение проблемы фокуса.
+        // Слушает клики по всему приложению. Если клик вне калькулятора — тушит рамку.
+        Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
+            @Override
+            public void eventDispatched(AWTEvent event) {
+                if (event instanceof MouseEvent mouseEvent && mouseEvent.getID() == MouseEvent.MOUSE_PRESSED) {
+                    Component clickedComponent = mouseEvent.getComponent();
+
+                    if (clickedComponent != null) {
+                        // Проверяем, находится ли компонент, по которому кликнули, внутри нашего калькулятора
+                        if (SwingUtilities.isDescendingFrom(clickedComponent, CalculatorPanel.this)) {
+                            activateCalculatorFocus();
+                        } else {
+                            deactivateCalculatorFocus();
+                        }
+                    }
+                }
+            }
+        }, AWTEvent.MOUSE_EVENT_MASK);
+    }
+
+    /**
+     * Включает активную синюю рамку вокруг табло.
+     */
+    private void activateCalculatorFocus() {
+        displayPanel.setBorder(createUniformDisplayBorder(focusBorderColor));
+        displayPanel.repaint();
+    }
+
+    /**
+     * Гасит рамку калькулятора (делает серой).
+     */
+    private void deactivateCalculatorFocus() {
+        displayPanel.setBorder(createUniformDisplayBorder(defaultBorderColor));
+        displayPanel.repaint();
+    }
+
+    /**
+     * Создает базовую подложку с абсолютно одинаковыми отступами по всему периметру (6px).
+     * Рисует красивую, ЖИРНУЮ рамку в 4 пикселя.
+     */
+    private Border createUniformDisplayBorder(Color borderColor) {
+        return BorderFactory.createCompoundBorder(
+                BorderFactory.createEmptyBorder(6, 6, 6, 6),   // Идеально симметричные зазоры вокруг табло
+                BorderFactory.createLineBorder(borderColor, 4)  // Увеличенная толщина рамки до 4px
+        );
     }
 
     private void initializeDisplay() {
-        JPanel displayPanel = new JPanel(new BorderLayout());
-        displayPanel.setBackground(Color.WHITE);
-        displayPanel.setPreferredSize(new Dimension(0, 75));
-        displayPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(Color.GRAY, 1),
-                BorderFactory.createEmptyBorder(4, 12, 4, 12)
-        ));
+        displayPanel = new JPanel(new BorderLayout());
+        displayPanel.setBackground(Color.WHITE); // Само пространство табло делаем белым
+        displayPanel.setPreferredSize(new Dimension(0, 80)); // Немного увеличили высоту для безопасности крупных шрифтов
 
-        // Клик по экрану калькулятора тоже переводит фокус на калькулятор
+        // Стартовая стандартная серая рамка (толщина 4px)
+        displayPanel.setBorder(createUniformDisplayBorder(defaultBorderColor));
+
+        // Клик по зоне вокруг экрана активирует рамку калькулятора
         displayPanel.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent e) {
-                requestFocusInWindow();
+            public void mousePressed(MouseEvent e) {
+                activateCalculatorFocus();
             }
         });
+
+        // ФИКС ОБРЕЗКИ: Убираем вертикальные инсеты, давая BorderLayout центрировать текст без обрезки снизу
+        JPanel textContainer = new JPanel(new BorderLayout());
+        textContainer.setOpaque(false);
+        textContainer.setBorder(BorderFactory.createEmptyBorder(2, 12, 2, 12));
 
         memoryLabel = new JLabel(" ");
         memoryLabel.setFont(new Font("Consolas", Font.PLAIN, 14));
         memoryLabel.setForeground(Color.GRAY);
-        displayPanel.add(memoryLabel, BorderLayout.NORTH);
+        textContainer.add(memoryLabel, BorderLayout.NORTH);
 
         display = new JLabel("0");
         display.setOpaque(false);
         display.setHorizontalAlignment(SwingConstants.RIGHT);
-        display.setVerticalAlignment(SwingConstants.BOTTOM);
+        display.setVerticalAlignment(SwingConstants.CENTER); // Центрируем по вертикали, чтобы низ не резало
         display.setFont(new Font("Consolas", Font.BOLD, 36));
-        displayPanel.add(display, BorderLayout.CENTER);
+        textContainer.add(display, BorderLayout.CENTER);
 
+        displayPanel.add(textContainer, BorderLayout.CENTER);
         add(displayPanel, BorderLayout.NORTH);
     }
 
@@ -221,6 +284,9 @@ public class CalculatorPanel extends JPanel {
     private JButton createStyledButton(String text, boolean isEngineering) {
         JButton button = new JButton(text);
         button.setFocusPainted(false);
+
+        // Запрещаем кнопкам участвовать в системном фокусе клавиатуры
+        button.setFocusable(false);
 
         if (text.equals("Enter")) {
             button.setFont(new Font("Segoe UI", Font.BOLD, 12));
