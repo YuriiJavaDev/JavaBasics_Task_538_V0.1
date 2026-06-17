@@ -31,6 +31,16 @@ public class CalculatorPanel extends JPanel {
 
         // Делегируем настройку горячих клавиш внешней утилите
         CalculatorHotkeyConfigurator.configureHotkeys(this, buttonMap);
+
+        setFocusable(true); // Делаем саму панель способной принимать фокус
+
+        // При клике мышкой в любую пустую зону панели калькулятора — забираем фокус на себя
+        this.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mousePressed(java.awt.event.MouseEvent e) {
+                requestFocusInWindow();
+            }
+        });
     }
 
     private void initializeDisplay() {
@@ -41,6 +51,14 @@ public class CalculatorPanel extends JPanel {
                 BorderFactory.createLineBorder(Color.GRAY, 1),
                 BorderFactory.createEmptyBorder(4, 12, 4, 12)
         ));
+
+        // Клик по экрану калькулятора тоже переводит фокус на калькулятор
+        displayPanel.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mousePressed(java.awt.event.MouseEvent e) {
+                requestFocusInWindow();
+            }
+        });
 
         memoryLabel = new JLabel(" ");
         memoryLabel.setFont(new Font("Consolas", Font.PLAIN, 14));

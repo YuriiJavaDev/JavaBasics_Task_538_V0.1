@@ -51,6 +51,13 @@ public class WeatherPanel extends JPanel {
         btnSearch.setFont(new Font("Segoe UI", Font.BOLD, 11));
         btnSearch.setFocusPainted(false);
 
+        // ФИКС: дублируем нажатие Enter в поле города на кнопку Search с визуальным откликом
+        txtCity.addActionListener(e -> {
+            if (btnSearch.isEnabled()) {
+                btnSearch.doClick(120);
+            }
+        });
+
         topBar.add(new JLabel("City:"));
         topBar.add(txtCity);
         topBar.add(btnSearch);
@@ -95,7 +102,7 @@ public class WeatherPanel extends JPanel {
         lblTemp = new JLabel("Temperature: 23 °C");
         lblTemp.setFont(new Font("Segoe UI", Font.PLAIN, 18));
         lblTemp.setIcon(createThermometerIcon());
-        lblTemp.setIconTextGap(12); // Увеличили отступ от иконки
+        lblTemp.setIconTextGap(12);
         contentCard.add(lblTemp, gbc);
 
         lblWind = new JLabel("Wind Speed: 1.0 m/s (151° ^ N)");
@@ -172,8 +179,6 @@ public class WeatherPanel extends JPanel {
         };
     }
 
-    // РАЗМЕРЫ ВСЕХ ИКОНОК УВЕЛИЧЕНЫ ДО 32x32
-
     private ImageIcon createThermometerIcon() {
         BufferedImage img = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = img.createGraphics();
@@ -190,7 +195,7 @@ public class WeatherPanel extends JPanel {
         Graphics2D g2 = img.createGraphics();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setColor(new Color(110, 140, 160));
-        g2.setStroke(new BasicStroke(3.0f)); // Сделали линию в два раза жирнее
+        g2.setStroke(new BasicStroke(3.0f));
         g2.draw(new Line2D.Double(4, 10, 22, 10));
         g2.draw(new Line2D.Double(8, 18, 28, 18));
         g2.draw(new Line2D.Double(6, 26, 18, 26));

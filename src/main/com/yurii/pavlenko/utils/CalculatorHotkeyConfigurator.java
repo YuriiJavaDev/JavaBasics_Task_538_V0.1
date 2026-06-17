@@ -21,7 +21,7 @@ public final class CalculatorHotkeyConfigurator {
      * Configures hotkeys for the provided calculator panel and sets up smart tooltips.
      */
     public static void configureHotkeys(JPanel panel, Map<String, JButton> buttonMap) {
-        InputMap inputMap = panel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        InputMap inputMap = panel.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         ActionMap actionMap = panel.getActionMap();
 
         // 1. Цифры основного ряда и правого блока Numpad

@@ -55,6 +55,13 @@ public class CurrencyConverterPanel extends JPanel {
         btnConvert.setFont(new Font("Segoe UI", Font.BOLD, 11));
         btnConvert.setFocusPainted(false);
 
+        // ФИКС: дублируем нажатие Enter в поле суммы Amt на кнопку Convert с визуальным откликом
+        txtAmount.addActionListener(e -> {
+            if (btnConvert.isEnabled()) {
+                btnConvert.doClick(120);
+            }
+        });
+
         controlPanel.add(new JLabel("Amt:"));
         controlPanel.add(txtAmount);
         controlPanel.add(comboFrom);
@@ -74,11 +81,11 @@ public class CurrencyConverterPanel extends JPanel {
         displayCard.setBackground(new Color(250, 250, 253));
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.anchor = GridBagConstraints.CENTER; // Идеальное центрирование по вертикали
+        gbc.anchor = GridBagConstraints.CENTER;
         gbc.fill = GridBagConstraints.NONE;
         gbc.gridy = 0;
 
-        // 1. Левая невидимая распорка (заставляет всё сдвигаться к центру по горизонтали)
+        // 1. Левая невидимая распорка
         gbc.gridx = 0;
         gbc.weightx = 1.0;
         displayCard.add(Box.createHorizontalGlue(), gbc);
@@ -87,7 +94,7 @@ public class CurrencyConverterPanel extends JPanel {
         lblGraphicIcon = new JLabel(createExchangeVectorIcon());
         gbc.gridx = 1;
         gbc.weightx = 0.0;
-        gbc.insets = new Insets(0, 0, 0, 15); // Зазор 15px справа от кольца до текста
+        gbc.insets = new Insets(0, 0, 0, 15);
         displayCard.add(lblGraphicIcon, gbc);
 
         // 3. Текстовое поле результата
@@ -99,12 +106,11 @@ public class CurrencyConverterPanel extends JPanel {
         gbc.insets = new Insets(0, 0, 0, 0);
         displayCard.add(lblResultText, gbc);
 
-        // 4. Правая невидимая распорка (уравновешивает левую сторону)
+        // 4. Правая невидимая распорка
         gbc.gridx = 3;
         gbc.weightx = 1.0;
         displayCard.add(Box.createHorizontalGlue(), gbc);
 
-        // Добавляем displayCard напрямую в центр БЕЗ врапперов, чтобы рамка была во всю ширину
         add(displayCard, BorderLayout.CENTER);
     }
 
