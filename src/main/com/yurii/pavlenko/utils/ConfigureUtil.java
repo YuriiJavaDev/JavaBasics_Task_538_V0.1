@@ -1,4 +1,4 @@
-package main.com.yurii.pavlenko.util;
+package main.com.yurii.pavlenko.utils;
 
 import javax.swing.UIManager;
 import javax.swing.plaf.FontUIResource;

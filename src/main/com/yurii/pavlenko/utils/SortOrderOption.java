@@ -1,4 +1,4 @@
-package main.com.yurii.pavlenko.util;
+package main.com.yurii.pavlenko.utils;
 
 /**
  * Enumeration representing all supported task sorting criteria within the tracking system.

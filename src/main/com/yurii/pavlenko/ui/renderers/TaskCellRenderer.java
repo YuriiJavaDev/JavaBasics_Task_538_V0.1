@@ -1,7 +1,7 @@
 package main.com.yurii.pavlenko.ui.renderers;
 
 import main.com.yurii.pavlenko.model.Task;
-import main.com.yurii.pavlenko.util.DateFormatterUtil;
+import main.com.yurii.pavlenko.utils.DateFormatterUtil;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

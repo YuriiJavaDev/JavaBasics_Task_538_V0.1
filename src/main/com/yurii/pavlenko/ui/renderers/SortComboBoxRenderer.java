@@ -1,7 +1,7 @@
 package main.com.yurii.pavlenko.ui.renderers;
 
-import main.com.yurii.pavlenko.util.FilterStatus;
-import main.com.yurii.pavlenko.util.SortOrderOption;
+import main.com.yurii.pavlenko.utils.FilterStatus;
+import main.com.yurii.pavlenko.utils.SortOrderOption;
 
 import javax.swing.*;
 import java.awt.*;

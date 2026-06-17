@@ -1,4 +1,4 @@
-package main.com.yurii.pavlenko.util;
+package main.com.yurii.pavlenko.utils;
 
 /**
  * Configuration constants for the Currency Converter feature.

@@ -2,7 +2,7 @@ package main.com.yurii.pavlenko.ui.panels.tools;
 
 import main.com.yurii.pavlenko.controller.tools.currency.CurrencyController;
 import main.com.yurii.pavlenko.model.tools.currency.CurrencyModelDTO;
-import main.com.yurii.pavlenko.util.CurrencyApiConfig;
+import main.com.yurii.pavlenko.utils.CurrencyApiConfig;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

@@ -10,6 +10,7 @@ import javax.swing.SwingWorker;
 
 /**
  * Controller managing weather update sequences using multi-threaded Swing worker patterns.
+ * Coordinates data flow and triggers dynamic astronomical moon phase recalculations.
  */
 public class WeatherController implements ActionListener {
 
@@ -39,7 +40,7 @@ public class WeatherController implements ActionListener {
 
         view.setButtonsEnabled(false);
 
-        // Запуск SwingWorker: HTTP уходит в фон, а EDT продолжает крутить интерфейс
+        // Запуск SwingWorker: HTTP уходит в фон, а EDT продолжает крутить интерфейс без фризов
         new SwingWorker<WeatherModelDTO, Void>() {
             @Override
             protected WeatherModelDTO doInBackground() throws Exception {
@@ -51,8 +52,8 @@ public class WeatherController implements ActionListener {
                 try {
                     WeatherModelDTO result = get();
                     view.updateWeatherDisplay(result);
+
                 } catch (Exception ex) {
-                    // Достаем реальное текстовое сообщение об ошибке, прилетевшее из сервиса
                     String message = ex.getCause() != null ? ex.getCause().getMessage() : "Ошибка сети";
                     view.displayError(message);
                 } finally {

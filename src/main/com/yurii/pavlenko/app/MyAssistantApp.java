@@ -7,7 +7,7 @@ import main.com.yurii.pavlenko.repository.impl.JsonTaskRepositoryImpl;
 import main.com.yurii.pavlenko.service.TaskService;
 import main.com.yurii.pavlenko.service.impl.TaskServiceImpl;
 import main.com.yurii.pavlenko.ui.frames.TaskFrame;
-import main.com.yurii.pavlenko.util.ConfigureUtil;
+import main.com.yurii.pavlenko.utils.ConfigureUtil;
 
 import javax.swing.*;
 

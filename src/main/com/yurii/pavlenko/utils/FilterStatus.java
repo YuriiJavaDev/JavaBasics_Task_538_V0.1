@@ -1,4 +1,4 @@
-package main.com.yurii.pavlenko.util;
+package main.com.yurii.pavlenko.utils;
 
 /**
  * Enumeration representing available task filtering states for the UI layer.

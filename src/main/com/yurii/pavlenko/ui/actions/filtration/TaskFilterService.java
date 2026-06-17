@@ -1,7 +1,7 @@
 package main.com.yurii.pavlenko.ui.actions.filtration;
 
 import main.com.yurii.pavlenko.model.Task;
-import main.com.yurii.pavlenko.util.FilterStatus;
+import main.com.yurii.pavlenko.utils.FilterStatus;
 
 import java.util.List;
 import java.util.stream.Collectors;

@@ -1,265 +1,236 @@
 package main.com.yurii.pavlenko.ui.panels.tools;
 
-import main.com.yurii.pavlenko.controller.tools.weather.WeatherController;
 import main.com.yurii.pavlenko.model.tools.weather.WeatherModelDTO;
-import main.com.yurii.pavlenko.service.tools.weather.impl.WeatherServiceImpl;
-import main.com.yurii.pavlenko.util.MoonPhaseCalculator;
+import main.com.yurii.pavlenko.utils.CityTranslitUtil;
+import main.com.yurii.pavlenko.utils.MoonPhaseCalculator;
+import main.com.yurii.pavlenko.utils.WindConverter;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
 import java.time.LocalDate;
 
 /**
- * Visual viewport component presenting meteorological analytics with custom drawn rich vector graphics.
- * Bypasses operating system monochrome font bugs by drawing shapes dynamically.
+ * Visual panel component for tracking atmospheric conditions and astronomical lunar cycles.
+ * Uses specialized utilities for calculations and text translations.
+ * @date 2026-06-17
  */
 public class WeatherPanel extends JPanel {
 
     private JTextField txtCity;
-    private JButton btnFetch;
+    private JButton btnSearch;
 
-    private JPanel cardPanel;
-    private JLabel lblIcon;
-    private JLabel lblStatus;
-    private JLabel lblTemperature;
+    private JPanel contentCard;
+    private JLabel lblLocation;
+    private JLabel lblWeatherIcon;
+    private JLabel lblCondition;
+
+    private JLabel lblTemp;
     private JLabel lblWind;
     private JLabel lblHumidity;
-    private JLabel lblCity;
-    private JLabel lblMoonIcon;
+    private JLabel lblMoonText;
 
     public WeatherPanel() {
         setBorder(BorderFactory.createTitledBorder("Local Weather Forecast"));
-        setLayout(new BorderLayout(5, 5));
+        setLayout(new BorderLayout(8, 8));
 
-        initInputBar();
-        initWeatherCard();
+        initTopBar();
+        initContentCard();
     }
 
-    private void initInputBar() {
-        JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 2));
+    private void initTopBar() {
+        JPanel topBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 2));
+        Font mainFont = new Font("Segoe UI", Font.PLAIN, 12);
 
-        JLabel lblCityPre = new JLabel("City:");
-        lblCityPre.setFont(new Font("Segoe UI", Font.BOLD, 12));
         txtCity = new JTextField("Rishon LeZion", 12);
+        txtCity.setFont(mainFont);
 
-        btnFetch = new JButton("Search");
-        btnFetch.setFont(new Font("Segoe UI", Font.BOLD, 11));
-        btnFetch.setFocusPainted(false);
+        btnSearch = new JButton("Search");
+        btnSearch.setFont(new Font("Segoe UI", Font.BOLD, 11));
+        btnSearch.setFocusPainted(false);
 
-        inputPanel.add(lblCityPre);
-        inputPanel.add(txtCity);
-        inputPanel.add(btnFetch);
+        topBar.add(new JLabel("City:"));
+        topBar.add(txtCity);
+        topBar.add(btnSearch);
 
-        add(inputPanel, BorderLayout.NORTH);
+        add(topBar, BorderLayout.NORTH);
     }
 
-    private void initWeatherCard() {
-        cardPanel = new JPanel(new GridBagLayout());
-        cardPanel.setBorder(BorderFactory.createCompoundBorder(
-                new EmptyBorder(15, 15, 15, 15),
-                BorderFactory.createLineBorder(new Color(210, 215, 225), 1, true)
+    private void initContentCard() {
+        contentCard = new JPanel(new GridBagLayout());
+        contentCard.setBorder(BorderFactory.createCompoundBorder(
+                new EmptyBorder(10, 15, 10, 15),
+                BorderFactory.createLineBorder(new Color(220, 224, 230), 1, true)
         ));
-        cardPanel.setBackground(new Color(250, 250, 253));
+        contentCard.setBackground(new Color(250, 252, 255));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = GridBagConstraints.RELATIVE;
-        gbc.insets = new Insets(6, 10, 6, 10);
+        gbc.anchor = GridBagConstraints.CENTER;
+
+        lblLocation = new JLabel("Location: Rishon LeZion, IL");
+        lblLocation.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        lblLocation.setForeground(new Color(60, 70, 85));
+        gbc.insets = new Insets(12, 0, 8, 0);
+        contentCard.add(lblLocation, gbc);
+
+        gbc.insets = new Insets(4, 0, 4, 0);
+
+        lblWeatherIcon = new JLabel(createCloudVectorPlaceholder());
+        contentCard.add(lblWeatherIcon, gbc);
+
+        lblCondition = new JLabel("Partly Cloudy");
+        lblCondition.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        lblCondition.setForeground(Color.BLACK);
+        gbc.insets = new Insets(4, 0, 10, 0);
+        contentCard.add(lblCondition, gbc);
+
+        // Настройка выравнивания элементов по левому краю для погодных метрик
         gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(6, 30, 6, 30);
 
-        Font mainFont = new Font("Segoe UI", Font.PLAIN, 14);
+        lblTemp = new JLabel("Temperature: 23 °C");
+        lblTemp.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+        lblTemp.setIcon(createThermometerIcon());
+        lblTemp.setIconTextGap(12); // Увеличили отступ от иконки
+        contentCard.add(lblTemp, gbc);
 
-        lblIcon = new JLabel();
-        lblStatus = new JLabel("Clear Sky");
-        lblStatus.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        lblWind = new JLabel("Wind Speed: 1.0 m/s (151° ^ N)");
+        lblWind.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+        lblWind.setIcon(createWindIcon());
+        lblWind.setIconTextGap(12);
+        contentCard.add(lblWind, gbc);
 
-        lblTemperature = new JLabel("Temperature: -- °C");
-        lblTemperature.setFont(mainFont);
-        lblTemperature.setIcon(createParamIcon("temp", 0));
+        lblHumidity = new JLabel("Humidity: 83 %");
+        lblHumidity.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+        lblHumidity.setIcon(createHumidityIcon());
+        lblHumidity.setIconTextGap(12);
+        contentCard.add(lblHumidity, gbc);
 
-        lblWind = new JLabel("Wind Speed: -- m/s");
-        lblWind.setFont(mainFont);
-        lblWind.setIcon(createParamIcon("wind", 0));
+        // Возврат выравнивания по центру для красивой строки луны из утилиты
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(18, 0, 14, 0);
 
-        lblHumidity = new JLabel("Humidity: -- %");
-        lblHumidity.setFont(mainFont);
-        lblHumidity.setIcon(createParamIcon("humidity", 0));
+        lblMoonText = new JLabel();
+        lblMoonText.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 20));
+        lblMoonText.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
+        contentCard.add(lblMoonText, gbc);
 
-        lblCity = new JLabel("Location: --");
-        lblCity.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        lblCity.setForeground(new Color(80, 80, 80));
+        add(contentCard, BorderLayout.CENTER);
 
-        lblMoonIcon = new JLabel();
-        lblMoonIcon.setFont(mainFont);
-
-        GridBagConstraints gbcCenter = new GridBagConstraints();
-        gbcCenter.gridx = 0;
-        gbcCenter.gridy = GridBagConstraints.RELATIVE;
-        gbcCenter.insets = new Insets(6, 10, 6, 10);
-        gbcCenter.anchor = GridBagConstraints.CENTER;
-
-        cardPanel.add(lblIcon, gbcCenter);
-        cardPanel.add(lblStatus, gbcCenter);
-        cardPanel.add(lblTemperature, gbc);
-        cardPanel.add(lblWind, gbc);
-        cardPanel.add(lblHumidity, gbc);
-        cardPanel.add(lblCity, gbc);
-        cardPanel.add(lblMoonIcon, gbc);
-
-        add(cardPanel, BorderLayout.CENTER);
-    }
-
-    public void updateWeatherDisplay(WeatherModelDTO data) {
-        lblIcon.setIcon(createWeatherIcon(data.getWeatherCode()));
-        lblStatus.setText(WeatherServiceImpl.codeToTextStatus(data.getWeatherCode()));
-        lblTemperature.setText("Temperature: " + data.getTemperature() + " °C");
-        lblHumidity.setText("Humidity: " + data.getHumidity() + " %");
-        lblCity.setText("Location: " + data.getCityName() + ", " + data.getCountryCode().toUpperCase());
-
-        String directionText = WeatherServiceImpl.degreesToDirection(data.getWindDirection());
-        lblWind.setText("Wind Speed: " + String.format("%.1f", data.getWindSpeed()) + " m/s " + directionText);
-        lblWind.setIcon(createParamIcon("wind", data.getWindDirection()));
-
-        // Луна: Срезаем из строки калькулятора любые юникодные квадратики и спецсимволы
-        String rawPhaseText = MoonPhaseCalculator.getMoonPhase(LocalDate.now());
-        String cleanPhaseText = rawPhaseText.replaceAll("[^a-zA-Z0-9 ]", "").trim();
-        String percentageText = getPhasePercentage(cleanPhaseText);
-
-        lblMoonIcon.setIcon(createMoonPhaseIcon(cleanPhaseText));
-        lblMoonIcon.setText("Moon Phase: " + percentageText + " " + cleanPhaseText);
-
-        cardPanel.setBackground(new Color(245, 247, 250));
-    }
-
-    public void displayError(String message) {
-        lblIcon.setIcon(createWeatherIcon(-1));
-        lblStatus.setText("Error occurred");
-        lblTemperature.setText(message);
-        lblWind.setText("");
-        lblWind.setIcon(null);
-        lblHumidity.setText("");
-        lblCity.setText("");
-        lblMoonIcon.setIcon(null);
-        lblMoonIcon.setText("");
-        cardPanel.setBackground(new Color(255, 245, 245));
-    }
-
-    private String getPhasePercentage(String phase) {
-        if (phase == null) return "0%";
-        if (phase.contains("New Moon")) return "0%";
-        if (phase.contains("Waxing Crescent")) return "25%";
-        if (phase.contains("First Quarter")) return "50%";
-        if (phase.contains("Waxing Gibbous")) return "75%";
-        if (phase.contains("Full Moon")) return "100%";
-        if (phase.contains("Waning Gibbous")) return "75%";
-        if (phase.contains("Last Quarter") || phase.contains("Third Quarter")) return "50%";
-        if (phase.contains("Waning Crescent")) return "25%";
-        return "15%";
+        updateMoonPhaseDisplay();
     }
 
     /**
-     * Генерирует центральные иконки погоды, увеличенные ровно в 2 раза (128x128 пикселей).
+     * Re-evaluates current moon status directly through the centralized MoonPhaseCalculator utility.
      */
-    private ImageIcon createWeatherIcon(int code) {
-        BufferedImage img = new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB);
+    public void updateMoonPhaseDisplay() {
+        LocalDate now = LocalDate.now();
+        String fullMoonPhaseStr = MoonPhaseCalculator.getMoonPhase(now);
+        lblMoonText.setText(fullMoonPhaseStr);
+    }
+
+    public void updateWeatherDisplay(WeatherModelDTO data) {
+        String englishCity = CityTranslitUtil.convertToEnglishText(data.getCityName());
+        lblLocation.setText("Location: " + englishCity + ", " + data.getCountryCode());
+        lblCondition.setText(getConditionTextByCode(data.getWeatherCode()));
+
+        lblTemp.setText(String.format("Temperature: %.0f °C", data.getTemperature()));
+
+        String arrowDirection = WindConverter.getWindDirectionArrow(data.getWindDirection());
+        lblWind.setText(String.format("Wind Speed: %.1f m/s (%d° %s)",
+                data.getWindSpeed(), data.getWindDirection(), arrowDirection));
+
+        lblHumidity.setText("Humidity: " + data.getHumidity() + " %");
+        contentCard.setBackground(new Color(250, 252, 255));
+
+        updateMoonPhaseDisplay();
+    }
+
+    public void displayError(String message) {
+        lblCondition.setText("Error");
+        lblTemp.setText(message);
+        lblWind.setText("");
+        lblHumidity.setText("");
+        contentCard.setBackground(new Color(255, 243, 243));
+    }
+
+    private String getConditionTextByCode(int code) {
+        return switch (code) {
+            case 0 -> "Clear Sky";
+            case 1, 2, 3 -> "Partly Cloudy";
+            case 45, 48 -> "Foggy";
+            case 51, 53, 55 -> "Drizzle";
+            case 61, 63, 65 -> "Rainy";
+            case 71, 73, 75 -> "Snowy";
+            case 80, 81, 82 -> "Rain Showers";
+            case 95, 96, 99 -> "Thunderstorm";
+            default -> "Cloudy";
+        };
+    }
+
+    // РАЗМЕРЫ ВСЕХ ИКОНОК УВЕЛИЧЕНЫ ДО 32x32
+
+    private ImageIcon createThermometerIcon() {
+        BufferedImage img = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = img.createGraphics();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-        if (code == 0) { // Большое красивое Солнце
-            g2.setColor(new Color(255, 182, 0));
-            g2.fillOval(32, 32, 64, 64);
-        } else if (code <= 3) { // Объемные облака
-            g2.setColor(new Color(165, 195, 225));
-            g2.fillOval(24, 44, 52, 44);
-            g2.fillOval(48, 28, 56, 56);
-        } else if (code >= 51 && code <= 82) { // Дождевые облака с каплями
-            g2.setColor(new Color(140, 165, 195));
-            g2.fillOval(32, 28, 64, 48);
-            g2.setColor(new Color(30, 144, 255));
-            g2.setStroke(new BasicStroke(4)); // Толщина капель больше для масштаба
-            g2.drawLine(48, 84, 40, 100);
-            g2.drawLine(72, 84, 64, 100);
-        } else { // Иконка ошибки
-            g2.setColor(new Color(230, 90, 90));
-            g2.fillRoundRect(56, 20, 16, 72, 16, 16);
-            g2.fillOval(44, 72, 40, 40);
-        }
-
+        g2.setColor(new Color(230, 80, 80));
+        g2.fillOval(10, 20, 12, 12);
+        g2.fillRect(14, 4, 4, 18);
         g2.dispose();
         return new ImageIcon(img);
     }
 
-    private ImageIcon createParamIcon(String type, int angle) {
-        BufferedImage img = new BufferedImage(24, 24, BufferedImage.TYPE_INT_ARGB);
+    private ImageIcon createWindIcon() {
+        BufferedImage img = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = img.createGraphics();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-        if (type.equals("temp")) {
-            g2.setColor(new Color(240, 70, 70));
-            g2.fillRoundRect(10, 3, 4, 14, 4, 4);
-            g2.fillOval(7, 13, 10, 10);
-            g2.setColor(Color.WHITE);
-            g2.fillOval(11, 15, 3, 3);
-        } else if (type.equals("humidity")) {
-            g2.setColor(new Color(30, 144, 255));
-            g2.fillOval(4, 10, 16, 12);
-            int[] xPoints = {4, 12, 20};
-            int[] yPoints = {13, 2, 13};
-            g2.fillPolygon(xPoints, yPoints, 3);
-        } else if (type.equals("wind")) {
-            g2.setColor(new Color(180, 185, 195));
-            g2.setStroke(new BasicStroke(2));
-            g2.drawOval(2, 2, 20, 20);
-
-            g2.translate(12, 12);
-            g2.rotate(Math.toRadians(angle));
-
-            g2.setColor(new Color(230, 60, 60));
-            int[] xNorth = {0, -4, 0, 4};
-            int[] yNorth = {-9, 0, -2, 0};
-            g2.fillPolygon(xNorth, yNorth, 4);
-
-            g2.setColor(new Color(70, 130, 240));
-            int[] xSouth = {0, -4, 0, 4};
-            int[] ySouth = {9, 0, 2, 0};
-            g2.fillPolygon(xSouth, ySouth, 4);
-        }
-
+        g2.setColor(new Color(110, 140, 160));
+        g2.setStroke(new BasicStroke(3.0f)); // Сделали линию в два раза жирнее
+        g2.draw(new Line2D.Double(4, 10, 22, 10));
+        g2.draw(new Line2D.Double(8, 18, 28, 18));
+        g2.draw(new Line2D.Double(6, 26, 18, 26));
         g2.dispose();
         return new ImageIcon(img);
     }
 
-    private ImageIcon createMoonPhaseIcon(String phase) {
-        BufferedImage img = new BufferedImage(24, 24, BufferedImage.TYPE_INT_ARGB);
+    private ImageIcon createHumidityIcon() {
+        BufferedImage img = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = img.createGraphics();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-        g2.setColor(new Color(215, 215, 220));
-        g2.fillOval(2, 2, 20, 20);
-
-        g2.setColor(new Color(255, 225, 110));
-
-        if (phase.contains("Full")) {
-            g2.fillOval(2, 2, 20, 20);
-        } else if (phase.contains("New")) {
-            g2.setColor(new Color(75, 80, 90));
-            g2.fillOval(2, 2, 20, 20);
-        } else if (phase.contains("First") || phase.contains("Waxing")) {
-            g2.fillArc(2, 2, 20, 20, -90, 180);
-        } else {
-            g2.fillArc(2, 2, 20, 20, 90, 180);
-        }
-
+        g2.setColor(new Color(65, 130, 215));
+        g2.fillOval(8, 14, 16, 16);
+        int[] xPoints = {8, 16, 24};
+        int[] yPoints = {20, 4, 20};
+        g2.fillPolygon(xPoints, yPoints, 3);
         g2.dispose();
         return new ImageIcon(img);
     }
 
-    public void registerController(WeatherController controller) {
-        btnFetch.addActionListener(controller);
+    private ImageIcon createCloudVectorPlaceholder() {
+        BufferedImage img = new BufferedImage(80, 50, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = img.createGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setColor(new Color(160, 185, 215));
+        g2.fillOval(10, 15, 35, 30);
+        g2.fillOval(30, 10, 40, 35);
+        g2.dispose();
+        return new ImageIcon(img);
     }
 
-    public String getCityInput() { return txtCity.getText().trim(); }
-    public void setButtonsEnabled(boolean enabled) { btnFetch.setEnabled(enabled); }
+    public String getCityInput() {
+        return txtCity.getText().trim();
+    }
+
+    public void setButtonsEnabled(boolean enabled) {
+        btnSearch.setEnabled(enabled);
+    }
+
+    public void registerController(java.awt.event.ActionListener controller) {
+        btnSearch.addActionListener(controller);
+    }
 }

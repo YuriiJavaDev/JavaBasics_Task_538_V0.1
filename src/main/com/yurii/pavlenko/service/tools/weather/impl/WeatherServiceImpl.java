@@ -2,8 +2,8 @@ package main.com.yurii.pavlenko.service.tools.weather.impl;
 
 import main.com.yurii.pavlenko.model.tools.weather.WeatherModelDTO;
 import main.com.yurii.pavlenko.service.tools.weather.WeatherService;
-import main.com.yurii.pavlenko.util.WeatherApiConfig;
-import main.com.yurii.pavlenko.util.WindConverter;
+import main.com.yurii.pavlenko.utils.WeatherApiConfig;
+import main.com.yurii.pavlenko.utils.WindConverter;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;

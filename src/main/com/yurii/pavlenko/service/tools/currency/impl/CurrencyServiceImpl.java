@@ -2,7 +2,7 @@ package main.com.yurii.pavlenko.service.tools.currency.impl;
 
 import main.com.yurii.pavlenko.model.tools.currency.CurrencyModelDTO;
 import main.com.yurii.pavlenko.service.tools.currency.CurrencyService;
-import main.com.yurii.pavlenko.util.CurrencyApiConfig;
+import main.com.yurii.pavlenko.utils.CurrencyApiConfig;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;

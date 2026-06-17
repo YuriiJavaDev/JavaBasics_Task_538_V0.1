@@ -1,13 +1,16 @@
 package main.com.yurii.pavlenko.ui.panels.tools;
 
+import main.com.yurii.pavlenko.utils.CalculatorHotkeyConfigurator;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * High-performance arithmetic and engineering calculator layout.
- * Enforces a strictly monolithic classic numeric pad on the right wing while
- * allowing the engineering operations grid on the left wing to scale fluidly.
+ * Delegates physical keyboard mapping setup to specialized configurator entity.
  */
 public class CalculatorPanel extends JPanel {
 
@@ -16,12 +19,18 @@ public class CalculatorPanel extends JPanel {
     private JPanel engineeringGrid;
     private JPanel classicPad;
 
+    private final Map<String, JButton> buttonMap = new HashMap<>();
+    private ActionListener globalController;
+
     public CalculatorPanel() {
         setBorder(BorderFactory.createTitledBorder("Arithmetic & Engineering Calculator"));
         setLayout(new BorderLayout(12, 12));
 
         initializeDisplay();
         initializeCalculatorBody();
+
+        // Делегируем настройку горячих клавиш внешней утилите
+        CalculatorHotkeyConfigurator.configureHotkeys(this, buttonMap);
     }
 
     private void initializeDisplay() {
@@ -33,14 +42,11 @@ public class CalculatorPanel extends JPanel {
                 BorderFactory.createEmptyBorder(4, 12, 4, 12)
         ));
 
-        // Small top-left memory status indicator
-        // MONOLITHIC: We init with an empty string to ensure the layout allocates space immediately
         memoryLabel = new JLabel(" ");
         memoryLabel.setFont(new Font("Consolas", Font.PLAIN, 14));
         memoryLabel.setForeground(Color.GRAY);
         displayPanel.add(memoryLabel, BorderLayout.NORTH);
 
-        // Main numeric display field
         display = new JLabel("0");
         display.setOpaque(false);
         display.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -59,9 +65,6 @@ public class CalculatorPanel extends JPanel {
 
         JPanel leftEngineeringWing = new JPanel(new BorderLayout(0, 6));
 
-        // ---------------------------------------------------------------------
-        // STAGE A: Fixed Memory and Reset Control Row
-        // ---------------------------------------------------------------------
         JPanel memoryControlPanel = new JPanel(new GridBagLayout());
         GridBagConstraints memGbc = new GridBagConstraints();
         memGbc.fill = GridBagConstraints.BOTH;
@@ -73,7 +76,6 @@ public class CalculatorPanel extends JPanel {
         JButton btnMR = createStyledButton("MR", true);
         JButton btnMC = createStyledButton("MC", true);
 
-        // Explicitly set action commands to prevent spacing mismatch issues
         btnC.setActionCommand("C");
         btnToggleM.setActionCommand("M+");
         btnMR.setActionCommand("MR");
@@ -104,11 +106,7 @@ public class CalculatorPanel extends JPanel {
 
         leftEngineeringWing.add(memoryControlPanel, BorderLayout.NORTH);
 
-        // ---------------------------------------------------------------------
-        // STAGE B: Fluid Scaling Mathematical Grid Layout
-        // ---------------------------------------------------------------------
         engineeringGrid = new JPanel(new GridLayout(5, 5, 6, 6));
-
         String[] mathButtons = {
                 "sin",  "cos",  "tan",  "Deg",  "Rad",
                 "asin", "acos", "atan", "(",    ")",
@@ -127,9 +125,6 @@ public class CalculatorPanel extends JPanel {
         mainGbc.weightx = 1.0;
         bodyPanel.add(leftEngineeringWing, mainGbc);
 
-        // =====================================================================
-        // VISUAL SEPARATOR
-        // =====================================================================
         JPanel separatorContainer = new JPanel(new BorderLayout());
         JSeparator verticalLine = new JSeparator(JSeparator.VERTICAL);
         verticalLine.setForeground(Color.LIGHT_GRAY);
@@ -140,9 +135,6 @@ public class CalculatorPanel extends JPanel {
         mainGbc.weightx = 0.0;
         bodyPanel.add(separatorContainer, mainGbc);
 
-        // =====================================================================
-        // MONOLITHIC RIGHT WING: Mitsumi Numeric Pad Configuration
-        // =====================================================================
         classicPad = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.BOTH;
@@ -198,13 +190,8 @@ public class CalculatorPanel extends JPanel {
         int targetWidth = baseSize.width;
         int targetHeight = baseSize.height;
 
-        // Scale button dimension factoring in the 6px gap sizes
-        if (width == 2) {
-            targetWidth = (baseSize.width * 2) + 6;
-        }
-        if (height == 2) {
-            targetHeight = (baseSize.height * 2) + 6;
-        }
+        if (width == 2) targetWidth = (baseSize.width * 2) + 6;
+        if (height == 2) targetHeight = (baseSize.height * 2) + 6;
 
         Dimension targetDimension = new Dimension(targetWidth, targetHeight);
         button.setPreferredSize(targetDimension);
@@ -225,7 +212,6 @@ public class CalculatorPanel extends JPanel {
             button.setFont(new Font("Segoe UI", Font.BOLD, 22));
         }
 
-        // Apply dedicated styles to the top memory control layer row
         if (text.equals("C") || text.equals("M+") || text.equals("MR") || text.equals("MC")) {
             button.setBackground(new Color(228, 238, 247));
             button.setFont(new Font("Segoe UI", Font.BOLD, 12));
@@ -241,6 +227,8 @@ public class CalculatorPanel extends JPanel {
             }
         }
 
+        button.setActionCommand(text);
+        buttonMap.put(text, button);
         return button;
     }
 
@@ -248,22 +236,16 @@ public class CalculatorPanel extends JPanel {
         display.setText(text);
     }
 
-    /**
-     * Updates memory status based on logic.
-     * FIX (BUG 404): Removed parent removal, keeping monolithic size structure intact.
-     */
     public void updateMemoryDisplay(String memoryValue) {
         if (memoryValue == null || memoryValue.isEmpty() || "0".equals(memoryValue) || "0.0".equals(memoryValue)) {
-            // BUGFIX: Instead of removal, we set a single space to force the layout to keep allocating vertical height.
-            // parent.remove(memoryLabel); <- Removed
             memoryLabel.setText(" ");
         } else {
-            // BUGFIX: Keeps the monolithic size structure consistent when adding value
             memoryLabel.setText("M: " + memoryValue);
         }
     }
 
     public void registerController(ActionListener controller) {
+        this.globalController = controller;
         registerButtonsRecursively(engineeringGrid.getParent(), controller);
 
         for (Component comp : classicPad.getComponents()) {

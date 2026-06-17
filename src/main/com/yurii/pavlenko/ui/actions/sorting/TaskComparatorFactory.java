@@ -1,7 +1,7 @@
 package main.com.yurii.pavlenko.ui.actions.sorting;
 
 import main.com.yurii.pavlenko.model.Task;
-import main.com.yurii.pavlenko.util.SortOrderOption;
+import main.com.yurii.pavlenko.utils.SortOrderOption;
 
 import java.util.Comparator;
 

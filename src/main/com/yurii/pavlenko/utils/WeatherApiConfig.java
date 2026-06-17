@@ -1,4 +1,4 @@
-package main.com.yurii.pavlenko.util;
+package main.com.yurii.pavlenko.utils;
 
 /**
  * Configuration class holding the Open-Meteo API and Geocoding URL endpoints.

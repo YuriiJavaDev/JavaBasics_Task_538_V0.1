@@ -8,8 +8,8 @@ import main.com.yurii.pavlenko.ui.actions.sorting.TaskComparatorFactory;
 import main.com.yurii.pavlenko.ui.components.TaskFooterPanel;
 import main.com.yurii.pavlenko.ui.renderers.SortComboBoxRenderer;
 import main.com.yurii.pavlenko.ui.renderers.TaskCellRenderer;
-import main.com.yurii.pavlenko.util.FilterStatus;
-import main.com.yurii.pavlenko.util.SortOrderOption;
+import main.com.yurii.pavlenko.utils.FilterStatus;
+import main.com.yurii.pavlenko.utils.SortOrderOption;
 
 import javax.swing.*;
 import java.awt.*;
