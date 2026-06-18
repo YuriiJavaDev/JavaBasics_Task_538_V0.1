@@ -7,6 +7,7 @@ import main.com.yurii.pavlenko.ui.panels.tools.CalculatorPanel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
+import javax.swing.JRadioButton;
 
 /**
  * Controller component coordinating workflow between Calculator Model, Service, and UI Panel.
@@ -28,6 +29,12 @@ public class CalculatorController implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        // РЕФАКТОРИНГ: Добавляем обработку кликов по радиокнопкам Deg/Rad
+        if (e.getSource() instanceof JRadioButton radioButton) {
+            processAngleUnit(radioButton.getActionCommand());
+            return;
+        }
+
         if (!(e.getSource() instanceof JButton button)) {
             return;
         }
@@ -43,12 +50,12 @@ public class CalculatorController implements ActionListener {
                 case "MC" -> processMemoryClear();
 
                 case "." -> processDot();
-                case "Deg", "Rad" -> processAngleUnit(command);
                 case "π" -> processConstant(Math.PI);
                 case "e" -> processConstant(Math.E);
                 case "Rand" -> processConstant(Math.random());
                 case "Ans" -> processConstant(model.getLastResult());
 
+                // Добавлены новые инженерные кейсы, если они требуют специфики
                 case "+", "*", "/", "mod", "x^y" -> processBinaryOperator(command);
                 case "-" -> processMinusOperator();
                 case "Enter" -> processCalculate();
@@ -146,7 +153,6 @@ public class CalculatorController implements ActionListener {
         model.setActiveOperator(operator);
         model.setAwaitingNewInput(true);
 
-        // Лаконично отправляем промежуточный этап в мини-табло: "10 mod"
         view.updateFormulaDisplay(formatResult(currentNumber) + " " + operator);
     }
 
@@ -154,11 +160,15 @@ public class CalculatorController implements ActionListener {
         double currentNumber = Double.parseDouble(model.getCurrentInput());
         double result = service.calculateUnary(currentNumber, operation, model.isRadians());
 
-        // Определяем суффикс единицы измерения для тригонометрии
-        String unit = model.isRadians() ? " rad" : " deg";
-        // Собираем левую часть формулы: "sin(90) = "
+        // РЕФАКТОРИНГ: Добавляем суффикс угловых мер СТРОГО для тригонометрии
+        String unit = "";
+        if (operation.equals("sin") || operation.equals("cos") || operation.equals("tan")
+                || operation.equals("asin") || operation.equals("acos") || operation.equals("atan")
+                || operation.equals("sinh") || operation.equals("cosh")) {
+            unit = model.isRadians() ? " rad" : " deg";
+        }
+
         String formulaString = operation + "(" + formatResult(currentNumber) + unit + ") = ";
-        // Передаем управление в центральный метод финализации
         finalizeCalculation(result, formulaString);
     }
 
@@ -173,25 +183,18 @@ public class CalculatorController implements ActionListener {
         double result = service.calculateBinary(firstOperand, secondOperand, operator);
         model.setActiveOperator("");
 
-        // Строим левую часть для бинарного вычисления: "10 mod 3 = "
         String formulaString = formatResult(firstOperand) + " " + operator + " " + formatResult(secondOperand) + " = ";
 
         finalizeCalculation(result, formulaString);
     }
 
-    /**
-     * Centralized termination method for all arithmetic execution workflows.
-     * Synchronizes model state, main numeric display, and contextual formula tracking.
-     */
     private void finalizeCalculation(double result, String baseFormula) {
         String resultString = formatResult(result);
 
-        // Обновляем состояние модели
         model.setCurrentInput(resultString);
         model.setLastResult(result);
         model.setAwaitingNewInput(true);
 
-        // Синхронно выводим данные на UI-компоненты
         view.updateDisplay(resultString);
         view.updateFormulaDisplay(baseFormula + resultString);
     }

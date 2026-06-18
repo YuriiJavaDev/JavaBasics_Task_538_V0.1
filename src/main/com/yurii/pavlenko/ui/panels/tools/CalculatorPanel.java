@@ -5,7 +5,6 @@ import main.com.yurii.pavlenko.utils.CalculatorHotkeyConfigurator;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
-import java.awt.event.AWTEventListener;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
@@ -13,7 +12,7 @@ import java.util.Map;
 
 /**
  * High-performance arithmetic and engineering calculator layout.
- * Delegates physical keyboard mapping setup to specialized configurator entity.
+ * Integrates dedicated radio-button context switches for angular metrics.
  */
 public class CalculatorPanel extends JPanel {
 
@@ -23,13 +22,15 @@ public class CalculatorPanel extends JPanel {
     private JPanel engineeringGrid;
     private JPanel classicPad;
 
-    // Панель дисплея для точечной подсветки рамки
+    private JRadioButton degRadio;
+    private JRadioButton radRadio;
+    private ButtonGroup angleGroup;
+
     private JPanel displayPanel;
 
     private final Map<String, JButton> buttonMap = new HashMap<>();
     private ActionListener globalController;
 
-    // Цвета для рамки табло
     private final Color focusBorderColor = new Color(145, 175, 205);
     private final Color defaultBorderColor = Color.GRAY;
 
@@ -40,13 +41,10 @@ public class CalculatorPanel extends JPanel {
         initializeDisplay();
         initializeCalculatorBody();
 
-        // Настройка горячих клавиш
         CalculatorHotkeyConfigurator.configureHotkeys(this, buttonMap);
 
-        // 1. Делаем панель калькулятора полноценным участником фокуса
         setFocusable(true);
 
-        // 2. Чтобы при клике мышкой на пустые зоны фокус переходил на калькулятор
         this.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -54,8 +52,6 @@ public class CalculatorPanel extends JPanel {
             }
         });
 
-        // 3. Стандартный FocusListener. Теперь Swing сам будет гарантированно
-        // тушить фокус в Погоде и Конвертере, когда фокус переходит сюда!
         this.addFocusListener(new java.awt.event.FocusListener() {
             @Override
             public void focusGained(java.awt.event.FocusEvent e) {
@@ -64,8 +60,6 @@ public class CalculatorPanel extends JPanel {
 
             @Override
             public void focusLost(java.awt.event.FocusEvent e) {
-                // Проверяем: если фокус ушел на кнопку внутри нашего же калькулятора,
-                // рамку НЕ тушим!
                 Component opposite = e.getOppositeComponent();
                 if (opposite instanceof JButton && buttonMap.containsValue(opposite)) {
                     return;
@@ -75,59 +69,77 @@ public class CalculatorPanel extends JPanel {
         });
     }
 
-    /**
-     * Включает активную синюю рамку вокруг табло.
-     */
     private void activateCalculatorFocus() {
         displayPanel.setBorder(createUniformDisplayBorder(focusBorderColor));
         displayPanel.repaint();
     }
 
-    /**
-     * Гасит рамку калькулятора (делает серой).
-     */
     private void deactivateCalculatorFocus() {
         displayPanel.setBorder(createUniformDisplayBorder(defaultBorderColor));
         displayPanel.repaint();
     }
 
-    /**
-     * Создает базовую подложку с абсолютно одинаковыми отступами по всему периметру (6px).
-     * Рисует красивую, ЖИРНУЮ рамку в 4 пикселя.
-     */
     private Border createUniformDisplayBorder(Color borderColor) {
         return BorderFactory.createCompoundBorder(
-                BorderFactory.createEmptyBorder(6, 6, 6, 6), // Симметричные зазоры вокруг табло
-                BorderFactory.createLineBorder(borderColor, 4)  // Толщина рамки 4px
+                BorderFactory.createEmptyBorder(6, 6, 6, 6),
+                BorderFactory.createLineBorder(borderColor, 4)
         );
+    }
+
+    private JPanel createAngleLayoutComponent() {
+        JPanel radioPanel = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 15, 0));
+        radioPanel.setOpaque(false);
+
+        degRadio = new JRadioButton("Deg", true);
+        radRadio = new JRadioButton("Rad", false);
+
+        Font radioFont = new Font("Segoe UI", Font.PLAIN, 12);
+        degRadio.setFont(radioFont);
+        radRadio.setFont(radioFont);
+
+        degRadio.setFocusable(false);
+        radRadio.setFocusable(false);
+
+        // Чтобы клик по радиокнопкам возвращал фокус на калькулятор для работы горячих клавиш
+        java.awt.event.MouseAdapter radioFocusFix = new java.awt.event.MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                requestFocusInWindow();
+            }
+        };
+        degRadio.addMouseListener(radioFocusFix);
+        radRadio.addMouseListener(radioFocusFix);
+
+        angleGroup = new ButtonGroup();
+        angleGroup.add(degRadio);
+        angleGroup.add(radRadio);
+
+        radioPanel.add(degRadio);
+        radioPanel.add(radRadio);
+
+        return radioPanel;
     }
 
     private void initializeDisplay() {
         displayPanel = new JPanel(new BorderLayout());
-        displayPanel.setBackground(Color.WHITE); // пространство табло делаем белым
+        displayPanel.setBackground(Color.WHITE);
         displayPanel.setPreferredSize(new Dimension(0, 85));
-
-        // Стартовая стандартная серая рамка (толщина 4px)
         displayPanel.setBorder(createUniformDisplayBorder(defaultBorderColor));
 
-        // Клик по самой панели табло заставляет родительский калькулятор забрать фокус!
         displayPanel.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mousePressed(java.awt.event.MouseEvent e) {
-                requestFocusInWindow(); // Запрашиваем фокус для всей CalculatorPanel
+                requestFocusInWindow();
             }
         });
 
-        // Убираем вертикальные инсеты, давая BorderLayout центрировать текст без обрезки снизу
         JPanel textContainer = new JPanel(new BorderLayout());
         textContainer.setOpaque(false);
         textContainer.setBorder(BorderFactory.createEmptyBorder(2, 12, 2, 12));
 
-        // Слой для верхней служебной строки (Память слева, Формула справа)
         JPanel topLabelsPanel = new JPanel(new BorderLayout());
         topLabelsPanel.setOpaque(false);
 
-        // Клик по контейнеру текста тоже переводит фокус на калькулятор
         textContainer.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mousePressed(java.awt.event.MouseEvent e) {
@@ -153,7 +165,6 @@ public class CalculatorPanel extends JPanel {
         display.setVerticalAlignment(SwingConstants.CENTER);
         display.setFont(new Font("Consolas", Font.BOLD, 32));
 
-        // Клик непосредственно по тексту цифр на дисплее также переводит фокус
         display.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mousePressed(java.awt.event.MouseEvent e) {
@@ -162,7 +173,6 @@ public class CalculatorPanel extends JPanel {
         });
 
         textContainer.add(display, BorderLayout.CENTER);
-
         displayPanel.add(textContainer, BorderLayout.CENTER);
         add(displayPanel, BorderLayout.NORTH);
     }
@@ -173,7 +183,7 @@ public class CalculatorPanel extends JPanel {
         mainGbc.fill = GridBagConstraints.BOTH;
         mainGbc.weighty = 1.0;
 
-        JPanel leftEngineeringWing = new JPanel(new BorderLayout(0, 6));
+        JPanel leftEngineeringWing = new JPanel(new BorderLayout(0, 4));
 
         JPanel memoryControlPanel = new JPanel(new GridBagLayout());
         GridBagConstraints memGbc = new GridBagConstraints();
@@ -214,19 +224,30 @@ public class CalculatorPanel extends JPanel {
         memoryControlPanel.setMinimumSize(strictMemPanelSize);
         memoryControlPanel.setMaximumSize(strictMemPanelSize);
 
-        leftEngineeringWing.add(memoryControlPanel, BorderLayout.NORTH);
+        // Промежуточный контейнер для верхней части: Сброс/Память + Новые Радиокнопки
+        JPanel topCombinedPanel = new JPanel(new BorderLayout(0, 2));
+        topCombinedPanel.setOpaque(false);
+        topCombinedPanel.add(memoryControlPanel, BorderLayout.NORTH);
+        topCombinedPanel.add(createAngleLayoutComponent(), BorderLayout.SOUTH);
 
+        leftEngineeringWing.add(topCombinedPanel, BorderLayout.NORTH);
+
+        // Уменьшаем высоту инженерных кнопок с 45px до 38px, чтобы освободить место под тумблер
         engineeringGrid = new JPanel(new GridLayout(5, 5, 6, 6));
         String[] mathButtons = {
-                "sin",  "cos",  "tan",  "Deg",  "Rad",
+                "sin",  "cos",  "tan",  "sinh", "cosh", // Вместо Deg и Rad поставили гиперболические функции
                 "asin", "acos", "atan", "(",    ")",
                 "x²",   "x^y",  "sqrt", "∛x",   "1/x",
                 "ln",   "log",  "e",    "10^x", "exp",
                 "n!",   "abs",  "mod",  "Rand", "Ans"
         };
 
+        Dimension engButtonSize = new Dimension(60, 38);
         for (String txt : mathButtons) {
-            engineeringGrid.add(createStyledButton(txt, true));
+            JButton engBtn = createStyledButton(txt, true);
+            engBtn.setPreferredSize(engButtonSize);
+            engBtn.setMinimumSize(engButtonSize);
+            engineeringGrid.add(engBtn);
         }
 
         leftEngineeringWing.add(engineeringGrid, BorderLayout.CENTER);
@@ -313,10 +334,8 @@ public class CalculatorPanel extends JPanel {
     private JButton createStyledButton(String text, boolean isEngineering) {
         JButton button = new JButton(text);
         button.setFocusPainted(false);
-        button.setFocusable(false); // Кнопки не берут фокус на себя
+        button.setFocusable(false);
 
-        // Клик по кнопке переводит фокус на панель калькулятора.
-        // Погода и Конвертер узнают об этом и тушат свои рамки!
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -327,7 +346,7 @@ public class CalculatorPanel extends JPanel {
         if (text.equals("Enter")) {
             button.setFont(new Font("Segoe UI", Font.BOLD, 12));
         } else if (isEngineering) {
-            button.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+            button.setFont(new Font("Segoe UI", Font.PLAIN, 13)); // Слегка уменьшим кегль для длинных надписей (sinh/cosh)
         } else {
             button.setFont(new Font("Segoe UI", Font.BOLD, 22));
         }
@@ -381,6 +400,12 @@ public class CalculatorPanel extends JPanel {
                 button.addActionListener(controller);
             }
         }
+
+        // РЕФАКТОРИНГ: Регистрируем радиокнопки в Контроллере
+        if (degRadio != null && radRadio != null) {
+            degRadio.addActionListener(controller);
+            radRadio.addActionListener(controller);
+        }
     }
 
     private void registerButtonsRecursively(Component container, ActionListener controller) {
@@ -392,4 +417,8 @@ public class CalculatorPanel extends JPanel {
             }
         }
     }
+
+    // Вспомогательные геттеры для программного переключения радиокнопок через Hotkeys
+    public JRadioButton getDegRadio() { return degRadio; }
+    public JRadioButton getRadRadio() { return radRadio; }
 }

@@ -1,5 +1,7 @@
 package main.com.yurii.pavlenko.utils;
 
+import main.com.yurii.pavlenko.ui.panels.tools.CalculatorPanel;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -13,7 +15,7 @@ import java.util.Map;
 public final class CalculatorHotkeyConfigurator {
 
     private CalculatorHotkeyConfigurator() {
-        // Утилитарный класс не должен инстанцироваться напрямую
+        // Utility class should not be instantiated directly
     }
 
     /**
@@ -122,26 +124,29 @@ public final class CalculatorHotkeyConfigurator {
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.CTRL_DOWN_MASK), "press_ans");
         actionMap.put("press_ans", createTriggerAction(buttonMap, "Ans"));
 
-        // Переключение угловых мер одной кнопкой Ctrl + D
+        // РЕФАКТОРИНГ: Переключение радиокнопок одной комбинацией Ctrl + D
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.CTRL_DOWN_MASK), "toggle_angle");
         actionMap.put("toggle_angle", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JButton degBtn = buttonMap.get("Deg");
-                if (degBtn != null && degBtn.isEnabled()) {
-                    degBtn.doClick(120);
+                if (panel instanceof CalculatorPanel calcPanel) {
+                    if (calcPanel.getDegRadio().isSelected()) {
+                        calcPanel.getRadRadio().doClick();
+                    } else {
+                        calcPanel.getDegRadio().doClick();
+                    }
                 }
             }
         });
 
-        // Автоматически навешиваем контекстные подсказки для сложных кнопок
-        configureButtonToolTips(buttonMap);
+        // Автоматически навешиваем контекстные подсказки для сложных кнопок и радиокомпонентов
+        configureButtonToolTips(panel, buttonMap);
     }
 
     /**
-     * Automatically maps and assigns hotkey hint tooltips to appropriate buttons.
+     * Automatically maps and assigns hotkey hint tooltips to appropriate buttons and panels.
      */
-    private static void configureButtonToolTips(Map<String, JButton> buttonMap) {
+    private static void configureButtonToolTips(JPanel panel, Map<String, JButton> buttonMap) {
         Map<String, String> hints = new HashMap<>();
 
         // Кнопки управления и памяти
@@ -154,8 +159,6 @@ public final class CalculatorHotkeyConfigurator {
         hints.put("sin", "Hotkey: Ctrl + S");
         hints.put("cos", "Hotkey: Ctrl + O");
         hints.put("tan", "Hotkey: Ctrl + T");
-        hints.put("Deg", "Toggle mode Hotkey: Ctrl + D");
-        hints.put("Rad", "Toggle mode Hotkey: Ctrl + D");
         hints.put("x²", "Hotkey: Ctrl + Q");
         hints.put("x^y", "Hotkey: Shift + 6 (^)");
         hints.put("sqrt", "Hotkey: Ctrl + H");
@@ -170,6 +173,10 @@ public final class CalculatorHotkeyConfigurator {
         hints.put("(", "Hotkey: Shift + 9");
         hints.put(")", "Hotkey: Shift + 0");
 
+        // Новые функции
+        hints.put("sinh", "Hyperbolic Sine Function");
+        hints.put("cosh", "Hyperbolic Cosine Function");
+
         // Применяем тултипы только к тем кнопкам, которые есть на панели
         hints.forEach((btnKey, tipText) -> {
             JButton button = buttonMap.get(btnKey);
@@ -177,6 +184,13 @@ public final class CalculatorHotkeyConfigurator {
                 button.setToolTipText(tipText);
             }
         });
+
+        // РЕФАКТОРИНГ: Навешиваем подсказку горячей клавиши на радиокнопки переключателя
+        if (panel instanceof CalculatorPanel calcPanel) {
+            String angleTip = "Angle metric mode. Hotkey to toggle: Ctrl + D";
+            if (calcPanel.getDegRadio() != null) calcPanel.getDegRadio().setToolTipText(angleTip);
+            if (calcPanel.getRadRadio() != null) calcPanel.getRadRadio().setToolTipText(angleTip);
+        }
     }
 
     private static Action createTriggerAction(Map<String, JButton> buttonMap, String buttonKey) {
