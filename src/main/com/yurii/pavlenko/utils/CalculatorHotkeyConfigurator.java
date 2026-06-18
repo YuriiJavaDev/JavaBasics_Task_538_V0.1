@@ -9,7 +9,6 @@ import java.util.Map;
 /**
  * Utility configurator initializing seamless physical keyboard hotkeys mapping
  * and dynamic contextual tooltips for engineering functions.
- * @date 2026-06-17
  */
 public final class CalculatorHotkeyConfigurator {
 

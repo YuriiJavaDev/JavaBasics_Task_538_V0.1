@@ -55,11 +55,19 @@ public class CurrencyConverterPanel extends JPanel {
         btnConvert.setFont(new Font("Segoe UI", Font.BOLD, 11));
         btnConvert.setFocusPainted(false);
 
-        // ФИКС: дублируем нажатие Enter в поле суммы Amt на кнопку Convert с визуальным откликом
+        // Блокируем кнопке возможность воровать фокус у текстового поля при клике мышкой
+        btnConvert.setFocusable(false);
+
+        // Дублируем нажатие Enter в поле суммы Amt на кнопку Convert с визуальным откликом
         txtAmount.addActionListener(e -> {
             if (btnConvert.isEnabled()) {
                 btnConvert.doClick(120);
             }
+        });
+
+        // При нажатии мышкой на кнопку — возврат фокуса в текстовое поле города!
+        btnConvert.addActionListener(e -> {
+            txtAmount.requestFocusInWindow();
         });
 
         controlPanel.add(new JLabel("Amt:"));

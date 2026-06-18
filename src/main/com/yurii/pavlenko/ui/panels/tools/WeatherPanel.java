@@ -15,7 +15,6 @@ import java.time.LocalDate;
 /**
  * Visual panel component for tracking atmospheric conditions and astronomical lunar cycles.
  * Uses specialized utilities for calculations and text translations.
- * @date 2026-06-17
  */
 public class WeatherPanel extends JPanel {
 
@@ -51,11 +50,19 @@ public class WeatherPanel extends JPanel {
         btnSearch.setFont(new Font("Segoe UI", Font.BOLD, 11));
         btnSearch.setFocusPainted(false);
 
-        // ФИКС: дублируем нажатие Enter в поле города на кнопку Search с визуальным откликом
+        // Блокируем кнопке возможность воровать фокус у текстового поля при клике мышкой
+        btnSearch.setFocusable(false);
+
+        // Дублируем нажатие Enter в поле города на кнопку Search с визуальным откликом
         txtCity.addActionListener(e -> {
             if (btnSearch.isEnabled()) {
                 btnSearch.doClick(120);
             }
+        });
+
+        // При нажатии мышкой на кнопку — возврат фокуса в текстовое поле города!
+        btnSearch.addActionListener(e -> {
+            txtCity.requestFocusInWindow();
         });
 
         topBar.add(new JLabel("City:"));

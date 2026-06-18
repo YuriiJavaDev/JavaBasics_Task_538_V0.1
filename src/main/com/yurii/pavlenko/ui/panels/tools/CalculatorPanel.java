@@ -39,39 +39,39 @@ public class CalculatorPanel extends JPanel {
         initializeDisplay();
         initializeCalculatorBody();
 
-        // Настройка горячих клавиш (с защитой от воровства фокуса текстовыми полями)
+        // Настройка горячих клавиш
         CalculatorHotkeyConfigurator.configureHotkeys(this, buttonMap);
 
-        // ФИКС: Саму панель больше не делаем фокусной, чтобы она не ловила "призрачный" фокус при перескоках
-        setFocusable(false);
+        // 1. Делаем панель калькулятора полноценным участником фокуса
+        setFocusable(true);
 
-        // Клик по пустым зонам калькулятора активирует рамку
+        // 2. Чтобы при клике мышкой на пустые зоны фокус переходил на калькулятор
         this.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                activateCalculatorFocus();
+                requestFocusInWindow();
             }
         });
 
-        // ГЛОБАЛЬНЫЙ ТРЕКЕР КЛИКОВ: Идеальное решение проблемы фокуса.
-        // Слушает клики по всему приложению. Если клик вне калькулятора — тушит рамку.
-        Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
+        // 3. Стандартный FocusListener. Теперь Swing сам будет гарантированно
+        // тушить фокус в Погоде и Конвертере, когда фокус переходит сюда!
+        this.addFocusListener(new java.awt.event.FocusListener() {
             @Override
-            public void eventDispatched(AWTEvent event) {
-                if (event instanceof MouseEvent mouseEvent && mouseEvent.getID() == MouseEvent.MOUSE_PRESSED) {
-                    Component clickedComponent = mouseEvent.getComponent();
-
-                    if (clickedComponent != null) {
-                        // Проверяем, находится ли компонент, по которому кликнули, внутри нашего калькулятора
-                        if (SwingUtilities.isDescendingFrom(clickedComponent, CalculatorPanel.this)) {
-                            activateCalculatorFocus();
-                        } else {
-                            deactivateCalculatorFocus();
-                        }
-                    }
-                }
+            public void focusGained(java.awt.event.FocusEvent e) {
+                activateCalculatorFocus();
             }
-        }, AWTEvent.MOUSE_EVENT_MASK);
+
+            @Override
+            public void focusLost(java.awt.event.FocusEvent e) {
+                // Проверяем: если фокус ушел на кнопку внутри нашего же калькулятора,
+                // рамку НЕ тушим!
+                Component opposite = e.getOppositeComponent();
+                if (opposite instanceof JButton && buttonMap.containsValue(opposite)) {
+                    return;
+                }
+                deactivateCalculatorFocus();
+            }
+        });
     }
 
     /**
@@ -104,23 +104,31 @@ public class CalculatorPanel extends JPanel {
     private void initializeDisplay() {
         displayPanel = new JPanel(new BorderLayout());
         displayPanel.setBackground(Color.WHITE); // Само пространство табло делаем белым
-        displayPanel.setPreferredSize(new Dimension(0, 80)); // Немного увеличили высоту для безопасности крупных шрифтов
+        displayPanel.setPreferredSize(new Dimension(0, 80));
 
         // Стартовая стандартная серая рамка (толщина 4px)
         displayPanel.setBorder(createUniformDisplayBorder(defaultBorderColor));
 
-        // Клик по зоне вокруг экрана активирует рамку калькулятора
+        // Клик по самой панели табло заставляет родительский калькулятор забрать фокус!
         displayPanel.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
-            public void mousePressed(MouseEvent e) {
-                activateCalculatorFocus();
+            public void mousePressed(java.awt.event.MouseEvent e) {
+                requestFocusInWindow(); // Запрашиваем фокус для всей CalculatorPanel
             }
         });
 
-        // ФИКС ОБРЕЗКИ: Убираем вертикальные инсеты, давая BorderLayout центрировать текст без обрезки снизу
+        // Убираем вертикальные инсеты, давая BorderLayout центрировать текст без обрезки снизу
         JPanel textContainer = new JPanel(new BorderLayout());
         textContainer.setOpaque(false);
         textContainer.setBorder(BorderFactory.createEmptyBorder(2, 12, 2, 12));
+
+        // Клик по контейнеру текста тоже переводит фокус на калькулятор
+        textContainer.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mousePressed(java.awt.event.MouseEvent e) {
+                requestFocusInWindow();
+            }
+        });
 
         memoryLabel = new JLabel(" ");
         memoryLabel.setFont(new Font("Consolas", Font.PLAIN, 14));
@@ -130,8 +138,17 @@ public class CalculatorPanel extends JPanel {
         display = new JLabel("0");
         display.setOpaque(false);
         display.setHorizontalAlignment(SwingConstants.RIGHT);
-        display.setVerticalAlignment(SwingConstants.CENTER); // Центрируем по вертикали, чтобы низ не резало
+        display.setVerticalAlignment(SwingConstants.CENTER);
         display.setFont(new Font("Consolas", Font.BOLD, 36));
+
+        // Клик непосредственно по тексту цифр на дисплее также переводит фокус
+        display.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mousePressed(java.awt.event.MouseEvent e) {
+                requestFocusInWindow();
+            }
+        });
+
         textContainer.add(display, BorderLayout.CENTER);
 
         displayPanel.add(textContainer, BorderLayout.CENTER);
@@ -284,9 +301,16 @@ public class CalculatorPanel extends JPanel {
     private JButton createStyledButton(String text, boolean isEngineering) {
         JButton button = new JButton(text);
         button.setFocusPainted(false);
+        button.setFocusable(false); // Кнопки не берут фокус на себя
 
-        // Запрещаем кнопкам участвовать в системном фокусе клавиатуры
-        button.setFocusable(false);
+        // Клик по кнопке переводит фокус на панель калькулятора.
+        // Погода и Конвертер узнают об этом и тушат свои рамки!
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                requestFocusInWindow();
+            }
+        });
 
         if (text.equals("Enter")) {
             button.setFont(new Font("Segoe UI", Font.BOLD, 12));
