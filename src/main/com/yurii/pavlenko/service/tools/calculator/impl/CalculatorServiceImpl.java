@@ -9,9 +9,14 @@ public class CalculatorServiceImpl implements CalculatorService {
 
     private double memory = 0.0;
 
+//    @Override
+//    public void saveToMemory(double value) {
+//        this.memory = value;
+//    }
+
     @Override
-    public void saveToMemory(double value) {
-        this.memory = value;
+    public void addToMemory(double value) {
+        this.memory += value;
     }
 
     @Override
@@ -47,6 +52,9 @@ public class CalculatorServiceImpl implements CalculatorService {
         double forwardAngle = isRadians ? operand : Math.toRadians(operand);
 
         return switch (operation) {
+
+            case "%"    -> operand / 100.0;
+
             case "sin"  -> Math.sin(forwardAngle);
             case "cos"  -> Math.cos(forwardAngle);
             case "tan"  -> Math.tan(forwardAngle);

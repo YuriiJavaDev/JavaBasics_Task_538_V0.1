@@ -19,6 +19,7 @@ public class CalculatorPanel extends JPanel {
 
     private JLabel display;
     private JLabel memoryLabel;
+    private JLabel formulaLabel;
     private JPanel engineeringGrid;
     private JPanel classicPad;
 
@@ -96,15 +97,15 @@ public class CalculatorPanel extends JPanel {
      */
     private Border createUniformDisplayBorder(Color borderColor) {
         return BorderFactory.createCompoundBorder(
-                BorderFactory.createEmptyBorder(6, 6, 6, 6),   // Идеально симметричные зазоры вокруг табло
-                BorderFactory.createLineBorder(borderColor, 4)  // Увеличенная толщина рамки до 4px
+                BorderFactory.createEmptyBorder(6, 6, 6, 6), // Симметричные зазоры вокруг табло
+                BorderFactory.createLineBorder(borderColor, 4)  // Толщина рамки 4px
         );
     }
 
     private void initializeDisplay() {
         displayPanel = new JPanel(new BorderLayout());
-        displayPanel.setBackground(Color.WHITE); // Само пространство табло делаем белым
-        displayPanel.setPreferredSize(new Dimension(0, 80));
+        displayPanel.setBackground(Color.WHITE); // пространство табло делаем белым
+        displayPanel.setPreferredSize(new Dimension(0, 85));
 
         // Стартовая стандартная серая рамка (толщина 4px)
         displayPanel.setBorder(createUniformDisplayBorder(defaultBorderColor));
@@ -122,6 +123,10 @@ public class CalculatorPanel extends JPanel {
         textContainer.setOpaque(false);
         textContainer.setBorder(BorderFactory.createEmptyBorder(2, 12, 2, 12));
 
+        // Слой для верхней служебной строки (Память слева, Формула справа)
+        JPanel topLabelsPanel = new JPanel(new BorderLayout());
+        topLabelsPanel.setOpaque(false);
+
         // Клик по контейнеру текста тоже переводит фокус на калькулятор
         textContainer.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
@@ -131,15 +136,22 @@ public class CalculatorPanel extends JPanel {
         });
 
         memoryLabel = new JLabel(" ");
-        memoryLabel.setFont(new Font("Consolas", Font.PLAIN, 14));
+        memoryLabel.setFont(new Font("Consolas", Font.PLAIN, 12));
         memoryLabel.setForeground(Color.GRAY);
-        textContainer.add(memoryLabel, BorderLayout.NORTH);
+        topLabelsPanel.add(memoryLabel, BorderLayout.WEST);
+
+        formulaLabel = new JLabel(" ");
+        formulaLabel.setFont(new Font("Consolas", Font.ITALIC, 12));
+        formulaLabel.setForeground(new Color(100, 130, 160));
+        topLabelsPanel.add(formulaLabel, BorderLayout.EAST);
+
+        textContainer.add(topLabelsPanel, BorderLayout.NORTH);
 
         display = new JLabel("0");
         display.setOpaque(false);
         display.setHorizontalAlignment(SwingConstants.RIGHT);
         display.setVerticalAlignment(SwingConstants.CENTER);
-        display.setFont(new Font("Consolas", Font.BOLD, 36));
+        display.setFont(new Font("Consolas", Font.BOLD, 32));
 
         // Клик непосредственно по тексту цифр на дисплее также переводит фокус
         display.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -349,6 +361,14 @@ public class CalculatorPanel extends JPanel {
             memoryLabel.setText(" ");
         } else {
             memoryLabel.setText("M: " + memoryValue);
+        }
+    }
+
+    public void updateFormulaDisplay(String formula) {
+        if (formula == null || formula.isEmpty()) {
+            formulaLabel.setText(" ");
+        } else {
+            formulaLabel.setText(formula);
         }
     }
 

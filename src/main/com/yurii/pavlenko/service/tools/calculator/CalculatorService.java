@@ -9,9 +9,11 @@ public interface CalculatorService {
 
     double calculateUnary(double operand, String operation, boolean isRadians);
 
-    void saveToMemory(double value);
+    // void saveToMemory(double value);
 
     void clearMemory();
 
     double getMemoryValue();
+
+    void addToMemory(double value);
 }

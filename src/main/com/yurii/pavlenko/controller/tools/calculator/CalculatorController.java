@@ -55,6 +55,8 @@ public class CalculatorController implements ActionListener {
                 default -> {
                     if (command.matches("\\d")) {
                         processDigit(command);
+                    } else if (command.equals("%")) {
+                        processUnaryOperator(command);
                     } else if (!command.trim().isEmpty() && !command.equals("(") && !command.equals(")")) {
                         processUnaryOperator(command);
                     }
@@ -82,10 +84,10 @@ public class CalculatorController implements ActionListener {
         }
 
         double currentNumber = Double.parseDouble(model.getCurrentInput());
-        double newMemoryValue = service.getMemoryValue() + currentNumber;
-        service.saveToMemory(newMemoryValue);
+        // ФИКС SRP: Контроллер больше не считает сумму сам, этим занимается сервис
+        service.addToMemory(currentNumber);
 
-        view.updateMemoryDisplay(formatResult(newMemoryValue));
+        view.updateMemoryDisplay(formatResult(service.getMemoryValue()));
         model.setAwaitingNewInput(true);
     }
 
@@ -103,11 +105,13 @@ public class CalculatorController implements ActionListener {
         view.updateMemoryDisplay("0");
         model.reset();
         view.updateDisplay(model.getCurrentInput());
+        view.updateFormulaDisplay(" ");
     }
 
     private void processClear() {
         model.reset();
         view.updateDisplay(model.getCurrentInput());
+        view.updateFormulaDisplay(" ");
     }
 
     private void processDigit(String digit) {
@@ -141,6 +145,8 @@ public class CalculatorController implements ActionListener {
         model.setFirstOperand(currentNumber);
         model.setActiveOperator(operator);
         model.setAwaitingNewInput(true);
+        // Выводим в маленькое табло текущую стадию: "10 mod"
+        view.updateFormulaDisplay(formatResult(currentNumber) + " " + operator);
     }
 
     private void processUnaryOperator(String operation) {
@@ -154,8 +160,17 @@ public class CalculatorController implements ActionListener {
             return;
         }
         double secondOperand = Double.parseDouble(model.getCurrentInput());
-        double result = service.calculateBinary(model.getFirstOperand(), secondOperand, model.getActiveOperator());
+        double firstOperand = model.getFirstOperand();
+        String operator = model.getActiveOperator();
+
+        double result = service.calculateBinary(firstOperand, secondOperand, operator);
         model.setActiveOperator("");
+        // Форматируем результат в строку (без лишних .0 для целых чисел)
+        String formattedResult = formatResult(result);
+        // Выводим в верхнее правое табло, например: "10 mod 3 = 1"
+        view.updateFormulaDisplay(formatResult(firstOperand) + " " + operator
+                + " " + formatResult(secondOperand) + " = " + formattedResult);
+
         finalizeCalculation(result);
     }
 

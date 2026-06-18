@@ -61,6 +61,10 @@ public final class CalculatorHotkeyConfigurator {
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, 0), "press_clear");
         actionMap.put("press_clear", createTriggerAction(buttonMap, "C"));
 
+        // Shift + 5 (знак % на основной клавиатуре)
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_5, KeyEvent.SHIFT_DOWN_MASK), "press_percent");
+        actionMap.put("press_percent", createTriggerAction(buttonMap, "%"));
+
         // 4. Блок работы с памятью (Ctrl + M / R / L)
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_M, KeyEvent.CTRL_DOWN_MASK), "press_MPlus");
         actionMap.put("press_MPlus", createTriggerAction(buttonMap, "M+"));
@@ -84,7 +88,7 @@ public final class CalculatorHotkeyConfigurator {
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_6, KeyEvent.SHIFT_DOWN_MASK), "press_power");
         actionMap.put("press_power", createTriggerAction(buttonMap, "x^y"));
 
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_5, KeyEvent.SHIFT_DOWN_MASK), "press_mod");
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_5, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK), "press_mod");
         actionMap.put("press_mod", createTriggerAction(buttonMap, "mod"));
 
         // 6. Тригонометрия, логарифмы и константные значения
@@ -160,7 +164,8 @@ public final class CalculatorHotkeyConfigurator {
         hints.put("π", "Hotkey: Ctrl + P");
         hints.put("e", "Hotkey: Ctrl + E");
         hints.put("n!", "Hotkey: Shift + 1 (!)");
-        hints.put("mod", "Hotkey: Shift + 5 (%)");
+        hints.put("%", "Hotkey: Shift + 5 (%)");
+        hints.put("mod", "Hotkey: Ctrl + Shift + 5");
         hints.put("Ans", "Hotkey: Ctrl + A");
         hints.put("(", "Hotkey: Shift + 9");
         hints.put(")", "Hotkey: Shift + 0");
