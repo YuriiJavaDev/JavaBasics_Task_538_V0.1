@@ -10,6 +10,7 @@ import javax.swing.JButton;
 
 /**
  * Controller component coordinating workflow between Calculator Model, Service, and UI Panel.
+ * Centralizes UI updates into unified termination routines.
  */
 public class CalculatorController implements ActionListener {
 
@@ -84,7 +85,6 @@ public class CalculatorController implements ActionListener {
         }
 
         double currentNumber = Double.parseDouble(model.getCurrentInput());
-        // ФИКС SRP: Контроллер больше не считает сумму сам, этим занимается сервис
         service.addToMemory(currentNumber);
 
         view.updateMemoryDisplay(formatResult(service.getMemoryValue()));
@@ -145,14 +145,21 @@ public class CalculatorController implements ActionListener {
         model.setFirstOperand(currentNumber);
         model.setActiveOperator(operator);
         model.setAwaitingNewInput(true);
-        // Выводим в маленькое табло текущую стадию: "10 mod"
+
+        // Лаконично отправляем промежуточный этап в мини-табло: "10 mod"
         view.updateFormulaDisplay(formatResult(currentNumber) + " " + operator);
     }
 
     private void processUnaryOperator(String operation) {
         double currentNumber = Double.parseDouble(model.getCurrentInput());
         double result = service.calculateUnary(currentNumber, operation, model.isRadians());
-        finalizeCalculation(result);
+
+        // Определяем суффикс единицы измерения для тригонометрии
+        String unit = model.isRadians() ? " rad" : " deg";
+        // Собираем левую часть формулы: "sin(90) = "
+        String formulaString = operation + "(" + formatResult(currentNumber) + unit + ") = ";
+        // Передаем управление в центральный метод финализации
+        finalizeCalculation(result, formulaString);
     }
 
     private void processCalculate() {
@@ -165,21 +172,28 @@ public class CalculatorController implements ActionListener {
 
         double result = service.calculateBinary(firstOperand, secondOperand, operator);
         model.setActiveOperator("");
-        // Форматируем результат в строку (без лишних .0 для целых чисел)
-        String formattedResult = formatResult(result);
-        // Выводим в верхнее правое табло, например: "10 mod 3 = 1"
-        view.updateFormulaDisplay(formatResult(firstOperand) + " " + operator
-                + " " + formatResult(secondOperand) + " = " + formattedResult);
 
-        finalizeCalculation(result);
+        // Строим левую часть для бинарного вычисления: "10 mod 3 = "
+        String formulaString = formatResult(firstOperand) + " " + operator + " " + formatResult(secondOperand) + " = ";
+
+        finalizeCalculation(result, formulaString);
     }
 
-    private void finalizeCalculation(double result) {
+    /**
+     * Centralized termination method for all arithmetic execution workflows.
+     * Synchronizes model state, main numeric display, and contextual formula tracking.
+     */
+    private void finalizeCalculation(double result, String baseFormula) {
         String resultString = formatResult(result);
+
+        // Обновляем состояние модели
         model.setCurrentInput(resultString);
         model.setLastResult(result);
         model.setAwaitingNewInput(true);
+
+        // Синхронно выводим данные на UI-компоненты
         view.updateDisplay(resultString);
+        view.updateFormulaDisplay(baseFormula + resultString);
     }
 
     private String formatResult(double value) {
