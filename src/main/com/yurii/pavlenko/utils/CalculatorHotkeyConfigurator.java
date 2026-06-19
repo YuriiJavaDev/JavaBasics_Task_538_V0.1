@@ -87,6 +87,9 @@ public final class CalculatorHotkeyConfigurator {
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.CTRL_DOWN_MASK), "press_square");
         actionMap.put("press_square", createTriggerAction(buttonMap, "x²"));
 
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_W, KeyEvent.CTRL_DOWN_MASK), "press_cube");
+        actionMap.put("press_cube", createTriggerAction(buttonMap, "x³"));
+
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_6, KeyEvent.SHIFT_DOWN_MASK), "press_power");
         actionMap.put("press_power", createTriggerAction(buttonMap, "x^y"));
 
@@ -105,6 +108,9 @@ public final class CalculatorHotkeyConfigurator {
 
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_H, KeyEvent.CTRL_DOWN_MASK), "press_sqrt");
         actionMap.put("press_sqrt", createTriggerAction(buttonMap, "sqrt"));
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_H, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK), "press_cbrt"); // <--- ДОБАВИТЬ
+        actionMap.put("press_cbrt", createTriggerAction(buttonMap, "cbrt"));
 
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK), "press_ln");
         actionMap.put("press_ln", createTriggerAction(buttonMap, "ln"));
@@ -160,8 +166,10 @@ public final class CalculatorHotkeyConfigurator {
         hints.put("cos", "Hotkey: Ctrl + O");
         hints.put("tan", "Hotkey: Ctrl + T");
         hints.put("x²", "Hotkey: Ctrl + Q");
+        hints.put("x³", "Hotkey: Ctrl + W");
         hints.put("x^y", "Hotkey: Shift + 6 (^)");
         hints.put("sqrt", "Hotkey: Ctrl + H");
+        hints.put("cbrt", "Hotkey: Ctrl + Shift + H");
         hints.put("ln", "Hotkey: Ctrl + N");
         hints.put("log", "Hotkey: Ctrl + G");
         hints.put("π", "Hotkey: Ctrl + P");
@@ -173,10 +181,6 @@ public final class CalculatorHotkeyConfigurator {
         hints.put("(", "Hotkey: Shift + 9");
         hints.put(")", "Hotkey: Shift + 0");
 
-        // Новые функции
-        hints.put("sinh", "Hyperbolic Sine Function");
-        hints.put("cosh", "Hyperbolic Cosine Function");
-
         // Применяем тултипы только к тем кнопкам, которые есть на панели
         hints.forEach((btnKey, tipText) -> {
             JButton button = buttonMap.get(btnKey);
@@ -185,7 +189,7 @@ public final class CalculatorHotkeyConfigurator {
             }
         });
 
-        // РЕФАКТОРИНГ: Навешиваем подсказку горячей клавиши на радиокнопки переключателя
+        // Навешиваем подсказку горячей клавиши на радиокнопки переключателя
         if (panel instanceof CalculatorPanel calcPanel) {
             String angleTip = "Angle metric mode. Hotkey to toggle: Ctrl + D";
             if (calcPanel.getDegRadio() != null) calcPanel.getDegRadio().setToolTipText(angleTip);

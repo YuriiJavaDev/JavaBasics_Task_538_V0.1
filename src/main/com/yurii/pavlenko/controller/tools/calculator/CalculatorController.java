@@ -29,7 +29,7 @@ public class CalculatorController implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // РЕФАКТОРИНГ: Добавляем обработку кликов по радиокнопкам Deg/Rad
+        // Добавляем обработку кликов по радиокнопкам Deg/Rad
         if (e.getSource() instanceof JRadioButton radioButton) {
             processAngleUnit(radioButton.getActionCommand());
             return;
@@ -160,11 +160,10 @@ public class CalculatorController implements ActionListener {
         double currentNumber = Double.parseDouble(model.getCurrentInput());
         double result = service.calculateUnary(currentNumber, operation, model.isRadians());
 
-        // РЕФАКТОРИНГ: Добавляем суффикс угловых мер СТРОГО для тригонометрии
+        // Добавляем суффикс угловых мер СТРОГО для тригонометрии
         String unit = "";
         if (operation.equals("sin") || operation.equals("cos") || operation.equals("tan")
-                || operation.equals("asin") || operation.equals("acos") || operation.equals("atan")
-                || operation.equals("sinh") || operation.equals("cosh")) {
+                || operation.equals("asin") || operation.equals("acos") || operation.equals("atan")) {
             unit = model.isRadians() ? " rad" : " deg";
         }
 

@@ -235,10 +235,10 @@ public class CalculatorPanel extends JPanel {
         // Уменьшаем высоту инженерных кнопок с 45px до 38px, чтобы освободить место под тумблер
         engineeringGrid = new JPanel(new GridLayout(5, 5, 6, 6));
         String[] mathButtons = {
-                "sin",  "cos",  "tan",  "sinh", "cosh", // Вместо Deg и Rad поставили гиперболические функции
+                "sin",  "cos",  "tan",  "π",    "e",
                 "asin", "acos", "atan", "(",    ")",
-                "x²",   "x^y",  "sqrt", "∛x",   "1/x",
-                "ln",   "log",  "e",    "10^x", "exp",
+                "x²",   "x³",   "x^y",  "10^x", "1/x",
+                "ln",   "log",  "exp",  "sqrt", "cbrt",
                 "n!",   "abs",  "mod",  "Rand", "Ans"
         };
 

@@ -9,11 +9,6 @@ public class CalculatorServiceImpl implements CalculatorService {
 
     private double memory = 0.0;
 
-//    @Override
-//    public void saveToMemory(double value) {
-//        this.memory = value;
-//    }
-
     @Override
     public void addToMemory(double value) {
         this.memory += value;
@@ -89,8 +84,9 @@ public class CalculatorServiceImpl implements CalculatorService {
                 if (operand < 0) throw new ArithmeticException("Invalid square root input");
                 yield Math.sqrt(operand);
             }
-            case "∛x"   -> Math.cbrt(operand);
+            case "cbrt"   -> Math.cbrt(operand);
             case "x²"   -> operand * operand;
+            case "x³"   -> operand * operand * operand;
             case "1/x"  -> {
                 if (operand == 0) throw new ArithmeticException("Cannot divide by zero");
                 yield 1.0 / operand;
