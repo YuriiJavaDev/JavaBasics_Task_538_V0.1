@@ -199,7 +199,22 @@ public class CalculatorController implements ActionListener {
     }
 
     private String formatResult(double value) {
-        return (value % 1 == 0) ? String.valueOf((long) value) : String.valueOf(value);
+        if (Double.isNaN(value) || Double.isInfinite(value)) {
+            return String.valueOf(value);
+        }
+
+        // Если число слишком огромное или слишком микроскопическое,
+        // не округляем через long, а отдаем как есть (в экспоненциальном виде)
+        if (Math.abs(value) > 1e14 || (Math.abs(value) < 1e-12 && value != 0)) {
+            return String.valueOf(value);
+        }
+
+        // Стандартное округление для нормальных чисел
+        double scaled = Math.round(value * 1e12) / 1e12;
+        if (scaled % 1 == 0) {
+            return String.valueOf((long) scaled);
+        }
+        return String.valueOf(scaled);
     }
 
     private void processAngleUnit(String command) {

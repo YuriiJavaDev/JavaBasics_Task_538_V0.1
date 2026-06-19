@@ -123,7 +123,10 @@ public class CalculatorPanel extends JPanel {
     private void initializeDisplay() {
         displayPanel = new JPanel(new BorderLayout());
         displayPanel.setBackground(Color.WHITE);
-        displayPanel.setPreferredSize(new Dimension(0, 85));
+        Dimension displaySize = new Dimension(0, 85);
+        displayPanel.setPreferredSize(displaySize);
+        displayPanel.setMinimumSize(displaySize);
+        displayPanel.setMaximumSize(displaySize);
         displayPanel.setBorder(createUniformDisplayBorder(defaultBorderColor));
 
         displayPanel.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -163,7 +166,9 @@ public class CalculatorPanel extends JPanel {
         display.setOpaque(false);
         display.setHorizontalAlignment(SwingConstants.RIGHT);
         display.setVerticalAlignment(SwingConstants.CENTER);
+        display.setPreferredSize(new Dimension(0, 45));
         display.setFont(new Font("Consolas", Font.BOLD, 32));
+        display.setToolTipText("IEEE 754 Double Precision (Calculated: ~15 digits, Displayed: 12 digits)");
 
         display.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
@@ -371,7 +376,17 @@ public class CalculatorPanel extends JPanel {
         return button;
     }
 
+    /**
+     * Updates the main display text and dynamically adjusts the font size for error messages.
+     */
     public void updateDisplay(String text) {
+        if (text != null && text.startsWith("Error:")) {
+            display.setFont(new Font("Consolas", Font.BOLD, 26));
+        } else {
+            display.setFont(new Font("Consolas", Font.BOLD, 32));
+        }
+
+        display.setVerticalAlignment(SwingConstants.CENTER);
         display.setText(text);
     }
 

@@ -100,11 +100,20 @@ public final class CalculatorHotkeyConfigurator {
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK), "press_sin");
         actionMap.put("press_sin", createTriggerAction(buttonMap, "sin"));
 
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK), "press_cos");
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK), "press_cos");
         actionMap.put("press_cos", createTriggerAction(buttonMap, "cos"));
 
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK), "press_tan");
         actionMap.put("press_tan", createTriggerAction(buttonMap, "tan"));
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK), "press_asin");
+        actionMap.put("press_asin", createTriggerAction(buttonMap, "asin"));
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK), "press_acos");
+        actionMap.put("press_acos", createTriggerAction(buttonMap, "acos"));
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK), "press_atan");
+        actionMap.put("press_atan", createTriggerAction(buttonMap, "atan"));
 
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_H, KeyEvent.CTRL_DOWN_MASK), "press_sqrt");
         actionMap.put("press_sqrt", createTriggerAction(buttonMap, "sqrt"));
@@ -163,8 +172,11 @@ public final class CalculatorHotkeyConfigurator {
 
         // Инженерный блок
         hints.put("sin", "Hotkey: Ctrl + S");
-        hints.put("cos", "Hotkey: Ctrl + O");
+        hints.put("cos", "Hotkey: Ctrl + C");
         hints.put("tan", "Hotkey: Ctrl + T");
+        hints.put("asin", "Hotkey: Ctrl + Shift + S");
+        hints.put("acos", "Hotkey: Ctrl + Shift + C");
+        hints.put("atan", "Hotkey: Ctrl + Shift + T");
         hints.put("x²", "Hotkey: Ctrl + Q");
         hints.put("x³", "Hotkey: Ctrl + W");
         hints.put("x^y", "Hotkey: Shift + 6 (^)");

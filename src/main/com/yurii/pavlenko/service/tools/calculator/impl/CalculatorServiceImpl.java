@@ -52,7 +52,14 @@ public class CalculatorServiceImpl implements CalculatorService {
 
             case "sin"  -> Math.sin(forwardAngle);
             case "cos"  -> Math.cos(forwardAngle);
-            case "tan"  -> Math.tan(forwardAngle);
+            case "tan"  -> {
+                double result = Math.tan(forwardAngle);
+                // Если результат улетел в космос (тангенс 90° или близких точек)
+                if (Math.abs(result) > 1e10) {
+                    throw new ArithmeticException("Undefined (Infinity)");
+                }
+                yield result;
+            }
 
             case "asin" -> {
                 if (operand < -1 || operand > 1) throw new ArithmeticException("Invalid asin input range [-1, 1]");

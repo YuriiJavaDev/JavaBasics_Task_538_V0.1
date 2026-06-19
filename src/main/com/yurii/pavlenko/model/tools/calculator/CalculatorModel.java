@@ -13,6 +13,7 @@ public class CalculatorModel {
     private boolean isAwaitingNewInput;
 
     public CalculatorModel() {
+        this.isRadians = false;
         reset();
     }
 
@@ -24,7 +25,6 @@ public class CalculatorModel {
         this.firstOperand = 0;
         this.activeOperator = "";
         this.lastResult = 0;
-        this.isRadians = false; // Default system state is Degrees (Deg)
         this.isAwaitingNewInput = true;
     }
 
