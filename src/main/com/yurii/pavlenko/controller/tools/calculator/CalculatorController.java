@@ -11,13 +11,17 @@ import javax.swing.JRadioButton;
 
 /**
  * Controller component coordinating workflow between Calculator Model, Service, and UI Panel.
- * Centralizes UI updates into unified termination routines.
+ * Manages dual-state calculations: sequential binary steps or continuous string expression parsing.
  */
 public class CalculatorController implements ActionListener {
 
     private final CalculatorModel model;
     private final CalculatorService service;
     private final CalculatorPanel view;
+
+    // Переменные для поддержки скобок и построчного ввода выражений
+    private final StringBuilder expressionBuilder = new StringBuilder();
+    private boolean isExpressionMode = false;
 
     public CalculatorController(CalculatorModel model, CalculatorService service, CalculatorPanel view) {
         this.model = model;
@@ -29,7 +33,6 @@ public class CalculatorController implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // Добавляем обработку кликов по радиокнопкам Deg/Rad
         if (e.getSource() instanceof JRadioButton radioButton) {
             processAngleUnit(radioButton.getActionCommand());
             return;
@@ -55,17 +58,42 @@ public class CalculatorController implements ActionListener {
                 case "Rand" -> processConstant(Math.random());
                 case "Ans" -> processConstant(model.getLastResult());
 
-                // Добавлены новые инженерные кейсы, если они требуют специфики
-                case "+", "*", "/", "mod", "x^y" -> processBinaryOperator(command);
-                case "-" -> processMinusOperator();
-                case "Enter" -> processCalculate();
+                // Перехватываем управление скобками
+                case "(", ")" -> processBracket(command);
+
+                case "+", "*", "/", "mod", "x^y" -> {
+                    if (isExpressionMode) {
+                        processExpressionOperator(command);
+                    } else {
+                        processBinaryOperator(command);
+                    }
+                }
+                case "-" -> {
+                    if (isExpressionMode) {
+                        processExpressionOperator("-");
+                    } else {
+                        processMinusOperator();
+                    }
+                }
+
+                case "Enter" -> {
+                    if (isExpressionMode) {
+                        processExpressionCalculate();
+                    } else {
+                        processCalculate();
+                    }
+                }
 
                 default -> {
                     if (command.matches("\\d")) {
                         processDigit(command);
+                        // Если мы строим выражение, дублируем вводимую цифру в строку парсера
+                        if (isExpressionMode) {
+                            expressionBuilder.append(command);
+                        }
                     } else if (command.equals("%")) {
                         processUnaryOperator(command);
-                    } else if (!command.trim().isEmpty() && !command.equals("(") && !command.equals(")")) {
+                    } else {
                         processUnaryOperator(command);
                     }
                 }
@@ -73,6 +101,8 @@ public class CalculatorController implements ActionListener {
         } catch (ArithmeticException | IllegalArgumentException ex) {
             view.updateDisplay("Error: " + ex.getMessage());
             model.setAwaitingNewInput(true);
+            expressionBuilder.setLength(0);
+            isExpressionMode = false;
         }
     }
 
@@ -105,18 +135,27 @@ public class CalculatorController implements ActionListener {
         model.setCurrentInput(memString);
         view.updateDisplay(memString);
         model.setAwaitingNewInput(false);
+
+        if (isExpressionMode) {
+            expressionBuilder.append(memString);
+            view.updateFormulaDisplay(expressionBuilder.toString());
+        }
     }
 
     private void processMemoryClear() {
         service.clearMemory();
         view.updateMemoryDisplay("0");
         model.reset();
+        expressionBuilder.setLength(0);
+        isExpressionMode = false;
         view.updateDisplay(model.getCurrentInput());
         view.updateFormulaDisplay(" ");
     }
 
     private void processClear() {
         model.reset();
+        expressionBuilder.setLength(0);
+        isExpressionMode = false;
         view.updateDisplay(model.getCurrentInput());
         view.updateFormulaDisplay(" ");
     }
@@ -139,12 +178,20 @@ public class CalculatorController implements ActionListener {
             model.setCurrentInput(model.getCurrentInput() + ".");
         }
         view.updateDisplay(model.getCurrentInput());
+        if (isExpressionMode) {
+            expressionBuilder.append(".");
+        }
     }
 
     private void processConstant(double value) {
-        model.setCurrentInput(String.valueOf(value));
+        String constString = String.valueOf(value);
+        model.setCurrentInput(constString);
         model.setAwaitingNewInput(false);
         view.updateDisplay(model.getCurrentInput());
+        if (isExpressionMode) {
+            expressionBuilder.append(constString);
+            view.updateFormulaDisplay(expressionBuilder.toString());
+        }
     }
 
     private void processBinaryOperator(String operator) {
@@ -160,7 +207,6 @@ public class CalculatorController implements ActionListener {
         double currentNumber = Double.parseDouble(model.getCurrentInput());
         double result = service.calculateUnary(currentNumber, operation, model.isRadians());
 
-        // Добавляем суффикс угловых мер СТРОГО для тригонометрии
         String unit = "";
         if (operation.equals("sin") || operation.equals("cos") || operation.equals("tan")
                 || operation.equals("asin") || operation.equals("acos") || operation.equals("atan")) {
@@ -187,6 +233,64 @@ public class CalculatorController implements ActionListener {
         finalizeCalculation(result, formulaString);
     }
 
+    // --- МЕТОДЫ ДЛЯ РАБОТЫ СО СКОБКАМИ (EXPRESSION MODE) ---
+
+    private void processBracket(String bracket) {
+        if (!isExpressionMode) {
+            isExpressionMode = true;
+            expressionBuilder.setLength(0);
+
+            // ПРАВКА: Если до скобки уже был нажат оператор (например, "2 *"),
+            // мы берём первый операнд и сам оператор прямо из модели!
+            if (!model.getActiveOperator().isEmpty()) {
+                expressionBuilder.append(formatResult(model.getFirstOperand()))
+                        .append(" ")
+                        .append(model.getActiveOperator())
+                        .append(" ");
+                // Сбрасываем старый бинарный оператор модели, чтобы он не двоился при Enter
+                model.setActiveOperator("");
+            }
+            // Иначе, если операции не было, но на табло введено число (не дефолтный ноль)
+            else if (!"0".equals(model.getCurrentInput()) && !model.isAwaitingNewInput()) {
+                expressionBuilder.append(model.getCurrentInput());
+            }
+        }
+
+        expressionBuilder.append(bracket);
+        view.updateDisplay(bracket); // Показываем скобку на основном дисплее
+        view.updateFormulaDisplay(expressionBuilder.toString());
+        model.setAwaitingNewInput(true);
+    }
+
+    private void processExpressionOperator(String operator) {
+        // Конвертируем UI оператор степени x^y в системный символ '^' для парсера
+        String parserOperator = operator.equals("x^y") ? "^" : operator;
+
+        // Добавляем красивую разрядку пробелами для отображения в формуле
+        expressionBuilder.append(" ").append(parserOperator).append(" ");
+        view.updateFormulaDisplay(expressionBuilder.toString());
+        model.setAwaitingNewInput(true);
+    }
+
+    private void processExpressionCalculate() {
+        String finalExpression = expressionBuilder.toString();
+
+        // Отправляем собранную строку в наш новый метод сервиса
+        double result = service.calculateExpression(finalExpression);
+
+        String resultString = formatResult(result);
+        model.setCurrentInput(resultString);
+        model.setLastResult(result);
+        model.setAwaitingNewInput(true);
+
+        view.updateDisplay(resultString);
+        view.updateFormulaDisplay(finalExpression + " = " + resultString);
+
+        // Гасим режим выражения и чистим буфер до следующей скобки
+        expressionBuilder.setLength(0);
+        isExpressionMode = false;
+    }
+
     private void finalizeCalculation(double result, String baseFormula) {
         String resultString = formatResult(result);
 
@@ -203,13 +307,10 @@ public class CalculatorController implements ActionListener {
             return String.valueOf(value);
         }
 
-        // Если число слишком огромное или слишком микроскопическое,
-        // не округляем через long, а отдаем как есть (в экспоненциальном виде)
         if (Math.abs(value) > 1e14 || (Math.abs(value) < 1e-12 && value != 0)) {
             return String.valueOf(value);
         }
 
-        // Стандартное округление для нормальных чисел
         double scaled = Math.round(value * 1e12) / 1e12;
         if (scaled % 1 == 0) {
             return String.valueOf((long) scaled);

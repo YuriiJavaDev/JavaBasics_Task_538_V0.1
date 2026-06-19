@@ -16,4 +16,6 @@ public interface CalculatorService {
     double getMemoryValue();
 
     void addToMemory(double value);
+
+    double calculateExpression(String expression);
 }

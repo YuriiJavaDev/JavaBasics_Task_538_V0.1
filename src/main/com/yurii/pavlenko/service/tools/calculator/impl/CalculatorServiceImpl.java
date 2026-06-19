@@ -4,6 +4,7 @@ import main.com.yurii.pavlenko.service.tools.calculator.CalculatorService;
 
 /**
  * Robust implementation of CalculatorService using Java Math API.
+ * Integrated with a high-performance recursive descent expression parser for structural bracket evaluation.
  */
 public class CalculatorServiceImpl implements CalculatorService {
 
@@ -47,14 +48,12 @@ public class CalculatorServiceImpl implements CalculatorService {
         double forwardAngle = isRadians ? operand : Math.toRadians(operand);
 
         return switch (operation) {
-
             case "%"    -> operand / 100.0;
 
             case "sin"  -> Math.sin(forwardAngle);
             case "cos"  -> Math.cos(forwardAngle);
             case "tan"  -> {
                 double result = Math.tan(forwardAngle);
-                // Если результат улетел в космос (тангенс 90° или близких точек)
                 if (Math.abs(result) > 1e10) {
                     throw new ArithmeticException("Undefined (Infinity)");
                 }
@@ -91,7 +90,7 @@ public class CalculatorServiceImpl implements CalculatorService {
                 if (operand < 0) throw new ArithmeticException("Invalid square root input");
                 yield Math.sqrt(operand);
             }
-            case "cbrt"   -> Math.cbrt(operand);
+            case "cbrt" -> Math.cbrt(operand);
             case "x²"   -> operand * operand;
             case "x³"   -> operand * operand * operand;
             case "1/x"  -> {
@@ -103,6 +102,86 @@ public class CalculatorServiceImpl implements CalculatorService {
             case "n!"   -> calculateFactorial((int) operand);
             default -> throw new IllegalArgumentException("Unknown unary operation: " + operation);
         };
+    }
+
+    @Override
+    public double calculateExpression(String expression) {
+        // Очищаем строку от пробелов для корректной работы посимвольного парсера
+        final String cleanExpr = expression.replaceAll("\\s+", "");
+
+        return new Object() {
+            int pos = -1, ch;
+
+            void nextChar() {
+                ch = (++pos < cleanExpr.length()) ? cleanExpr.charAt(pos) : -1;
+            }
+
+            boolean eat(int charToEat) {
+                while (ch == ' ') nextChar();
+                if (ch == charToEat) {
+                    nextChar();
+                    return true;
+                }
+                return false;
+            }
+
+            double parse() {
+                nextChar();
+                double x = parseExpression();
+                if (pos < cleanExpr.length()) {
+                    throw new ArithmeticException("Unexpected character: " + (char) ch);
+                }
+                return x;
+            }
+
+            // Сложение и вычитание
+            double parseExpression() {
+                double x = parseTerm();
+                for (;;) {
+                    if      (eat('+')) x += parseTerm();
+                    else if (eat('-')) x -= parseTerm();
+                    else return x;
+                }
+            }
+
+            // Умножение и деление
+            double parseTerm() {
+                double x = parseFactor();
+                for (;;) {
+                    if      (eat('*')) x *= parseFactor();
+                    else if (eat('/')) {
+                        double divisor = parseFactor();
+                        if (divisor == 0) {
+                            throw new ArithmeticException("Cannot divide by zero");
+                        }
+                        x /= divisor;
+                    }
+                    else return x;
+                }
+            }
+
+            // Унарные знаки, скобки, числа и степени
+            double parseFactor() {
+                if (eat('+')) return parseFactor();
+                if (eat('-')) return -parseFactor();
+
+                double x;
+                int startPos = this.pos;
+                if (eat('(')) {
+                    x = parseExpression();
+                    eat(')');
+                } else if ((ch >= '0' && ch <= '9') || ch == '.') {
+                    while ((ch >= '0' && ch <= '9') || ch == '.') nextChar();
+                    x = Double.parseDouble(cleanExpr.substring(startPos, this.pos));
+                } else {
+                    throw new ArithmeticException("Unknown expression format");
+                }
+
+                if (eat('^')) x = Math.pow(x, parseFactor());
+
+                return x;
+            }
+        }.parse();
     }
 
     private double calculateFactorial(int n) {
