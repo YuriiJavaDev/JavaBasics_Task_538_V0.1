@@ -93,6 +93,12 @@ public final class CalculatorHotkeyConfigurator {
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_6, KeyEvent.SHIFT_DOWN_MASK), "press_power");
         actionMap.put("press_power", createTriggerAction(buttonMap, "x^y"));
 
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_I, KeyEvent.CTRL_DOWN_MASK), "press_inverse");
+        actionMap.put("press_inverse", createTriggerAction(buttonMap, "1/x"));
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK), "press_decimal_power");
+        actionMap.put("press_decimal_power", createTriggerAction(buttonMap, "10^x"));
+
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_5, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK), "press_mod");
         actionMap.put("press_mod", createTriggerAction(buttonMap, "mod"));
 
@@ -180,6 +186,8 @@ public final class CalculatorHotkeyConfigurator {
         hints.put("x²", "Hotkey: Ctrl + Q");
         hints.put("x³", "Hotkey: Ctrl + W");
         hints.put("x^y", "Hotkey: Shift + 6 (^)");
+        hints.put("1/x", "Hotkey: Ctrl + I");
+        hints.put("10^x", "Hotkey: Ctrl + Shift + D");
         hints.put("sqrt", "Hotkey: Ctrl + H");
         hints.put("cbrt", "Hotkey: Ctrl + Shift + H");
         hints.put("ln", "Hotkey: Ctrl + N");
