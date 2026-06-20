@@ -200,17 +200,17 @@ public class CalculatorPanel extends JPanel {
         JButton btnToggleM = createStyledButton("M+", true);
         JButton btnMR = createStyledButton("MR", true);
         JButton btnMC = createStyledButton("MC", true);
-        JButton btnBackspace = createStyledButton("<-", true); // Добавили кнопку Backspace
+        JButton btnBackspace = createStyledButton("Back", true);
 
         btnC.setActionCommand("C");
         btnToggleM.setActionCommand("M+");
         btnMR.setActionCommand("MR");
         btnMC.setActionCommand("MC");
-        btnBackspace.setActionCommand("<-"); // Установили экшен-команду для отслеживания контроллером
+        btnBackspace.setActionCommand("Back");
 
         Dimension singleMemSize = new Dimension(60, 45);
 
-        // ИСПРАВЛЕНО: Все 5 кнопок верхнего ряда теперь абсолютно одинакового размера
+        // Все 5 кнопок верхнего ряда одинакового размера
         btnC.setPreferredSize(singleMemSize);
         btnC.setMinimumSize(singleMemSize);
         btnToggleM.setPreferredSize(singleMemSize);
@@ -222,7 +222,7 @@ public class CalculatorPanel extends JPanel {
         btnBackspace.setPreferredSize(singleMemSize);
         btnBackspace.setMinimumSize(singleMemSize);
 
-        // ИСПРАВЛЕНО: Распределяем 5 кнопок по сетке GridBagLayout без объединения ячеек
+        // Распределяем 5 кнопок по сетке GridBagLayout без объединения ячеек
         memGbc.gridy = 0;
         memGbc.gridwidth = 1;
         memGbc.weightx = 1.0;
@@ -233,7 +233,7 @@ public class CalculatorPanel extends JPanel {
         memGbc.gridx = 3; memoryControlPanel.add(btnMC, memGbc);
         memGbc.gridx = 4; memoryControlPanel.add(btnBackspace, memGbc);
 
-        // ИСПРАВЛЕНО: Увеличиваем ширину контейнера со 264 до 324, чтобы вместить пятую кнопку
+        // Увеличиваем ширину контейнера со 264 до 324, чтобы вместить пятую кнопку
         Dimension strictMemPanelSize = new Dimension(324, 51);
         memoryControlPanel.setPreferredSize(strictMemPanelSize);
         memoryControlPanel.setMinimumSize(strictMemPanelSize);
@@ -257,7 +257,7 @@ public class CalculatorPanel extends JPanel {
                 "n!",   "abs",  "mod",  "Rand", "Ans"
         };
 
-        // ИСПРАВЛЕНО: Синхронизируем базовую ширину сетки инженерных кнопок под размер верхнего ряда
+        // Синхронизируем базовую ширину сетки инженерных кнопок под размер верхнего ряда
         Dimension engButtonSize = new Dimension(60, 38);
         for (String txt : mathButtons) {
             JButton engBtn = createStyledButton(txt, true);
@@ -367,8 +367,7 @@ public class CalculatorPanel extends JPanel {
             button.setFont(new Font("Segoe UI", Font.BOLD, 22));
         }
 
-        // ИСПРАВЛЕНО: Сюда добавлена проверка для кнопки "<-", чтобы она стилистически подходила под верхний ряд памяти
-        if (text.equals("C") || text.equals("M+") || text.equals("MR") || text.equals("MC") || text.equals("<-")) {
+        if (text.equals("C") || text.equals("M+") || text.equals("MR") || text.equals("MC") || text.equals("Back")) {
             button.setBackground(new Color(228, 238, 247));
             button.setFont(new Font("Segoe UI", Font.BOLD, 12));
         } else if (isEngineering) {

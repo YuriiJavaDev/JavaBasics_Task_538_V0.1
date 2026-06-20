@@ -46,7 +46,7 @@ public class CalculatorController implements ActionListener {
         try {
             switch (command) {
                 case "C" -> processClear();
-                case "<-", "Backspace" -> processBackspace();
+                case "Back", "Backspace" -> processBackspace();
 
                 case "M+" -> processMemoryAdd();
                 case "MR" -> processMemoryRecall();
