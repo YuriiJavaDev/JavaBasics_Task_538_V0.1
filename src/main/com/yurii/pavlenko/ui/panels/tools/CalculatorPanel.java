@@ -200,31 +200,41 @@ public class CalculatorPanel extends JPanel {
         JButton btnToggleM = createStyledButton("M+", true);
         JButton btnMR = createStyledButton("MR", true);
         JButton btnMC = createStyledButton("MC", true);
+        JButton btnBackspace = createStyledButton("<-", true); // Добавили кнопку Backspace
 
         btnC.setActionCommand("C");
         btnToggleM.setActionCommand("M+");
         btnMR.setActionCommand("MR");
         btnMC.setActionCommand("MC");
+        btnBackspace.setActionCommand("<-"); // Установили экшен-команду для отслеживания контроллером
 
         Dimension singleMemSize = new Dimension(60, 45);
-        Dimension doubleMemSize = new Dimension((60 * 2) + 6, 45);
 
+        // ИСПРАВЛЕНО: Все 5 кнопок верхнего ряда теперь абсолютно одинакового размера
         btnC.setPreferredSize(singleMemSize);
         btnC.setMinimumSize(singleMemSize);
         btnToggleM.setPreferredSize(singleMemSize);
         btnToggleM.setMinimumSize(singleMemSize);
         btnMR.setPreferredSize(singleMemSize);
         btnMR.setMinimumSize(singleMemSize);
-        btnMC.setPreferredSize(doubleMemSize);
-        btnMC.setMinimumSize(doubleMemSize);
+        btnMC.setPreferredSize(singleMemSize);
+        btnMC.setMinimumSize(singleMemSize);
+        btnBackspace.setPreferredSize(singleMemSize);
+        btnBackspace.setMinimumSize(singleMemSize);
 
+        // ИСПРАВЛЕНО: Распределяем 5 кнопок по сетке GridBagLayout без объединения ячеек
         memGbc.gridy = 0;
-        memGbc.gridx = 0; memGbc.gridwidth = 1; memGbc.weightx = 1.0; memoryControlPanel.add(btnC, memGbc);
-        memGbc.gridx = 1; memGbc.gridwidth = 1; memGbc.weightx = 1.0; memoryControlPanel.add(btnToggleM, memGbc);
-        memGbc.gridx = 2; memGbc.gridwidth = 1; memGbc.weightx = 1.0; memoryControlPanel.add(btnMR, memGbc);
-        memGbc.gridx = 3; memGbc.gridwidth = 2; memGbc.weightx = 2.0; memoryControlPanel.add(btnMC, memGbc);
+        memGbc.gridwidth = 1;
+        memGbc.weightx = 1.0;
 
-        Dimension strictMemPanelSize = new Dimension(264, 51);
+        memGbc.gridx = 0; memoryControlPanel.add(btnC, memGbc);
+        memGbc.gridx = 1; memoryControlPanel.add(btnToggleM, memGbc);
+        memGbc.gridx = 2; memoryControlPanel.add(btnMR, memGbc);
+        memGbc.gridx = 3; memoryControlPanel.add(btnMC, memGbc);
+        memGbc.gridx = 4; memoryControlPanel.add(btnBackspace, memGbc);
+
+        // ИСПРАВЛЕНО: Увеличиваем ширину контейнера со 264 до 324, чтобы вместить пятую кнопку
+        Dimension strictMemPanelSize = new Dimension(324, 51);
         memoryControlPanel.setPreferredSize(strictMemPanelSize);
         memoryControlPanel.setMinimumSize(strictMemPanelSize);
         memoryControlPanel.setMaximumSize(strictMemPanelSize);
@@ -247,6 +257,7 @@ public class CalculatorPanel extends JPanel {
                 "n!",   "abs",  "mod",  "Rand", "Ans"
         };
 
+        // ИСПРАВЛЕНО: Синхронизируем базовую ширину сетки инженерных кнопок под размер верхнего ряда
         Dimension engButtonSize = new Dimension(60, 38);
         for (String txt : mathButtons) {
             JButton engBtn = createStyledButton(txt, true);
@@ -351,12 +362,13 @@ public class CalculatorPanel extends JPanel {
         if (text.equals("Enter")) {
             button.setFont(new Font("Segoe UI", Font.BOLD, 12));
         } else if (isEngineering) {
-            button.setFont(new Font("Segoe UI", Font.PLAIN, 13)); // Слегка уменьшим кегль для длинных надписей (sinh/cosh)
+            button.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         } else {
             button.setFont(new Font("Segoe UI", Font.BOLD, 22));
         }
 
-        if (text.equals("C") || text.equals("M+") || text.equals("MR") || text.equals("MC")) {
+        // ИСПРАВЛЕНО: Сюда добавлена проверка для кнопки "<-", чтобы она стилистически подходила под верхний ряд памяти
+        if (text.equals("C") || text.equals("M+") || text.equals("MR") || text.equals("MC") || text.equals("<-")) {
             button.setBackground(new Color(228, 238, 247));
             button.setFont(new Font("Segoe UI", Font.BOLD, 12));
         } else if (isEngineering) {
@@ -376,9 +388,6 @@ public class CalculatorPanel extends JPanel {
         return button;
     }
 
-    /**
-     * Updates the main display text and dynamically adjusts the font size for error messages.
-     */
     public void updateDisplay(String text) {
         if (text != null && text.startsWith("Error:")) {
             display.setFont(new Font("Consolas", Font.BOLD, 26));
@@ -416,7 +425,6 @@ public class CalculatorPanel extends JPanel {
             }
         }
 
-        // РЕФАКТОРИНГ: Регистрируем радиокнопки в Контроллере
         if (degRadio != null && radRadio != null) {
             degRadio.addActionListener(controller);
             radRadio.addActionListener(controller);
@@ -433,7 +441,6 @@ public class CalculatorPanel extends JPanel {
         }
     }
 
-    // Вспомогательные геттеры для программного переключения радиокнопок через Hotkeys
     public JRadioButton getDegRadio() { return degRadio; }
     public JRadioButton getRadRadio() { return radRadio; }
 }

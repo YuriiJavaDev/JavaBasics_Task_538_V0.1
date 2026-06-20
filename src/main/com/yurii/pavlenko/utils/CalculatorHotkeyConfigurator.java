@@ -60,8 +60,10 @@ public final class CalculatorHotkeyConfigurator {
         actionMap.put("press_enter", createTriggerAction(buttonMap, "Enter"));
 
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "press_clear");
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, 0), "press_clear");
         actionMap.put("press_clear", createTriggerAction(buttonMap, "C"));
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, 0), "press_backspace");
+        actionMap.put("press_backspace", createTriggerAction(buttonMap, "<-"));
 
         // Shift + 5 (знак % на основной клавиатуре)
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_5, KeyEvent.SHIFT_DOWN_MASK), "press_percent");
@@ -171,7 +173,8 @@ public final class CalculatorHotkeyConfigurator {
         Map<String, String> hints = new HashMap<>();
 
         // Кнопки управления и памяти
-        hints.put("C", "Hotkey: ESC or Backspace");
+        hints.put("C", "Hotkey: ESC");
+        hints.put("<-", "Hotkey: Backspace");
         hints.put("M+", "Hotkey: Ctrl + M");
         hints.put("MR", "Hotkey: Ctrl + R");
         hints.put("MC", "Hotkey: Ctrl + L");

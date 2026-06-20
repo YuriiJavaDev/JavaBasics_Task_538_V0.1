@@ -105,7 +105,7 @@ public class CalculatorServiceImpl implements CalculatorService {
     }
 
     @Override
-    public double calculateExpression(String expression) {
+    public double calculateExpression(String expression, boolean isRadians) {
         // Очищаем строку от пробелов для корректной работы посимвольного парсера
         final String cleanExpr = expression.replaceAll("\\s+", "");
 
@@ -160,23 +160,44 @@ public class CalculatorServiceImpl implements CalculatorService {
                 }
             }
 
-            // Унарные знаки, скобки, числа и степени
+            // Унарные знаки, скобки, функции, числа и степени
             double parseFactor() {
                 if (eat('+')) return parseFactor();
                 if (eat('-')) return -parseFactor();
 
                 double x;
                 int startPos = this.pos;
-                if (eat('(')) {
+
+                if (eat('(')) { // Скобки
                     x = parseExpression();
                     eat(')');
-                } else if ((ch >= '0' && ch <= '9') || ch == '.') {
+                } else if ((ch >= '0' && ch <= '9') || ch == '.') { // Числа
                     while ((ch >= '0' && ch <= '9') || ch == '.') nextChar();
                     x = Double.parseDouble(cleanExpr.substring(startPos, this.pos));
+                } else if ((ch >= 'a' && ch <= 'z') || ch == '!') { // Буквенные функции
+                    while (ch >= 'a' && ch <= 'z') nextChar();
+                    String func = cleanExpr.substring(startPos, this.pos);
+
+                    // Если это префиксная функция, за ней строго обязана идти скобка
+                    if (eat('(')) {
+                        double argument = parseExpression();
+                        eat(')');
+
+                        // Теперь передаем актуальный флаг isRadians, переданный в метод
+                        x = calculateUnary(argument, func, isRadians);
+                    } else {
+                        throw new ArithmeticException("Missing parenthesis after function: " + func);
+                    }
                 } else {
                     throw new ArithmeticException("Unknown expression format");
                 }
 
+                // Обработка постфиксного факториала (если встретили '!')
+                if (eat('!')) {
+                    x = calculateUnary(x, "n!", false);
+                }
+
+                // Оператор степени
                 if (eat('^')) x = Math.pow(x, parseFactor());
 
                 return x;

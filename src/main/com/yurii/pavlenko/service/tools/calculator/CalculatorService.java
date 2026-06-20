@@ -17,5 +17,5 @@ public interface CalculatorService {
 
     void addToMemory(double value);
 
-    double calculateExpression(String expression);
+    double calculateExpression(String expression, boolean isRadians);
 }
