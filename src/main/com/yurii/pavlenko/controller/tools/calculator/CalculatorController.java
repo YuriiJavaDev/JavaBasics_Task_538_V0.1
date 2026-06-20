@@ -46,7 +46,7 @@ public class CalculatorController implements ActionListener {
         try {
             switch (command) {
                 case "C" -> processClear();
-                case "Back", "Backspace" -> processBackspace();
+                case "Back", "Backspace", "<-" -> processBackspace(); // Поддержка всех вариантов команд для удаления
 
                 case "M+" -> processMemoryAdd();
                 case "MR" -> processMemoryRecall();
@@ -193,6 +193,8 @@ public class CalculatorController implements ActionListener {
             expressionBuilder.append(model.getCurrentInput());
         }
 
+        String displayToken = operation; // То, что пойдет на главное табло
+
         switch (operation) {
             // 1. ПОСТФИКСНЫЕ ОПЕРАЦИИ (дописываются после текущего числа/выражения)
             case "x²" -> expressionBuilder.append("^2");
@@ -203,10 +205,20 @@ public class CalculatorController implements ActionListener {
             // 2. ПРЕФИКСНЫЕ ФУНКЦИИ (оборачивают число или открывают зону для ввода)
             case "sin", "cos", "tan", "asin", "acos", "atan", "ln", "log", "exp", "sqrt", "cbrt" -> {
                 expressionBuilder.append(operation).append("(");
+                displayToken = operation + "("; // РЕФАКТОРИНГ: Выводим на табло со скобкой
             }
-            case "10^x" -> expressionBuilder.append("10^(");
-            case "1/x"  -> expressionBuilder.append("1/(");
-            case "abs"  -> expressionBuilder.append("abs(");
+            case "10^x" -> {
+                expressionBuilder.append("10^(");
+                displayToken = "10^(";
+            }
+            case "1/x"  -> {
+                expressionBuilder.append("1/(");
+                displayToken = "1/(";
+            }
+            case "abs"  -> {
+                expressionBuilder.append("abs(");
+                displayToken = "abs(";
+            }
 
             default -> throw new IllegalArgumentException("Unknown unary operation: " + operation);
         }
@@ -214,8 +226,9 @@ public class CalculatorController implements ActionListener {
         // Обновляем верхнее табло текущим состоянием формулы
         view.updateFormulaDisplay(expressionBuilder.toString());
 
-        // Показываем саму операцию на главном экране и ждем ввода аргумента
-        view.updateDisplay(operation);
+        // РЕФАКТОРИНГ: Показываем операцию со скобкой на главном экране и ждем ввода аргумента
+        view.updateDisplay(displayToken);
+        model.setCurrentInput(displayToken);
         model.setAwaitingNewInput(true);
     }
 
@@ -226,6 +239,7 @@ public class CalculatorController implements ActionListener {
 
         expressionBuilder.append(bracket);
         view.updateDisplay(bracket);
+        model.setCurrentInput(bracket);
         view.updateFormulaDisplay(expressionBuilder.toString());
         model.setAwaitingNewInput(true);
     }
@@ -248,6 +262,23 @@ public class CalculatorController implements ActionListener {
         }
 
         String finalExpression = expressionBuilder.toString();
+
+        // РЕФАКТОРИНГ: Автоматическое исправление/закрытие скобок перед вычислением
+        int openCount = 0;
+        int closeCount = 0;
+        for (char ch : finalExpression.toCharArray()) {
+            if (ch == '(') openCount++;
+            if (ch == ')') closeCount++;
+        }
+
+        if (openCount > closeCount) {
+            int missingBrackets = openCount - closeCount;
+            for (int i = 0; i < missingBrackets; i++) {
+                expressionBuilder.append(")");
+            }
+            finalExpression = expressionBuilder.toString(); // Обновляем выражение для парсера
+        }
+
         double result = service.calculateExpression(finalExpression, model.isRadians());
 
         String resultString = formatResult(result);
@@ -273,39 +304,55 @@ public class CalculatorController implements ActionListener {
     }
 
     private void processBackspace() {
-        // Если в буфере выражения что-то есть, работаем с ним
+        // Если в буфере выражения что-то есть, работаем с ним напрямую
         if (expressionBuilder.length() > 0) {
+            String currentFormula = expressionBuilder.toString();
 
-            // Проверяем: если на конце оператор с пробелами (например, " + "), удаляем весь оператор з пробелами
-            if (expressionBuilder.toString().endsWith(" ")) {
-                // Удаляем пробел, сам оператор и первый пробел (всего 3 символа)
+            // Пошаговый разбор окончания строки для умного удаления
+            if (currentFormula.endsWith(" ")) {
+                // Оператор с пробелами (например, " + ")
+                expressionBuilder.setLength(expressionBuilder.length() - 3);
+            } else if (currentFormula.endsWith("sin(") || currentFormula.endsWith("cos(") || currentFormula.endsWith("tan(")
+                    || currentFormula.endsWith("log(") || currentFormula.endsWith("exp(") || currentFormula.endsWith("abs(")) {
+                // Функции из 4-х символов
+                expressionBuilder.setLength(expressionBuilder.length() - 4);
+            } else if (currentFormula.endsWith("asin(") || currentFormula.endsWith("acos(") || currentFormula.endsWith("atan(")
+                    || currentFormula.endsWith("sqrt(") || currentFormula.endsWith("cbrt(") || currentFormula.endsWith("10^(")) {
+                // Функции из 5 символов
+                expressionBuilder.setLength(expressionBuilder.length() - 5);
+            } else if (currentFormula.endsWith("1/(")) {
                 expressionBuilder.setLength(expressionBuilder.length() - 3);
             } else {
-                // Иначе просто удаляем один последний символ (цифру, точку или скобку)
+                // Обычная цифра, точка или одиночная скобка
                 expressionBuilder.setLength(expressionBuilder.length() - 1);
             }
 
             // Обновляем верхний лейбл формулы
-            view.updateFormulaDisplay(expressionBuilder.length() == 0 ? " " : expressionBuilder.toString());
+            String updatedFormula = expressionBuilder.toString();
+            view.updateFormulaDisplay(updatedFormula.isEmpty() ? " " : updatedFormula);
 
-            // Теперь нужно обновить нижнее главное табло текущим вводом
-            String currentText = expressionBuilder.toString().trim();
-            if (currentText.isEmpty()) {
+            // Синхронизируем нижнее табло
+            String trimmedFormula = updatedFormula.trim();
+            if (trimmedFormula.isEmpty()) {
                 model.setCurrentInput("0");
                 view.updateDisplay("0");
             } else {
-                // Выделяем последнее незавершённое число или токен для отображения снизу
-                int lastSpace = currentText.lastIndexOf(" ");
-                String lastToken = (lastSpace != -1) ? currentText.substring(lastSpace + 1) : currentText;
+                int lastSpace = trimmedFormula.lastIndexOf(" ");
+                String lastToken = (lastSpace != -1) ? trimmedFormula.substring(lastSpace + 1) : trimmedFormula;
 
                 model.setCurrentInput(lastToken);
                 view.updateDisplay(lastToken);
             }
         } else {
-            // Если буфер пуст, но на главном табло длинное число (например, введённое до знаков)
+            // Если буфер выражения пуст, но на табло длинное число
             String currentInput = model.getCurrentInput();
             if (currentInput.length() > 1 && !"0".equals(currentInput)) {
                 String updatedInput = currentInput.substring(0, currentInput.length() - 1);
+
+                if ("-".equals(updatedInput)) {
+                    updatedInput = "0";
+                }
+
                 model.setCurrentInput(updatedInput);
                 view.updateDisplay(updatedInput);
             } else {
