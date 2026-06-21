@@ -9,24 +9,17 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JRadioButton;
 
-/**
- * Controller component coordinating workflow between Calculator Model, Service, and UI Panel.
- * Manages dynamic string expression parsing using a continuous sequence-building workflow.
- */
 public class CalculatorController implements ActionListener {
 
     private final CalculatorModel model;
     private final CalculatorService service;
     private final CalculatorPanel view;
-
-    // Единый буфер для поддержки построчного ввода выражений
     private final StringBuilder expressionBuilder = new StringBuilder();
 
     public CalculatorController(CalculatorModel model, CalculatorService service, CalculatorPanel view) {
         this.model = model;
         this.service = service;
         this.view = view;
-
         this.view.registerController(this);
     }
 
@@ -43,71 +36,49 @@ public class CalculatorController implements ActionListener {
 
         String command = button.getActionCommand();
 
-        try {
-            switch (command) {
-                case "C" -> processClear();
-                case "Back", "Backspace", "<-" -> processBackspace(); // Поддержка всех вариантов команд для удаления
-
-                case "M+" -> processMemoryAdd();
-                case "MR" -> processMemoryRecall();
-                case "MC" -> processMemoryClear();
-
-                case "." -> processDot();
-                case "π" -> processConstant(Math.PI);
-                case "e" -> processConstant(Math.E);
-                case "Rand" -> processConstant(Math.random());
-                case "Ans" -> processConstant(model.getLastResult());
-
-                case "(", ")" -> processBracket(command);
-
-                // Выносим минус в собственный обработчик для поддержки унарных чисел (-5)
-                case "-" -> processMinusOperator();
-
-                // Остальные бинарные операторы идут через построчное накопление
-                case "+", "*", "/", "mod", "x^y" -> processExpressionOperator(command);
-
-                // Enter ВСЕГДА вызывает парсер строки
-                case "Enter" -> processExpressionCalculate();
-
-                default -> {
-                    if (command.matches("\\d")) {
-                        processDigit(command);
-                        // Всегда пишем цифру в буфер парсера
-                        expressionBuilder.append(command);
-                    } else {
-                        processUnaryOperator(command);
-                    }
+        switch (command) {
+            case "C" -> processClear();
+            case "Back", "Backspace", "<-" -> processBackspace();
+            case "M+" -> processMemoryAdd();
+            case "MR" -> processMemoryRecall();
+            case "MC" -> processMemoryClear();
+            case "." -> processDot();
+            case "π" -> processConstant(Math.PI);
+            case "e" -> processConstant(Math.E);
+            case "Rand" -> processConstant(Math.random());
+            case "Ans" -> processConstant(model.getLastResult());
+            case "(", ")" -> processBracket(command);
+            case "-" -> processMinusOperator();
+            case "+", "*", "/", "mod", "x^y" -> processExpressionOperator(command);
+            case "Enter" -> processExpressionCalculate();
+            default -> {
+                if (command.matches("\\d")) {
+                    processDigit(command);
+                    expressionBuilder.append(command);
+                } else {
+                    processUnaryOperator(command);
                 }
             }
-        } catch (ArithmeticException | IllegalArgumentException ex) {
-            view.updateDisplay("Error: " + ex.getMessage());
-            model.setAwaitingNewInput(true);
-            expressionBuilder.setLength(0);
         }
     }
 
     private void processMinusOperator() {
-        // Унарный минус на старте
+        String currentFormula = expressionBuilder.toString();
+
         if (expressionBuilder.length() == 0 || "0".equals(model.getCurrentInput())) {
             model.setCurrentInput("-");
             model.setAwaitingNewInput(false);
             view.updateDisplay("-");
-
             expressionBuilder.setLength(0);
             expressionBuilder.append("-");
             view.updateFormulaDisplay(expressionBuilder.toString());
-        }
-        // Унарный минус сразу после открывающей скобки, например: (-5
-        else if (expressionBuilder.toString().endsWith("(")) {
+        } else if (currentFormula.endsWith("(")) {
             model.setCurrentInput("-");
             model.setAwaitingNewInput(false);
             view.updateDisplay("-");
-
             expressionBuilder.append("-");
             view.updateFormulaDisplay(expressionBuilder.toString());
-        }
-        // Бинарный минус (вычитание)
-        else {
+        } else {
             processExpressionOperator("-");
         }
     }
@@ -119,7 +90,6 @@ public class CalculatorController implements ActionListener {
 
         double currentNumber = Double.parseDouble(model.getCurrentInput());
         service.addToMemory(currentNumber);
-
         view.updateMemoryDisplay(formatResult(service.getMemoryValue()));
         model.setAwaitingNewInput(true);
     }
@@ -131,8 +101,6 @@ public class CalculatorController implements ActionListener {
         model.setCurrentInput(memString);
         view.updateDisplay(memString);
         model.setAwaitingNewInput(false);
-
-        // Всегда добавляем значение памяти в выражение
         expressionBuilder.append(memString);
         view.updateFormulaDisplay(expressionBuilder.toString());
     }
@@ -171,8 +139,6 @@ public class CalculatorController implements ActionListener {
             model.setCurrentInput(model.getCurrentInput() + ".");
         }
         view.updateDisplay(model.getCurrentInput());
-
-        // Точка в строке формулы
         expressionBuilder.append(".");
     }
 
@@ -181,31 +147,25 @@ public class CalculatorController implements ActionListener {
         model.setCurrentInput(constString);
         model.setAwaitingNewInput(false);
         view.updateDisplay(model.getCurrentInput());
-
-        // Константы склеиваются с буфером выражения
         expressionBuilder.append(constString);
         view.updateFormulaDisplay(expressionBuilder.toString());
     }
 
     private void processUnaryOperator(String operation) {
-        // Если буфер пуст, но на экране уже введено число, подхватываем его
         if (expressionBuilder.length() == 0 && !"0".equals(model.getCurrentInput())) {
             expressionBuilder.append(model.getCurrentInput());
         }
 
-        String displayToken = operation; // То, что пойдет на главное табло
+        String displayToken = operation;
 
         switch (operation) {
-            // 1. ПОСТФИКСНЫЕ ОПЕРАЦИИ (дописываются после текущего числа/выражения)
             case "x²" -> expressionBuilder.append("^2");
             case "x³" -> expressionBuilder.append("^3");
             case "n!" -> expressionBuilder.append("!");
             case "%"  -> expressionBuilder.append("/100");
-
-            // 2. ПРЕФИКСНЫЕ ФУНКЦИИ (оборачивают число или открывают зону для ввода)
             case "sin", "cos", "tan", "asin", "acos", "atan", "ln", "log", "exp", "sqrt", "cbrt" -> {
                 expressionBuilder.append(operation).append("(");
-                displayToken = operation + "("; // РЕФАКТОРИНГ: Выводим на табло со скобкой
+                displayToken = operation + "(";
             }
             case "10^x" -> {
                 expressionBuilder.append("10^(");
@@ -219,14 +179,10 @@ public class CalculatorController implements ActionListener {
                 expressionBuilder.append("abs(");
                 displayToken = "abs(";
             }
-
             default -> throw new IllegalArgumentException("Unknown unary operation: " + operation);
         }
 
-        // Обновляем верхнее табло текущим состоянием формулы
         view.updateFormulaDisplay(expressionBuilder.toString());
-
-        // РЕФАКТОРИНГ: Показываем операцию со скобкой на главном экране и ждем ввода аргумента
         view.updateDisplay(displayToken);
         model.setCurrentInput(displayToken);
         model.setAwaitingNewInput(true);
@@ -261,12 +217,10 @@ public class CalculatorController implements ActionListener {
             return;
         }
 
-        String finalExpression = expressionBuilder.toString();
-
-        // РЕФАКТОРИНГ: Автоматическое исправление/закрытие скобок перед вычислением
         int openCount = 0;
         int closeCount = 0;
-        for (char ch : finalExpression.toCharArray()) {
+        String currentContent = expressionBuilder.toString();
+        for (char ch : currentContent.toCharArray()) {
             if (ch == '(') openCount++;
             if (ch == ')') closeCount++;
         }
@@ -276,88 +230,83 @@ public class CalculatorController implements ActionListener {
             for (int i = 0; i < missingBrackets; i++) {
                 expressionBuilder.append(")");
             }
-            finalExpression = expressionBuilder.toString(); // Обновляем выражение для парсера
         }
 
-        double result = service.calculateExpression(finalExpression, model.isRadians());
+        String finalExpression = expressionBuilder.toString();
 
-        String resultString = formatResult(result);
-        model.setCurrentInput(resultString);
-        model.setLastResult(result);
-        model.setAwaitingNewInput(true);
-
-        view.updateDisplay(resultString);
-        view.updateFormulaDisplay(finalExpression + " = " + resultString);
-
-        expressionBuilder.setLength(0);
-    }
-
-    private void finalizeCalculation(double result, String baseFormula) {
-        String resultString = formatResult(result);
-
-        model.setCurrentInput(resultString);
-        model.setLastResult(result);
-        model.setAwaitingNewInput(true);
-
-        view.updateDisplay(resultString);
-        view.updateFormulaDisplay(baseFormula + resultString);
+        try {
+            double result = service.calculateExpression(finalExpression, model.isRadians());
+            String resultString = formatResult(result);
+            model.setCurrentInput(resultString);
+            model.setLastResult(result);
+            model.setAwaitingNewInput(true);
+            view.updateDisplay(resultString);
+            view.updateFormulaDisplay(finalExpression + " = " + resultString);
+            expressionBuilder.setLength(0);
+        } catch (ArithmeticException | IllegalArgumentException ex) {
+            view.updateDisplay("Error: " + ex.getMessage());
+            view.updateFormulaDisplay(finalExpression + " = Error");
+            model.setAwaitingNewInput(true);
+            expressionBuilder.setLength(0);
+        }
     }
 
     private void processBackspace() {
-        // Если в буфере выражения что-то есть, работаем с ним напрямую
         if (expressionBuilder.length() > 0) {
             String currentFormula = expressionBuilder.toString();
 
-            // Пошаговый разбор окончания строки для умного удаления
-            if (currentFormula.endsWith(" ")) {
-                // Оператор с пробелами (например, " + ")
-                expressionBuilder.setLength(expressionBuilder.length() - 3);
-            } else if (currentFormula.endsWith("sin(") || currentFormula.endsWith("cos(") || currentFormula.endsWith("tan(")
-                    || currentFormula.endsWith("log(") || currentFormula.endsWith("exp(") || currentFormula.endsWith("abs(")) {
-                // Функции из 4-х символов
-                expressionBuilder.setLength(expressionBuilder.length() - 4);
-            } else if (currentFormula.endsWith("asin(") || currentFormula.endsWith("acos(") || currentFormula.endsWith("atan(")
-                    || currentFormula.endsWith("sqrt(") || currentFormula.endsWith("cbrt(") || currentFormula.endsWith("10^(")) {
-                // Функции из 5 символов
+            if (currentFormula.endsWith(" mod ")) {
                 expressionBuilder.setLength(expressionBuilder.length() - 5);
-            } else if (currentFormula.endsWith("1/(")) {
+            } else if (currentFormula.endsWith(" + ") || currentFormula.endsWith(" - ")
+                    || currentFormula.endsWith(" * ") || currentFormula.endsWith(" / ")
+                    || currentFormula.endsWith(" ^ ")) {
                 expressionBuilder.setLength(expressionBuilder.length() - 3);
+            } else if (currentFormula.endsWith("asin(") || currentFormula.endsWith("acos(") || currentFormula.endsWith("atan(")
+                    || currentFormula.endsWith("sqrt(") || currentFormula.endsWith("cbrt(")) {
+                expressionBuilder.setLength(expressionBuilder.length() - 5);
+            } else if (currentFormula.endsWith("sin(") || currentFormula.endsWith("cos(") || currentFormula.endsWith("tan(")
+                    || currentFormula.endsWith("log(") || currentFormula.endsWith("exp(") || currentFormula.endsWith("abs(")
+                    || currentFormula.endsWith("10^(") || currentFormula.endsWith("/100")) {
+                expressionBuilder.setLength(expressionBuilder.length() - 4);
+            } else if (currentFormula.endsWith("ln(") || currentFormula.endsWith("1/(")) {
+                expressionBuilder.setLength(expressionBuilder.length() - 3);
+            } else if (currentFormula.endsWith("^2") || currentFormula.endsWith("^3")) {
+                expressionBuilder.setLength(expressionBuilder.length() - 2);
             } else {
-                // Обычная цифра, точка или одиночная скобка
                 expressionBuilder.setLength(expressionBuilder.length() - 1);
             }
 
-            // Обновляем верхний лейбл формулы
             String updatedFormula = expressionBuilder.toString();
-            view.updateFormulaDisplay(updatedFormula.isEmpty() ? " " : updatedFormula);
 
-            // Синхронизируем нижнее табло
-            String trimmedFormula = updatedFormula.trim();
-            if (trimmedFormula.isEmpty()) {
-                model.setCurrentInput("0");
-                view.updateDisplay("0");
-            } else {
-                int lastSpace = trimmedFormula.lastIndexOf(" ");
-                String lastToken = (lastSpace != -1) ? trimmedFormula.substring(lastSpace + 1) : trimmedFormula;
-
-                model.setCurrentInput(lastToken);
-                view.updateDisplay(lastToken);
+            if (updatedFormula.trim().isEmpty() || "0".equals(updatedFormula.trim())) {
+                processClear();
+                return;
             }
+
+            view.updateFormulaDisplay(updatedFormula);
+
+            String trimmedFormula = updatedFormula.trim();
+            int lastSpace = trimmedFormula.lastIndexOf(" ");
+            String lastToken = (lastSpace != -1) ? trimmedFormula.substring(lastSpace + 1) : trimmedFormula;
+
+            model.setCurrentInput(lastToken);
+            view.updateDisplay(lastToken);
+
         } else {
-            // Если буфер выражения пуст, но на табло длинное число
             String currentInput = model.getCurrentInput();
             if (currentInput.length() > 1 && !"0".equals(currentInput)) {
                 String updatedInput = currentInput.substring(0, currentInput.length() - 1);
 
                 if ("-".equals(updatedInput)) {
-                    updatedInput = "0";
+                    processClear();
+                    return;
                 }
 
                 model.setCurrentInput(updatedInput);
                 view.updateDisplay(updatedInput);
             } else {
-                model.setCurrentInput("0");
-                view.updateDisplay("0");
+                processClear();
+                return;
             }
         }
     }
