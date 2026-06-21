@@ -16,8 +16,10 @@ public class CalculatorController implements ActionListener {
     private final StringBuilder expressionBuilder = new StringBuilder();
 
     private final InputProcessor inputProcessor;
+    private final BackspaceProcessor backspaceProcessor;
     private final MemoryProcessor memoryProcessor;
     private final OperatorProcessor operatorProcessor;
+    private final UnaryOperatorProcessor unaryOperatorProcessor;
     private final ExecutionProcessor executionProcessor;
 
     public CalculatorController(CalculatorModel model, CalculatorService service, CalculatorPanel view) {
@@ -26,8 +28,10 @@ public class CalculatorController implements ActionListener {
 
         ResultFormatter formatter = new ResultFormatter();
         this.inputProcessor = new InputProcessor(model, view);
+        this.backspaceProcessor = new BackspaceProcessor(model, view, inputProcessor);
         this.memoryProcessor = new MemoryProcessor(model, service, view, formatter);
         this.operatorProcessor = new OperatorProcessor(model, view);
+        this.unaryOperatorProcessor = new UnaryOperatorProcessor(model, view);
         this.executionProcessor = new ExecutionProcessor(model, service, view, formatter);
 
         this.view.registerController(this);
@@ -48,7 +52,7 @@ public class CalculatorController implements ActionListener {
 
         switch (command) {
             case "C" -> inputProcessor.processClear(expressionBuilder);
-            case "Back", "Backspace", "<-" -> inputProcessor.processBackspace(expressionBuilder);
+            case "Back", "Backspace", "<-" -> backspaceProcessor.processBackspace(expressionBuilder);
             case "M+" -> memoryProcessor.processMemoryAdd();
             case "MR" -> memoryProcessor.processMemoryRecall(expressionBuilder);
             case "MC" -> memoryProcessor.processMemoryClear(expressionBuilder);
@@ -66,7 +70,7 @@ public class CalculatorController implements ActionListener {
                     inputProcessor.processDigit(command);
                     expressionBuilder.append(command);
                 } else {
-                    operatorProcessor.processUnaryOperator(command, expressionBuilder);
+                    unaryOperatorProcessor.processUnaryOperator(command, expressionBuilder);
                 }
             }
         }
