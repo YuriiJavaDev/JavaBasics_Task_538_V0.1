@@ -14,6 +14,9 @@ public class OperatorProcessor {
     }
 
     public void processMinusOperator(StringBuilder expressionBuilder) {
+        // Как только нажали оператор, число из MR больше не является "активным" для затирания цифрой
+        model.setCalculatedOrMemory(false);
+
         String currentFormula = expressionBuilder.toString();
 
         if (currentFormula.endsWith("(")) {
@@ -30,11 +33,15 @@ public class OperatorProcessor {
             expressionBuilder.append("-");
             view.updateFormulaDisplay(expressionBuilder.toString());
         } else {
+            // Здесь вызовется метод ниже, но флаг мы уже сбросили
             processExpressionOperator("-", expressionBuilder);
         }
     }
 
     public void processExpressionOperator(String operator, StringBuilder expressionBuilder) {
+        // Принудительно тушим флаг MR при выборе любого бинарного оператора (+, *, /, mod, x^y)
+        model.setCalculatedOrMemory(false);
+
         if (expressionBuilder.length() == 0) {
             expressionBuilder.append(model.getCurrentInput());
         }
@@ -47,6 +54,9 @@ public class OperatorProcessor {
     }
 
     public void processBracket(String bracket, StringBuilder expressionBuilder) {
+        // Если после MR открывают скобку, это тоже ломает монолитность числа из памяти
+        model.setCalculatedOrMemory(false);
+
         if (expressionBuilder.length() == 0 && !"0".equals(model.getCurrentInput())) {
             expressionBuilder.append(model.getCurrentInput());
         }

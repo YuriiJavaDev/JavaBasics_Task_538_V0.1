@@ -6,11 +6,10 @@ package com.yurii.pavlenko.model.tools.calculator;
 public class CalculatorModel {
 
     private String currentInput;
-    private double firstOperand;
-    private String activeOperator;
     private double lastResult;
     private boolean isRadians;
     private boolean isAwaitingNewInput;
+    private boolean isCalculatedOrMemory;
 
     public CalculatorModel() {
         this.isRadians = false;
@@ -22,10 +21,9 @@ public class CalculatorModel {
      */
     public void reset() {
         this.currentInput = "0";
-        this.firstOperand = 0;
-        this.activeOperator = "";
         this.lastResult = 0;
         this.isAwaitingNewInput = true;
+        this.isCalculatedOrMemory = false;
     }
 
     // Getters and Setters following Clean Code conventions
@@ -36,22 +34,6 @@ public class CalculatorModel {
 
     public void setCurrentInput(String currentInput) {
         this.currentInput = currentInput;
-    }
-
-    public double getFirstOperand() {
-        return firstOperand;
-    }
-
-    public void setFirstOperand(double firstOperand) {
-        this.firstOperand = firstOperand;
-    }
-
-    public String getActiveOperator() {
-        return activeOperator;
-    }
-
-    public void setActiveOperator(String activeOperator) {
-        this.activeOperator = activeOperator;
     }
 
     public double getLastResult() {
@@ -76,5 +58,13 @@ public class CalculatorModel {
 
     public void setAwaitingNewInput(boolean awaitingNewInput) {
         this.isAwaitingNewInput = awaitingNewInput;
+    }
+
+    public boolean isCalculatedOrMemory() {
+        return isCalculatedOrMemory;
+    }
+
+    public void setCalculatedOrMemory(boolean calculatedOrMemory) {
+        this.isCalculatedOrMemory = calculatedOrMemory;
     }
 }

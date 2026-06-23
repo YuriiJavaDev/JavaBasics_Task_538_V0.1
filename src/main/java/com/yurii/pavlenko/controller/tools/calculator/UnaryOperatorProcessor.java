@@ -14,7 +14,20 @@ public class UnaryOperatorProcessor {
     }
 
     public void processUnaryOperator(String operation, StringBuilder expressionBuilder) {
-        if (expressionBuilder.length() == 0 && !"0".equals(model.getCurrentInput())) {
+        String currentFormula = expressionBuilder.toString().trim();
+
+        // ПРАВИЛО: Если в лейбе горит только одно число (нет пробелов и операторов),
+        // и мы нажимаем ТЕКСТОВУЮ функцию (sin, cos, ln и т.д.), то старое число затирается.
+        boolean isTextFunction = !"x²".equals(operation) && !"x³".equals(operation)
+                && !"n!".equals(operation) && !"%".equals(operation);
+
+        if (isTextFunction && !currentFormula.contains(" ") && !currentFormula.isEmpty()) {
+            expressionBuilder.setLength(0);
+        }
+
+        // Если это постфиксная операция (степень, факториал) или если мы продолжаем сложное выражение,
+        // подтягиваем число из модели, если билдер пуст
+        if (expressionBuilder.length() == 0 && !"0".equals(model.getCurrentInput()) && !isTextFunction) {
             expressionBuilder.append(model.getCurrentInput());
         }
 
@@ -48,5 +61,6 @@ public class UnaryOperatorProcessor {
         view.updateDisplay(displayToken);
         model.setCurrentInput(displayToken);
         model.setAwaitingNewInput(true);
+        model.setCalculatedOrMemory(false);
     }
 }

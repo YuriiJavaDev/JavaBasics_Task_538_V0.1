@@ -67,8 +67,31 @@ public class CalculatorController implements ActionListener {
             case "Enter" -> executionProcessor.processExpressionCalculate(expressionBuilder);
             default -> {
                 if (command.matches("\\d")) {
+                    // ПРАВИЛО: Если число на табло из MR — полностью стираем лейбу и табло
+                    if (model.isCalculatedOrMemory()) {
+                        expressionBuilder.setLength(0); // Стираем лейбу
+                        model.setCurrentInput("0");     // Сбрасываем модель табло для inputProcessor
+                        model.setAwaitingNewInput(true);
+                        model.setCalculatedOrMemory(false); // Сбрасываем маркер MR
+                    }
+
+                    // Стандартный ввод (он сам разберётся: сделать "7" -> "78" или начать заново)
                     inputProcessor.processDigit(command);
-                    expressionBuilder.append(command);
+
+                    // Синхронизируем лейбу с тем, что ввёл inputProcessor
+                    if (expressionBuilder.length() == 0) {
+                        expressionBuilder.append(command);
+                    } else {
+                        String currentFormula = expressionBuilder.toString();
+                        // Если в лейбе сложное выражение (например "15 + "), просто дописываем цифру в хвост
+                        if (currentFormula.endsWith(" ")) {
+                            expressionBuilder.append(command);
+                        } else {
+                            // Если мы руками набираем многоразрядное число (делаем из 7 -> 78)
+                            expressionBuilder.append(command);
+                        }
+                    }
+                    view.updateFormulaDisplay(expressionBuilder.toString());
                 } else {
                     unaryOperatorProcessor.processUnaryOperator(command, expressionBuilder);
                 }
