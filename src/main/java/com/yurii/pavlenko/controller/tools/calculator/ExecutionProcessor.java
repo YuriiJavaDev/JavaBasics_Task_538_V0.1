@@ -35,7 +35,9 @@ public class ExecutionProcessor {
                 expressionBuilder.append(")");
             }
         }
+
         String finalExpression = expressionBuilder.toString();
+
         try {
             double result = service.calculateExpression(finalExpression, model.isRadians());
             String resultString = formatter.formatResult(result);
