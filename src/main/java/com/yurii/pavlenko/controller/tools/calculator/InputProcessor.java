@@ -48,5 +48,6 @@ public class InputProcessor {
         view.updateDisplay(model.getCurrentInput());
         expressionBuilder.append(constString);
         view.updateFormulaDisplay(expressionBuilder.toString());
+        model.setAwaitingNewInput(true);
     }
 }

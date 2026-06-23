@@ -67,27 +67,48 @@ public class CalculatorController implements ActionListener {
             case "Enter" -> executionProcessor.processExpressionCalculate(expressionBuilder);
             default -> {
                 if (command.matches("\\d")) {
-                    // ПРАВИЛО: Если число на табло из MR — полностью стираем лейбу и табло
-                    if (model.isCalculatedOrMemory()) {
-                        expressionBuilder.setLength(0); // Стираем лейбу
-                        model.setCurrentInput("0");     // Сбрасываем модель табло для inputProcessor
-                        model.setAwaitingNewInput(true);
-                        model.setCalculatedOrMemory(false); // Сбрасываем маркер MR
+                    String currentFormula = expressionBuilder.toString().trim();
+
+                    // Проверяем, оканчивается ли строка на константу (π, e, или букву 'd' от Rand/Ans)
+                    boolean isConstant = currentFormula.endsWith("π")
+                            || currentFormula.endsWith("e")
+                            || currentFormula.endsWith("d")  // для Rand
+                            // если Ans выводится как слово, можно добавить: || currentFormula.endsWith("s")
+                            ;
+
+                    // Если калькулятор ждёт новый ввод ИЛИ в лейбе сейчас горит чистая константа
+                    if (model.isAwaitingNewInput() || (isConstant && !currentFormula.contains(" "))) {
+
+                        // Символы, после которых стирать лейбу НЕЛЬЗЯ (операторы и открытые скобки)
+                        boolean endsWithForbidden = currentFormula.endsWith("(")
+                                || currentFormula.endsWith("+") || currentFormula.endsWith("-")
+                                || currentFormula.endsWith("*") || currentFormula.endsWith("/")
+                                || currentFormula.endsWith("^") || currentFormula.endsWith("mod");
+
+                        // Стираем лейбу, если это одиночное число/константа без операторов
+                        if ((!currentFormula.contains(" ") || isConstant) && !endsWithForbidden) {
+                            expressionBuilder.setLength(0);
+                            // Если мы затираем константу, принудительно переводим табло в режим чистого листа
+                            if (isConstant) {
+                                model.setCurrentInput("0");
+                                model.setAwaitingNewInput(true);
+                            }
+                        }
+
+                        model.setCalculatedOrMemory(false);
                     }
 
-                    // Стандартный ввод (он сам разберётся: сделать "7" -> "78" или начать заново)
+                    // Стандартный ввод цифры
                     inputProcessor.processDigit(command);
 
-                    // Синхронизируем лейбу с тем, что ввёл inputProcessor
+                    // Синхронизируем лейбу
                     if (expressionBuilder.length() == 0) {
                         expressionBuilder.append(command);
                     } else {
-                        String currentFormula = expressionBuilder.toString();
-                        // Если в лейбе сложное выражение (например "15 + "), просто дописываем цифру в хвост
-                        if (currentFormula.endsWith(" ")) {
+                        String formula = expressionBuilder.toString();
+                        if (formula.endsWith(" ")) {
                             expressionBuilder.append(command);
                         } else {
-                            // Если мы руками набираем многоразрядное число (делаем из 7 -> 78)
                             expressionBuilder.append(command);
                         }
                     }
