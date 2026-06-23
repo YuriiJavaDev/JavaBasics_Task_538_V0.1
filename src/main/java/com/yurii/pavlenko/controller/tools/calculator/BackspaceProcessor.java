@@ -1,16 +1,16 @@
 package com.yurii.pavlenko.controller.tools.calculator;
 
 import com.yurii.pavlenko.model.tools.calculator.CalculatorModel;
-import com.yurii.pavlenko.ui.panels.tools.CalculatorPanel;
+import com.yurii.pavlenko.ui.panels.tools.CalculatorDisplay;
 import java.util.stream.Stream;
 
 public class BackspaceProcessor {
 
     private final CalculatorModel model;
-    private final CalculatorPanel view;
+    private final CalculatorDisplay view;
     private final InputProcessor inputProcessor;
 
-    public BackspaceProcessor(CalculatorModel model, CalculatorPanel view, InputProcessor inputProcessor) {
+    public BackspaceProcessor(CalculatorModel model, CalculatorDisplay view, InputProcessor inputProcessor) {
         this.model = model;
         this.view = view;
         this.inputProcessor = inputProcessor;

@@ -5,6 +5,8 @@ import com.yurii.pavlenko.ui.panels.tools.CalculatorDisplay;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.awt.event.ActionListener;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class InputProcessorTest {
@@ -26,6 +28,11 @@ class InputProcessorTest {
         @Override
         public void updateFormulaDisplay(String text) {
             this.lastFormulaDisplay = text;
+        }
+        @Override public void updateMemoryDisplay(String text) {
+        }
+        @Override
+        public void registerController(ActionListener controller) {
         }
     }
 

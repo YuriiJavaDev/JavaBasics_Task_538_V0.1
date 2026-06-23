@@ -2,7 +2,7 @@ package com.yurii.pavlenko.controller.tools.calculator;
 
 import com.yurii.pavlenko.model.tools.calculator.CalculatorModel;
 import com.yurii.pavlenko.service.tools.calculator.CalculatorService;
-import com.yurii.pavlenko.ui.panels.tools.CalculatorPanel;
+import com.yurii.pavlenko.ui.panels.tools.CalculatorDisplay;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,7 +12,7 @@ import javax.swing.JRadioButton;
 public class CalculatorController implements ActionListener {
 
     private final CalculatorModel model;
-    private final CalculatorPanel view;
+    private final CalculatorDisplay view;
     private final StringBuilder expressionBuilder = new StringBuilder();
 
     private final InputProcessor inputProcessor;
@@ -22,7 +22,7 @@ public class CalculatorController implements ActionListener {
     private final UnaryOperatorProcessor unaryOperatorProcessor;
     private final ExecutionProcessor executionProcessor;
 
-    public CalculatorController(CalculatorModel model, CalculatorService service, CalculatorPanel view) {
+    public CalculatorController(CalculatorModel model, CalculatorService service, CalculatorDisplay view) {
         this.model = model;
         this.view = view;
 

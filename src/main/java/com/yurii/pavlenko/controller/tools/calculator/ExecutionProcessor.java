@@ -2,16 +2,16 @@ package com.yurii.pavlenko.controller.tools.calculator;
 
 import com.yurii.pavlenko.model.tools.calculator.CalculatorModel;
 import com.yurii.pavlenko.service.tools.calculator.CalculatorService;
-import com.yurii.pavlenko.ui.panels.tools.CalculatorPanel;
+import com.yurii.pavlenko.ui.panels.tools.CalculatorDisplay; // Імпортуємо інтерфейс
 
 public class ExecutionProcessor {
 
     private final CalculatorModel model;
     private final CalculatorService service;
-    private final CalculatorPanel view;
+    private final CalculatorDisplay view; // Змінено тип з CalculatorPanel на CalculatorDisplay
     private final ResultFormatter formatter;
 
-    public ExecutionProcessor(CalculatorModel model, CalculatorService service, CalculatorPanel view, ResultFormatter formatter) {
+    public ExecutionProcessor(CalculatorModel model, CalculatorService service, CalculatorDisplay view, ResultFormatter formatter) {
         this.model = model;
         this.service = service;
         this.view = view;
