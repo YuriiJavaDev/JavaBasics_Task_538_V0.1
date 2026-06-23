@@ -12,10 +12,9 @@ public class ExpressionParser {
     }
 
     public double parse(String expression, boolean isRadians) {
-        // 1. Сначала подменяем текстовый оператор "mod" на символ "%", чтобы парсер его легко распознал
+
         String preparedExpr = expression.replace("mod", "%");
 
-        // 2. Затем удаляем все пробелы
         this.cleanExpr = preparedExpr.replaceAll("\\s+", "");
         this.pos = -1;
         nextChar();
@@ -58,12 +57,11 @@ public class ExpressionParser {
                     throw new ArithmeticException("Cannot divide by zero");
                 }
                 x /= divisor;
-            } else if (eat('%')) { // 3. ДОБАВЛЯЕМ ОБРАБОТКУ ОСТАТКА ОТ ДЕЛЕНИЯ
+            } else if (eat('%')) {
                 double divisor = parseFactor(isRadians);
                 if (divisor == 0) {
                     throw new ArithmeticException("Cannot divide by zero");
                 }
-                // Вызываем твой готовый MathOperationEvaluator
                 x = evaluator.calculateBinary(x, divisor, "mod");
             } else return x;
         }
