@@ -14,7 +14,7 @@ import java.util.Map;
  * High-performance arithmetic and engineering calculator layout.
  * Integrates dedicated radio-button context switches for angular metrics.
  */
-public class CalculatorPanel extends JPanel {
+public class CalculatorPanel extends JPanel implements CalculatorDisplay {
 
     private JLabel display;
     private JLabel memoryLabel;

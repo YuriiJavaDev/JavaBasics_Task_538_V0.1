@@ -1,14 +1,15 @@
 package com.yurii.pavlenko.controller.tools.calculator;
 
 import com.yurii.pavlenko.model.tools.calculator.CalculatorModel;
+import com.yurii.pavlenko.ui.panels.tools.CalculatorDisplay;
 import com.yurii.pavlenko.ui.panels.tools.CalculatorPanel;
 
 public class InputProcessor {
 
     private final CalculatorModel model;
-    private final CalculatorPanel view;
+    private final CalculatorDisplay view;
 
-    public InputProcessor(CalculatorModel model, CalculatorPanel view) {
+    public InputProcessor(CalculatorModel model, CalculatorDisplay view) {
         this.model = model;
         this.view = view;
     }

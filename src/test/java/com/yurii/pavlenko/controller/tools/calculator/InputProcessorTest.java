@@ -1,25 +1,39 @@
 package com.yurii.pavlenko.controller.tools.calculator;
 
 import com.yurii.pavlenko.model.tools.calculator.CalculatorModel;
-import com.yurii.pavlenko.ui.panels.tools.CalculatorPanel;
+import com.yurii.pavlenko.ui.panels.tools.CalculatorDisplay;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
 
 class InputProcessorTest {
 
     private CalculatorModel model;
-    private CalculatorPanel viewMock;
+    private FakeCalculatorDisplay fakeDisplay;
     private InputProcessor inputProcessor;
+
+    // Створюємо власну просту заглушку замість примхливого Mockito
+    private static class FakeCalculatorDisplay implements CalculatorDisplay {
+        String lastDisplay = "";
+        String lastFormulaDisplay = "";
+
+        @Override
+        public void updateDisplay(String text) {
+            this.lastDisplay = text;
+        }
+
+        @Override
+        public void updateFormulaDisplay(String text) {
+            this.lastFormulaDisplay = text;
+        }
+    }
 
     @BeforeEach
     void setUp() {
-        // Using real object for model and mock for UI panel
         model = new CalculatorModel();
-        viewMock = mock(CalculatorPanel.class);
-        inputProcessor = new InputProcessor(model, viewMock);
+        fakeDisplay = new FakeCalculatorDisplay();
+        inputProcessor = new InputProcessor(model, fakeDisplay);
     }
 
     @Test
@@ -31,8 +45,8 @@ class InputProcessorTest {
 
         assertEquals(0, expressionBuilder.length());
         assertEquals("0", model.getCurrentInput());
-        verify(viewMock, times(1)).updateDisplay("0");
-        verify(viewMock, times(1)).updateFormulaDisplay(" ");
+        assertEquals("0", fakeDisplay.lastDisplay);
+        assertEquals(" ", fakeDisplay.lastFormulaDisplay);
     }
 
     @Test
@@ -45,7 +59,7 @@ class InputProcessorTest {
 
         assertEquals("52", model.getCurrentInput());
         assertEquals("52", expressionBuilder.toString());
-        verify(viewMock, times(1)).updateDisplay("52");
+        assertEquals("52", fakeDisplay.lastDisplay);
     }
 
     @Test
@@ -58,7 +72,7 @@ class InputProcessorTest {
 
         assertEquals("7", model.getCurrentInput());
         assertEquals("7", expressionBuilder.toString());
-        verify(viewMock, times(1)).updateDisplay("7");
+        assertEquals("7", fakeDisplay.lastDisplay);
     }
 
     @Test
@@ -71,7 +85,7 @@ class InputProcessorTest {
 
         assertEquals("5.", model.getCurrentInput());
         assertEquals("5.", expressionBuilder.toString());
-        verify(viewMock, times(1)).updateDisplay("5.");
+        assertEquals("5.", fakeDisplay.lastDisplay);
     }
 
     @Test
@@ -94,6 +108,6 @@ class InputProcessorTest {
 
         assertEquals("3.141592653589793", model.getCurrentInput());
         assertEquals("2 + 3.141592653589793", expressionBuilder.toString());
-        verify(viewMock, times(1)).updateDisplay("3.141592653589793");
+        assertEquals("3.141592653589793", fakeDisplay.lastDisplay);
     }
 }
