@@ -34,13 +34,13 @@ public class WeatherController implements ActionListener {
         String city = view.getCityInput();
 
         if (city.isEmpty()) {
-            view.displayError("Укажите город");
+            view.displayError("Specify the city");
             return;
         }
 
         view.setButtonsEnabled(false);
 
-        // Запуск SwingWorker: HTTP уходит в фон, а EDT продолжает крутить интерфейс без фризов
+        // Launching SwingWorker: HTTP goes into the background, EDT continues to spin the interface without freezing.
         new SwingWorker<WeatherModelDTO, Void>() {
             @Override
             protected WeatherModelDTO doInBackground() throws Exception {
@@ -54,7 +54,7 @@ public class WeatherController implements ActionListener {
                     view.updateWeatherDisplay(result);
 
                 } catch (Exception ex) {
-                    String message = ex.getCause() != null ? ex.getCause().getMessage() : "Ошибка сети";
+                    String message = ex.getCause() != null ? ex.getCause().getMessage() : "Network error";
                     view.displayError(message);
                 } finally {
                     view.setButtonsEnabled(true);

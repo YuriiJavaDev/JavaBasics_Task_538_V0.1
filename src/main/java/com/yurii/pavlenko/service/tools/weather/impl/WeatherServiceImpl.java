@@ -91,23 +91,22 @@ public class WeatherServiceImpl implements WeatherService {
         return response.body();
     }
 
-    /**
-     * Maps WMO weather codes to plain international text statuses.
-     */
-    public static String codeToTextStatus(int code) {
-        if (code == 0)                return "Clear Sky";
-        if (code <= 2)                return "Partly Cloudy";
-        if (code == 3)                return "Overcast";
-        if (code == 45 || code == 48) return "Foggy";
-        if (code >= 51 && code <= 67) return "Rainy";
-        if (code >= 71 && code <= 77) return "Snowy";
-        if (code >= 80 && code <= 82) return "Heavy Rain";
-        if (code == 95)               return "Thunderstorm";
-        return "Unknown";
+    public static String mapCodeToText(int code) {
+        return switch (code) {
+            case 0 -> "Clear Sky";
+            case 1, 2, 3 -> "Partly Cloudy";
+            case 45, 48 -> "Foggy";
+            case 51, 53, 55 -> "Drizzle";
+            case 61, 63, 65 -> "Rainy";
+            case 71, 73, 75 -> "Snowy";
+            case 80, 81, 82 -> "Rain Showers";
+            case 95, 96, 99 -> "Thunderstorm";
+            default -> "Cloudy";
+        };
     }
 
     /**
-     * Конвертирует градусы направления ветра в строковый румб.
+     * Converts wind direction degrees to line bearings.
      */
     public static String degreesToDirection(int degrees) {
         String[] directions = {"N", "NE", "E", "SE", "S", "SW", "W", "NW", "N"};

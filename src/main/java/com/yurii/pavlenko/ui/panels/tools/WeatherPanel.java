@@ -1,6 +1,7 @@
 package com.yurii.pavlenko.ui.panels.tools;
 
 import com.yurii.pavlenko.model.tools.weather.WeatherModelDTO;
+import com.yurii.pavlenko.service.tools.weather.impl.WeatherServiceImpl;
 import com.yurii.pavlenko.utils.CityTranslitUtil;
 import com.yurii.pavlenko.utils.MoonPhaseCalculator;
 import com.yurii.pavlenko.utils.WindConverter;
@@ -150,7 +151,7 @@ public class WeatherPanel extends JPanel {
     public void updateWeatherDisplay(WeatherModelDTO data) {
         String englishCity = CityTranslitUtil.convertToEnglishText(data.getCityName());
         lblLocation.setText("Location: " + englishCity + ", " + data.getCountryCode());
-        lblCondition.setText(getConditionTextByCode(data.getWeatherCode()));
+        lblCondition.setText(WeatherServiceImpl.mapCodeToText(data.getWeatherCode()));
 
         lblTemp.setText(String.format("Temperature: %.0f °C", data.getTemperature()));
 
@@ -170,20 +171,6 @@ public class WeatherPanel extends JPanel {
         lblWind.setText("");
         lblHumidity.setText("");
         contentCard.setBackground(new Color(255, 243, 243));
-    }
-
-    private String getConditionTextByCode(int code) {
-        return switch (code) {
-            case 0 -> "Clear Sky";
-            case 1, 2, 3 -> "Partly Cloudy";
-            case 45, 48 -> "Foggy";
-            case 51, 53, 55 -> "Drizzle";
-            case 61, 63, 65 -> "Rainy";
-            case 71, 73, 75 -> "Snowy";
-            case 80, 81, 82 -> "Rain Showers";
-            case 95, 96, 99 -> "Thunderstorm";
-            default -> "Cloudy";
-        };
     }
 
     private ImageIcon createThermometerIcon() {
