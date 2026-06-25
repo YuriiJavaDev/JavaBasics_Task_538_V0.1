@@ -100,8 +100,7 @@ public class WeatherPanel extends JPanel {
         gbc.insets = new Insets(18, 0, 25, 0);
         lblMoonText = new JLabel();
         lblMoonText.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 20));
-        // Fixed dimensions to prevent clipping
-        lblMoonText.setPreferredSize(new Dimension(350, 40));
+        lblMoonText.setPreferredSize(new Dimension(360, 40));
         contentCard.add(lblMoonText, gbc);
 
         add(contentCard, BorderLayout.CENTER);
