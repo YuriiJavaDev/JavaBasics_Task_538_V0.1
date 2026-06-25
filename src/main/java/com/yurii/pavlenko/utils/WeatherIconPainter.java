@@ -8,14 +8,11 @@ import javax.swing.*;
 
 /**
  * Utility class for generating dynamic weather and metric icons.
- * Centralizes UI graphical resources to maintain clean component separation.
  */
 public class WeatherIconPainter {
 
     private static final int ICON_WIDTH = 80;
     private static final int ICON_HEIGHT = 60;
-
-    // --- Weather Condition Icons ---
 
     public static BufferedImage createIcon(int weatherCode) {
         BufferedImage img = new BufferedImage(ICON_WIDTH, ICON_HEIGHT, BufferedImage.TYPE_INT_ARGB);
@@ -36,8 +33,6 @@ public class WeatherIconPainter {
         g2.dispose();
         return img;
     }
-
-    // --- Metric Icons (Thermometer, Wind, Humidity) ---
 
     public static ImageIcon createThermometerIcon() {
         BufferedImage img = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
@@ -76,7 +71,43 @@ public class WeatherIconPainter {
         return new ImageIcon(img);
     }
 
-    // --- Drawing Primitives & Composites (Private) ---
+    public static ImageIcon createCompassIcon(int degrees) {
+        int size = 32;
+        BufferedImage img = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = img.createGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        double cx = size / 2.0;
+        double cy = size / 2.0;
+
+        java.awt.geom.Path2D.Double arrow = new java.awt.geom.Path2D.Double();
+        arrow.moveTo(cx, 4);
+        arrow.lineTo(cx - 8, cy + 4);
+        arrow.lineTo(cx, cy);
+        arrow.lineTo(cx + 8, cy + 4);
+        arrow.closePath();
+
+        java.awt.geom.Path2D.Double tail = new java.awt.geom.Path2D.Double();
+        tail.moveTo(cx, cy);
+        tail.lineTo(cx - 4, size - 4);
+        tail.lineTo(cx + 4, size - 4);
+        tail.closePath();
+
+        g2.setColor(new Color(110, 140, 160));
+        g2.fill(arrow);
+        g2.setColor(new Color(80, 100, 120));
+        g2.fill(tail);
+        g2.dispose();
+
+        BufferedImage rotated = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D gRotated = rotated.createGraphics();
+        gRotated.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        gRotated.rotate(Math.toRadians(degrees), cx, cy);
+        gRotated.drawImage(img, 0, 0, null);
+        gRotated.dispose();
+
+        return new ImageIcon(rotated);
+    }
 
     private static void drawSunBehindCloud(Graphics2D g2) {
         g2.setColor(Color.ORANGE);

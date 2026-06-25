@@ -116,12 +116,14 @@ public class WeatherPanel extends JPanel {
 
     public void updateWeatherDisplay(WeatherModelDTO data) {
         String englishCity = CityTranslitUtil.convertToEnglishText(data.getCityName());
+        String directionName = WindConverter.getCompassDirectionName(data.getWindDirection());
+
         lblLocation.setText("Location: " + englishCity + ", " + data.getCountryCode());
         lblCondition.setText(WeatherServiceImpl.mapCodeToText(data.getWeatherCode()));
         lblTemp.setText(String.format("Temperature: %.0f °C", data.getTemperature()));
-        lblWind.setText(WindConverter.formatWindDisplay(data.getWindSpeed(), data.getWindDirection()));
-        lblHumidity.setText("Humidity: " + data.getHumidity() + " %");
-
+        lblWind.setIcon(WeatherIconPainter.createCompassIcon(data.getWindDirection()));
+        lblWind.setText(String.format("Wind: %.1f m/s (%d° %s)", data.getWindSpeed(), data.getWindDirection(), directionName));
+        lblHumidity.setText(String.format("Humidity: %d %%", data.getHumidity()));
         lblWeatherIcon.setIcon(new ImageIcon(WeatherIconPainter.createIcon(data.getWeatherCode())));
         updateMoonPhaseDisplay();
     }
