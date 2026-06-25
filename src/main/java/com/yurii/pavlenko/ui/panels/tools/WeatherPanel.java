@@ -155,9 +155,8 @@ public class WeatherPanel extends JPanel {
 
         lblTemp.setText(String.format("Temperature: %.0f °C", data.getTemperature()));
 
-        String arrowDirection = WindConverter.getWindDirectionArrow(data.getWindDirection());
-        lblWind.setText(String.format("Wind Speed: %.1f m/s (%d° %s)",
-                data.getWindSpeed(), data.getWindDirection(), arrowDirection));
+        // Використовуємо нову логіку з утиліти
+        lblWind.setText(WindConverter.formatWindDisplay(data.getWindSpeed(), data.getWindDirection()));
 
         lblHumidity.setText("Humidity: " + data.getHumidity() + " %");
         contentCard.setBackground(new Color(250, 252, 255));

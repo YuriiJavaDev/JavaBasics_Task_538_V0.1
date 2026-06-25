@@ -11,15 +11,17 @@ public class WindConverter {
     }
 
     /**
-     * Returns a wind emoji for general status tracking.
+     * Formats the wind data into a user-friendly display string.
      */
+    public static String formatWindDisplay(double speedMs, int degrees) {
+        String arrow = getWindDirectionArrow(degrees);
+        return String.format("Wind Speed: %.1f m/s (%d° %s)", speedMs, degrees, arrow);
+    }
+
     public static String getWindEmoji() {
         return "💨";
     }
 
-    /**
-     * Returns direction arrow combined with compass heading literal (e.g. "↑ N", "↘ SE").
-     */
     public static String getWindDirectionArrow(int degrees) {
         if (degrees < 0 || degrees > 360) {
             return "N/A";
