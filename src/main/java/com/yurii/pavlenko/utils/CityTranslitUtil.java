@@ -33,7 +33,7 @@ public class CityTranslitUtil {
             case "киев", "київ" -> { return "Kyiv"; }
             case "харьков", "харків" -> { return "Kharkiv"; }
             case "москва" -> { return "Moscow"; }
-            case "ришон ле-цион", "ришон лецион" -> { return "Rishon LeZion"; }
+            case "ришон ле-цион", "ришон лецион", "ришон", "Rishon" -> { return "Rishon LeZion"; }
         }
 
         StringBuilder sb = new StringBuilder(src.length());
