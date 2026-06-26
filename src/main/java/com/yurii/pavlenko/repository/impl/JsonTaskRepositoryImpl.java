@@ -38,7 +38,6 @@ public class JsonTaskRepositoryImpl implements TaskRepository {
         executeUpdate("Save task: " + task.getTitle(), tasks -> tasks.add(task));
     }
 
-    // UPDATED: Now removes tasks matching the unique identity key
     @Override
     public void delete(UUID id) {
         if (id == null) return;
@@ -62,7 +61,6 @@ public class JsonTaskRepositoryImpl implements TaskRepository {
         executeUpdate("Clear all tasks", List::clear);
     }
 
-    // UPDATED: Now replaces tasks based on matching UUID tokens instead of volatile indices
     @Override
     public void update(UUID id, Task updatedTask) {
         if (id == null || updatedTask == null) return;

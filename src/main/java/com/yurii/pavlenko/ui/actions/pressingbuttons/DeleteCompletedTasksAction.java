@@ -1,7 +1,7 @@
 package com.yurii.pavlenko.ui.actions.pressingbuttons;
 
 import com.yurii.pavlenko.controller.TaskController;
-import com.yurii.pavlenko.ui.dialogs.DialogHelper;
+import com.yurii.pavlenko.ui.dialogs.DialogHelperDelete;
 
 import javax.swing.AbstractAction;
 import java.awt.*;
@@ -25,7 +25,7 @@ public class DeleteCompletedTasksAction extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (DialogHelper.showDeleteConfirmation(parentComponent, "Are you sure? Delete all completed tasks?")) {
+        if (DialogHelperDelete.showDeleteConfirmation(parentComponent, "Are you sure? Delete all completed tasks?")) {
         controller.deleteCompletedTasks();
         refreshCallback.run();
         }

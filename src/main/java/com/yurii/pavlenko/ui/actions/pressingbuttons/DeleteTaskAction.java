@@ -2,7 +2,7 @@ package com.yurii.pavlenko.ui.actions.pressingbuttons;
 
 import com.yurii.pavlenko.controller.TaskController;
 import com.yurii.pavlenko.model.Task;
-import com.yurii.pavlenko.ui.dialogs.DialogHelper;
+import com.yurii.pavlenko.ui.dialogs.DialogHelperDelete;
 
 import javax.swing.AbstractAction;
 import javax.swing.JList;
@@ -36,7 +36,7 @@ public class DeleteTaskAction extends AbstractAction {
 
         Task task = controller.getTasks().get(selectedIndex);
 
-        if (DialogHelper.showDeleteConfirmation(parentComponent, "Are you sure you want to delete the selected task?")) {
+        if (DialogHelperDelete.showDeleteConfirmation(parentComponent, "Are you sure you want to delete the selected task?")) {
             controller.deleteTask(task.getId());
             refreshCallback.run();
         }

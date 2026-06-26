@@ -6,9 +6,9 @@ import java.awt.*;
 /**
  * Utility class handling reusable confirmation dialogs across UI components.
  */
-public final class DialogHelper {
+public final class DialogHelperDelete {
 
-    private DialogHelper() {}
+    private DialogHelperDelete() {}
 
     /**
      * Shows a standard confirmation warning dialog.
