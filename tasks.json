@@ -1,89 +1,25 @@
 [ {
-  "id" : "ec2de537-4c34-4901-b2e5-a2ca78edd018",
-  "title" : "1. уа у4п уф5р 54р укн45 ор65",
-  "completed" : true,
-  "createdAt" : [ 2026, 6, 13, 11, 16, 5, 954001100 ],
-  "updatedAt" : [ 2026, 6, 14, 10, 44, 53, 975362200 ],
-  "completedAt" : [ 2026, 6, 14, 10, 8, 32, 958251500 ],
-  "importance" : "Normal"
-}, {
-  "id" : "5de0346e-02b6-430a-ad42-37383432ad4c",
-  "title" : "2. кап йукп уйцукпе у4р фуе",
+  "id" : "ed43046f-8107-4ebc-83a7-e20452057d93",
+  "title" : "1. Проснуться утром в 6мь часов",
   "completed" : false,
-  "createdAt" : [ 2026, 6, 13, 11, 16, 9, 779349400 ],
-  "updatedAt" : [ 2026, 6, 14, 10, 28, 15, 428338400 ],
-  "completedAt" : null,
-  "importance" : "Normal"
-}, {
-  "id" : "07f47b2e-97eb-464e-99eb-967cf987b629",
-  "title" : "3. Третий",
-  "completed" : true,
-  "createdAt" : [ 2026, 6, 13, 11, 16, 11, 827161500 ],
-  "updatedAt" : [ 2026, 6, 14, 10, 57, 49, 457768000 ],
-  "completedAt" : [ 2026, 6, 14, 11, 11, 23, 336040200 ],
-  "importance" : "Normal"
-}, {
-  "id" : "bc974622-776a-4af4-a070-8301915ec21d",
-  "title" : "4. вфпм уйп йупи",
-  "completed" : false,
-  "createdAt" : [ 2026, 6, 13, 11, 16, 18, 658129000 ],
-  "updatedAt" : null,
-  "completedAt" : null,
-  "importance" : "Normal"
-}, {
-  "id" : "8529ff0a-f40a-4cac-a38d-8ae6b8f54538",
-  "title" : "5. цуке5 34м6й3 н 56цы тимь890-гх₽ш 87 9ув68дща9гжюми346 й35фн 45г",
-  "completed" : true,
-  "createdAt" : [ 2026, 6, 14, 10, 6, 7, 838412400 ],
-  "updatedAt" : [ 2026, 6, 14, 10, 6, 17, 276355500 ],
-  "completedAt" : [ 2026, 6, 14, 11, 11, 25, 21084800 ],
-  "importance" : "Normal"
-}, {
-  "id" : "afab0e17-4015-4a49-a991-65dbe845ff12",
-  "title" : "6. цуйк 34ен й53н54",
-  "completed" : false,
-  "createdAt" : [ 2026, 6, 14, 10, 27, 33, 718716200 ],
-  "updatedAt" : [ 2026, 6, 14, 10, 28, 46, 173391800 ],
-  "completedAt" : null,
-  "importance" : "Normal"
-}, {
-  "id" : "0b253788-9236-41ea-a954-6ec557fba53b",
-  "title" : "уке укпр кер кеыор фкеор",
-  "completed" : true,
-  "createdAt" : [ 2026, 6, 14, 11, 12, 56, 677707700 ],
-  "updatedAt" : null,
-  "completedAt" : [ 2026, 6, 14, 11, 13, 4, 212337400 ],
-  "importance" : "Normal"
-}, {
-  "id" : "9f9eeba9-6fe2-4468-8b5d-b8bf49b1ee37",
-  "title" : "8. Важное задание",
-  "completed" : false,
-  "createdAt" : [ 2026, 6, 26, 11, 42, 8, 632852100 ],
-  "updatedAt" : [ 2026, 6, 26, 11, 54, 49, 293139400 ],
-  "completedAt" : null,
-  "importance" : "Important"
-}, {
-  "id" : "cf1f78a0-280f-47a9-81ef-b75e0a7ae6e9",
-  "title" : "9 Срочное задание",
-  "completed" : false,
-  "createdAt" : [ 2026, 6, 26, 11, 43, 22, 302529800 ],
-  "updatedAt" : null,
+  "createdAt" : [ 2026, 6, 26, 13, 2, 2, 604310200 ],
+  "updatedAt" : [ 2026, 6, 26, 13, 2, 21, 247056600 ],
   "completedAt" : null,
   "importance" : "Urgent"
 }, {
-  "id" : "e49360d8-d03c-4930-9f26-a142a7aa448a",
-  "title" : "10 можно забить на это задание",
+  "id" : "0bb596dd-e387-4f48-af7d-837aba3a503f",
+  "title" : "2. выпить чашечку кофе",
   "completed" : false,
-  "createdAt" : [ 2026, 6, 26, 11, 43, 49, 813313400 ],
-  "updatedAt" : [ 2026, 6, 26, 11, 44, 30, 62549300 ],
+  "createdAt" : [ 2026, 6, 26, 13, 4, 49, 507659600 ],
+  "updatedAt" : null,
   "completedAt" : null,
   "importance" : "Normal"
 }, {
-  "id" : "ccef6275-476b-4b6d-8e54-04b982363425",
-  "title" : "цуакцу4 епа3урп 54р",
+  "id" : "e45e155c-61c5-441b-84e9-dfe5e7c03c52",
+  "title" : "3. Почитать учебник по Java",
   "completed" : false,
-  "createdAt" : [ 2026, 6, 26, 12, 26, 50, 958114000 ],
-  "updatedAt" : [ 2026, 6, 26, 12, 27, 9, 669644700 ],
+  "createdAt" : [ 2026, 6, 26, 13, 6, 58, 12282000 ],
+  "updatedAt" : null,
   "completedAt" : null,
   "importance" : "Important"
 } ]

@@ -3,42 +3,40 @@ package com.yurii.pavlenko.ui.actions.pressingbuttons;
 import com.yurii.pavlenko.controller.TaskController;
 import com.yurii.pavlenko.model.Task;
 import com.yurii.pavlenko.ui.dialogs.DialogHelperDelete;
-
 import javax.swing.AbstractAction;
 import javax.swing.JList;
-import java.awt.*;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
+import java.util.List;
 
-/**
- * Standalone action handling the removal of selected tasks from the tracking list view.
- */
 public class DeleteTaskAction extends AbstractAction {
-
     private final TaskController controller;
-    private final Component parentComponent;
+    private final Component parent;
     private final JList<Task> taskList;
-    private final Runnable refreshCallback;
+    private final Runnable callback;
 
-    public DeleteTaskAction(TaskController controller, Component parentComponent, JList<Task> taskList, Runnable refreshCallback) {
+    public DeleteTaskAction(TaskController controller, Component parent, JList<Task> taskList, Runnable callback) {
         super("Delete");
         this.controller = controller;
-        this.parentComponent = parentComponent;
+        this.parent = parent;
         this.taskList = taskList;
-        this.refreshCallback = refreshCallback;
+        this.callback = callback;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        int selectedIndex = taskList.getSelectedIndex();
-        if (selectedIndex < 0) {
-            return;
-        }
+        List<Task> selectedTasks = taskList.getSelectedValuesList();
+        if (selectedTasks.isEmpty()) return;
 
-        Task task = controller.getTasks().get(selectedIndex);
+        String message = (selectedTasks.size() == 1)
+                ? "Are you sure you want to delete the selected task?"
+                : "Are you sure you want to delete " + selectedTasks.size() + " selected tasks?";
 
-        if (DialogHelperDelete.showDeleteConfirmation(parentComponent, "Are you sure you want to delete the selected task?")) {
-            controller.deleteTask(task.getId());
-            refreshCallback.run();
+        if (DialogHelperDelete.showDeleteConfirmation(parent, message)) {
+            for (Task task : selectedTasks) {
+                controller.deleteTask(task.getId());
+            }
+            callback.run();
         }
     }
 }

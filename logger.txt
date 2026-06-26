@@ -1,6 +1,39 @@
-2026-06-26 12:26:41 [INFO] TaskController - TaskController initialized.
-2026-06-26 12:26:50 [INFO] TaskController - Adding new task: 'цуакцу4 епа3урп 54р' with importance: Urgent
-2026-06-26 12:26:50 [INFO] JsonTaskRepositoryImpl - SUCCESS: Save task: цуакцу4 епа3урп 54р
-2026-06-26 12:27:09 [INFO] TaskController - Editing task with ID: ccef6275-476b-4b6d-8e54-04b982363425 and status: false
-2026-06-26 12:27:09 [INFO] JsonTaskRepositoryImpl - DEBUG: The task in the list has been replaced. New status: false
-2026-06-26 12:27:09 [INFO] JsonTaskRepositoryImpl - SUCCESS: Update task with ID: ccef6275-476b-4b6d-8e54-04b982363425
+2026-06-26 13:06:07 [INFO] TaskController - TaskController initialized.
+2026-06-26 13:06:58 [INFO] TaskController - Adding new task: '3. Почитать учебник по Java' with importance: Important
+2026-06-26 13:06:58 [INFO] JsonTaskRepositoryImpl - SUCCESS: Save task: 3. Почитать учебник по Java
+2026-06-26 13:07:10 [INFO] TaskController - Adding new task: 'у4еп 54уе 45р п' with importance: Normal
+2026-06-26 13:07:10 [INFO] JsonTaskRepositoryImpl - SUCCESS: Save task: у4еп 54уе 45р п
+2026-06-26 13:07:14 [INFO] TaskController - Editing task with ID: d8e68ce7-2b9b-4374-a53a-311882af510c and status: true
+2026-06-26 13:07:14 [INFO] JsonTaskRepositoryImpl - DEBUG: The task in the list has been replaced. New status: true
+2026-06-26 13:07:14 [INFO] JsonTaskRepositoryImpl - SUCCESS: Update task with ID: d8e68ce7-2b9b-4374-a53a-311882af510c
+2026-06-26 13:07:20 [INFO] TaskController - Adding new task: '4ек4 3нп45 нр нотгьгвьь' with importance: Urgent
+2026-06-26 13:07:20 [INFO] JsonTaskRepositoryImpl - SUCCESS: Save task: 4ек4 3нп45 нр нотгьгвьь
+2026-06-26 13:07:22 [INFO] TaskController - Editing task with ID: 75523707-9509-4cf3-8d9f-057c12527f06 and status: true
+2026-06-26 13:07:22 [INFO] JsonTaskRepositoryImpl - DEBUG: The task in the list has been replaced. New status: true
+2026-06-26 13:07:22 [INFO] JsonTaskRepositoryImpl - SUCCESS: Update task with ID: 75523707-9509-4cf3-8d9f-057c12527f06
+2026-06-26 13:07:28 [INFO] TaskController - Adding new task: '54н 65оен во' with importance: Important
+2026-06-26 13:07:28 [INFO] JsonTaskRepositoryImpl - SUCCESS: Save task: 54н 65оен во
+2026-06-26 13:07:29 [INFO] TaskController - Editing task with ID: 5706958f-8cc6-49cf-978c-7b8e4ab70355 and status: true
+2026-06-26 13:07:29 [INFO] JsonTaskRepositoryImpl - DEBUG: The task in the list has been replaced. New status: true
+2026-06-26 13:07:29 [INFO] JsonTaskRepositoryImpl - SUCCESS: Update task with ID: 5706958f-8cc6-49cf-978c-7b8e4ab70355
+2026-06-26 13:07:49 [INFO] TaskController - Deleting all completed tasks.
+2026-06-26 13:07:49 [INFO] JsonTaskRepositoryImpl - SUCCESS: Delete completed tasks
+2026-06-26 13:07:55 [INFO] TaskController - Adding new task: 'у5еп 4н 45рк6' with importance: Normal
+2026-06-26 13:07:55 [INFO] JsonTaskRepositoryImpl - SUCCESS: Save task: у5еп 4н 45рк6
+2026-06-26 13:07:56 [INFO] TaskController - Editing task with ID: e46c3c34-693a-46fb-9e98-1309f0d49565 and status: true
+2026-06-26 13:07:56 [INFO] JsonTaskRepositoryImpl - DEBUG: The task in the list has been replaced. New status: true
+2026-06-26 13:07:56 [INFO] JsonTaskRepositoryImpl - SUCCESS: Update task with ID: e46c3c34-693a-46fb-9e98-1309f0d49565
+2026-06-26 13:08:03 [INFO] TaskController - Adding new task: '5п45рпк оро к о' with importance: Normal
+2026-06-26 13:08:03 [INFO] JsonTaskRepositoryImpl - SUCCESS: Save task: 5п45рпк оро к о
+2026-06-26 13:08:07 [INFO] TaskController - Editing task with ID: e0f8b7df-e41a-49dd-b165-082af0cf06b9 and status: false
+2026-06-26 13:08:07 [INFO] JsonTaskRepositoryImpl - DEBUG: The task in the list has been replaced. New status: false
+2026-06-26 13:08:07 [INFO] JsonTaskRepositoryImpl - SUCCESS: Update task with ID: e0f8b7df-e41a-49dd-b165-082af0cf06b9
+2026-06-26 13:08:12 [INFO] TaskController - Editing task with ID: e0f8b7df-e41a-49dd-b165-082af0cf06b9 and status: true
+2026-06-26 13:08:12 [INFO] JsonTaskRepositoryImpl - DEBUG: The task in the list has been replaced. New status: true
+2026-06-26 13:08:12 [INFO] JsonTaskRepositoryImpl - SUCCESS: Update task with ID: e0f8b7df-e41a-49dd-b165-082af0cf06b9
+2026-06-26 13:08:33 [INFO] TaskController - Attempting to delete task with ID: e0f8b7df-e41a-49dd-b165-082af0cf06b9
+2026-06-26 13:08:33 [INFO] JsonTaskRepositoryImpl - DEBUG: Task with ID e0f8b7df-e41a-49dd-b165-082af0cf06b9 successfully removed from the temporary list.
+2026-06-26 13:08:33 [INFO] JsonTaskRepositoryImpl - SUCCESS: Delete task with ID: e0f8b7df-e41a-49dd-b165-082af0cf06b9
+2026-06-26 13:08:33 [INFO] TaskController - Attempting to delete task with ID: e46c3c34-693a-46fb-9e98-1309f0d49565
+2026-06-26 13:08:33 [INFO] JsonTaskRepositoryImpl - DEBUG: Task with ID e46c3c34-693a-46fb-9e98-1309f0d49565 successfully removed from the temporary list.
+2026-06-26 13:08:33 [INFO] JsonTaskRepositoryImpl - SUCCESS: Delete task with ID: e46c3c34-693a-46fb-9e98-1309f0d49565

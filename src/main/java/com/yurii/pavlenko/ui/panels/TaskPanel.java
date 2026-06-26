@@ -14,87 +14,74 @@ import com.yurii.pavlenko.utils.SortOrderOption;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.util.List;
 
 public class TaskPanel extends JPanel {
-    private JTextField input;
-    private JComboBox<FilterStatus> filterComboBox;
-    private JComboBox<SortOrderOption> sortComboBox;
-    private DefaultListModel<Task> listModel;
-    private JList<Task> taskList;
-    private TaskFooterPanel footerPanel;
-    private AddTaskAction addTaskAction;
-    private EditTaskAction editTaskAction;
+    private final JTextField input = new JTextField(50);
+    private final JComboBox<FilterStatus> filterComboBox = new JComboBox<>(FilterStatus.values());
+    private final JComboBox<SortOrderOption> sortComboBox = new JComboBox<>(SortOrderOption.values());
+    private final DefaultListModel<Task> listModel = new DefaultListModel<>();
+    private final JList<Task> taskList = new JList<>(listModel);
+    private final TaskFooterPanel footerPanel = new TaskFooterPanel();
 
     public TaskPanel(TaskController controller) {
-        initComponents(controller);
-        initActions(controller);
-        initLayout();
-        initListeners(controller);
-        refreshTasks(controller);
-    }
-
-    private void initComponents(TaskController controller) {
-        input = new JTextField(50);
-        filterComboBox = new JComboBox<>(FilterStatus.values());
-        sortComboBox = new JComboBox<>(SortOrderOption.values());
-        sortComboBox.setRenderer(new SortComboBoxRenderer(() -> (FilterStatus) filterComboBox.getSelectedItem()));
-        listModel = new DefaultListModel<>();
-        taskList = new JList<>(listModel);
-        taskList.setCellRenderer(new TaskCellRenderer());
-        footerPanel = new TaskFooterPanel();
-    }
-
-    private void initActions(TaskController controller) {
-        addTaskAction = new AddTaskAction(controller, input, this, () -> refreshTasks(controller));
-        editTaskAction = new EditTaskAction(controller, taskList, listModel, this, () -> refreshTasks(controller));
-    }
-
-    private void initLayout() {
         setLayout(new BorderLayout());
+
+        sortComboBox.setRenderer(new SortComboBoxRenderer(() -> (FilterStatus) filterComboBox.getSelectedItem()));
+        taskList.setCellRenderer(new TaskCellRenderer());
+
+        // Actions
+        AddTaskAction addTaskAction = new AddTaskAction(controller, input, this, () -> refreshTasks(controller));
+        DeleteTaskAction deleteTaskAction = new DeleteTaskAction(controller, this, taskList, () -> refreshTasks(controller));
+
+        footerPanel.getDeleteCompletedButton().setAction(new DeleteCompletedTasksAction(controller, this, () -> refreshTasks(controller)));
+        footerPanel.getClearAllButton().setAction(new ClearAllTasksAction(controller, this, () -> refreshTasks(controller)));
+
+        // Top UI
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         topPanel.add(input);
         topPanel.add(new JButton(addTaskAction));
         topPanel.add(filterComboBox);
         topPanel.add(sortComboBox);
+
         add(topPanel, BorderLayout.NORTH);
         add(new JScrollPane(taskList), BorderLayout.CENTER);
         add(footerPanel, BorderLayout.SOUTH);
-    }
 
-    private void initListeners(TaskController controller) {
-        taskList.addMouseListener(new TaskMouseHandler(controller, taskList, () -> refreshTasks(controller), editTaskAction));
-        filterComboBox.addActionListener(e -> updateAndRefresh(controller));
-        sortComboBox.addActionListener(e -> updateAndRefresh(controller));
-    }
+        // --- KEY BINDINGS ---
+        // 1. Enter key for AddTaskAction
+        input.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "submitTask");
+        input.getActionMap().put("submitTask", addTaskAction);
 
-    private void updateAndRefresh(TaskController controller) {
-        validateSortOptions();
+        // 2. Delete key for DeleteTaskAction
+        taskList.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "deleteAction");
+        taskList.getActionMap().put("deleteAction", deleteTaskAction);
+
+        // Listeners
+        taskList.addMouseListener(new TaskMouseHandler(controller, taskList, () -> refreshTasks(controller),
+                new EditTaskAction(controller, taskList, listModel, this, () -> refreshTasks(controller))));
+
+        filterComboBox.addActionListener(e -> refreshTasks(controller));
+        sortComboBox.addActionListener(e -> refreshTasks(controller));
+
         refreshTasks(controller);
-    }
-
-    private void validateSortOptions() {
-        FilterStatus filter = (FilterStatus) filterComboBox.getSelectedItem();
-        SortOrderOption sort = (SortOrderOption) sortComboBox.getSelectedItem();
-        if ((filter != FilterStatus.ALL && sort == SortOrderOption.BY_STATUS) ||
-                (filter == FilterStatus.ACTIVE && sort == SortOrderOption.BY_COMPLETED)) {
-            sortComboBox.setSelectedItem(SortOrderOption.A_Z);
-        }
     }
 
     public void refreshTasks(TaskController controller) {
         List<Task> allTasks = controller.getTasks();
-        updateFooter(allTasks);
+
         listModel.clear();
         List<Task> processed = TaskFilterService.filter(allTasks, (FilterStatus) filterComboBox.getSelectedItem());
         processed.sort(TaskComparatorFactory.getComparator((SortOrderOption) sortComboBox.getSelectedItem()));
         processed.forEach(listModel::addElement);
-    }
 
-    private void updateFooter(List<Task> tasks) {
-        int total = tasks.size();
-        int completed = (int) tasks.stream().filter(Task::isCompleted).count();
-        int percent = (total > 0) ? (completed * 100) / total : 0;
-        footerPanel.updateStatistics(total, completed, total - completed, percent);
+        int total = allTasks.size();
+        int completed = (int) allTasks.stream().filter(Task::isCompleted).count();
+        footerPanel.updateStatistics(total, completed, total - completed, (total > 0) ? (completed * 100) / total : 0);
+
+        revalidate();
+        repaint();
     }
 }
