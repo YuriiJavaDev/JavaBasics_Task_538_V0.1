@@ -11,17 +11,16 @@ import java.util.UUID;
 public class TaskController {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskController.class);
-
-    private TaskService service;
+    private final TaskService service;
 
     public TaskController(TaskService service) {
         this.service = service;
         logger.info("TaskController initialized.");
     }
 
-    public void onAddButtonClicked(String textFromUI) {
-        logger.info("Adding new task: '{}'", textFromUI);
-        service.addTask(textFromUI);
+    public void addTask(String title, String importance) {
+        logger.info("Adding new task: '{}' with importance: {}", title, importance);
+        service.addTask(title, importance);
     }
 
     public List<Task> getTasks() {
@@ -29,7 +28,7 @@ public class TaskController {
     }
 
     public void deleteTask(UUID id) {
-        logger.info("Attempting to delete task at index: {}", id);
+        logger.info("Attempting to delete task with ID: {}", id);
         service.deleteTask(id);
     }
 
@@ -44,7 +43,7 @@ public class TaskController {
     }
 
     public void editTask(UUID id, Task task) {
-        logger.info("Editing task at index: {} with status: {}", id, task.isCompleted());
+        logger.info("Editing task with ID: {} and status: {}", id, task.isCompleted());
         service.editTask(id, task);
     }
 }

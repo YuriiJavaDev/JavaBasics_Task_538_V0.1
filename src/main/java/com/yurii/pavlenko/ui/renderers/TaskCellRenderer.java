@@ -2,20 +2,16 @@ package com.yurii.pavlenko.ui.renderers;
 
 import com.yurii.pavlenko.model.Task;
 import com.yurii.pavlenko.utils.DateFormatterUtil;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
-/**
- * Custom full-row list cell renderer ensuring unified background highlights and dynamic HTML task text strikethrough styling.
- */
-public class TaskCellRenderer extends JPanel implements ListCellRenderer<Task> { // Updated to Task
+public class TaskCellRenderer extends JPanel implements ListCellRenderer<Task> {
 
     private final JCheckBox checkBox;
     private final JLabel textLabel;
 
-    public TaskCellRenderer() { // Controller dependency removed
+    public TaskCellRenderer() {
         setLayout(new BorderLayout(8, 0));
         setBorder(new EmptyBorder(4, 6, 4, 6));
 
@@ -32,27 +28,28 @@ public class TaskCellRenderer extends JPanel implements ListCellRenderer<Task> {
     @Override
     public Component getListCellRendererComponent(JList<? extends Task> list, Task task, int index,
                                                   boolean isSelected, boolean cellHasFocus) {
-        // Fix: Use the direct task object supplied by the JList model instead of index-based controller fetching
         if (task != null) {
             checkBox.setSelected(task.isCompleted());
-
-            // Generate metadata date suffix using centralized utility class
             String dateInfo = DateFormatterUtil.getFormattedDatesInfo(task);
 
-            // Construct final display content with specific conditional HTML typography rules
             if (task.isCompleted()) {
-                // Apply strikethrough styling to core task title text only, preserving plain text for meta dates
                 textLabel.setText("<html><s>" + task.getTitle() + "</s>" + dateInfo + "</html>");
             } else {
                 textLabel.setText("<html>" + task.getTitle() + dateInfo + "</html>");
             }
+
+            switch (task.getImportance()) {
+                case "Urgent" -> textLabel.setForeground(Color.RED);
+                case "Important" -> textLabel.setForeground(new Color(184, 134, 11));
+                default -> textLabel.setForeground(Color.BLACK);
+            }
         } else {
             textLabel.setText("");
             checkBox.setSelected(false);
+            textLabel.setForeground(Color.BLACK);
         }
 
         textLabel.setFont(list.getFont());
-        textLabel.setForeground(Color.BLACK);
 
         if (isSelected) {
             setOpaque(true);

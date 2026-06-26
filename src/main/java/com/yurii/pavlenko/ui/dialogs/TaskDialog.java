@@ -3,35 +3,24 @@ package com.yurii.pavlenko.ui.dialogs;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * Visual modal helper wrapping standardized user entry forms.
- */
 public class TaskDialog {
 
-    public static String showEditDialog(Component parentComponent, String currentText, String title) {
-        // 1. Создаем поле ввода и задаем ему ширину (400 пикселей)
-        JTextField textField = new JTextField(currentText);
-        textField.setPreferredSize(new Dimension(600, 30));
+    public record TaskResult(String title, String importance) {}
 
-        // 2. Создаем панель, чтобы красиво разместить компоненты
-        JPanel panel = new JPanel(new BorderLayout(5, 5));
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        panel.add(new JLabel("Edit task description:"), BorderLayout.NORTH);
-        panel.add(textField, BorderLayout.CENTER);
+    public static TaskResult showEditDialog(Component parent, String currentText, String currentImportance, String title) {
+        JTextField textField = new JTextField(currentText, 60);
+        String[] options = {"Urgent", "Important", "Normal"};
+        JComboBox<String> importanceBox = new JComboBox<>(options);
+        importanceBox.setSelectedItem(currentImportance != null ? currentImportance : "Normal");
 
-        // 3. Используем ConfirmDialog с нашей панелью
-        int result = JOptionPane.showConfirmDialog(
-                parentComponent,
-                panel,
-                title,
-                JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.PLAIN_MESSAGE
-        );
+        JPanel panel = new JPanel(new GridLayout(0, 1, 5, 5));
+        panel.add(new JLabel("Task description:"));
+        panel.add(textField);
+        panel.add(new JLabel("Importance level:"));
+        panel.add(importanceBox);
 
-        // 4. Возвращаем текст, если нажали OK
-        if (result == JOptionPane.OK_OPTION) {
-            return textField.getText();
-        }
-        return null;
+        int result = JOptionPane.showConfirmDialog(parent, panel, title, JOptionPane.OK_CANCEL_OPTION);
+        return (result == JOptionPane.OK_OPTION) ?
+                new TaskResult(textField.getText().trim(), (String) importanceBox.getSelectedItem()) : null;
     }
 }

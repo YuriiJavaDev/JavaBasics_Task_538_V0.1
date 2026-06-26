@@ -1,1 +1,10 @@
-2026-06-25 14:26:51 [INFO] TaskController - TaskController initialized.
+2026-06-26 11:54:18 [INFO] TaskController - TaskController initialized.
+2026-06-26 11:54:35 [INFO] TaskController - Editing task with ID: 9f9eeba9-6fe2-4468-8b5d-b8bf49b1ee37 and status: false
+2026-06-26 11:54:35 [INFO] JsonTaskRepositoryImpl - DEBUG: The task in the list has been replaced. New status: false
+2026-06-26 11:54:35 [INFO] JsonTaskRepositoryImpl - SUCCESS: Update task with ID: 9f9eeba9-6fe2-4468-8b5d-b8bf49b1ee37
+2026-06-26 11:54:44 [INFO] TaskController - Editing task with ID: 9f9eeba9-6fe2-4468-8b5d-b8bf49b1ee37 and status: false
+2026-06-26 11:54:44 [INFO] JsonTaskRepositoryImpl - DEBUG: The task in the list has been replaced. New status: false
+2026-06-26 11:54:44 [INFO] JsonTaskRepositoryImpl - SUCCESS: Update task with ID: 9f9eeba9-6fe2-4468-8b5d-b8bf49b1ee37
+2026-06-26 11:54:49 [INFO] TaskController - Editing task with ID: 9f9eeba9-6fe2-4468-8b5d-b8bf49b1ee37 and status: false
+2026-06-26 11:54:49 [INFO] JsonTaskRepositoryImpl - DEBUG: The task in the list has been replaced. New status: false
+2026-06-26 11:54:49 [INFO] JsonTaskRepositoryImpl - SUCCESS: Update task with ID: 9f9eeba9-6fe2-4468-8b5d-b8bf49b1ee37

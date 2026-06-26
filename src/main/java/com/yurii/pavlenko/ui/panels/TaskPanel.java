@@ -64,7 +64,7 @@ public class TaskPanel extends JPanel {
     }
 
     private void initializeActions(TaskController controller) {
-        addTaskAction = new AddTaskAction(controller, input, () -> refreshTasks(controller));
+        addTaskAction = new AddTaskAction(controller, input, this, () -> refreshTasks(controller));
         deleteTaskAction = new DeleteTaskAction(controller, this, taskList, () -> refreshTasks(controller));
         editTaskAction = new EditTaskAction(controller, taskList, listModel, this, () -> refreshTasks(controller));
         clearAllTasksAction = new ClearAllTasksAction(controller, this, () -> refreshTasks(controller));

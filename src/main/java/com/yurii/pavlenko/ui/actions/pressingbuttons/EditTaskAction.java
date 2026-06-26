@@ -34,16 +34,14 @@ public class EditTaskAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         int selectedIndex = taskList.getSelectedIndex();
-        if (selectedIndex < 0) {
-            return;
-        }
+        if (selectedIndex < 0) return;
 
         Task task = listModel.getElementAt(selectedIndex);
+        TaskDialog.TaskResult result = TaskDialog.showEditDialog(parentComponent, task.getTitle(), task.getImportance(), "Edit task");
 
-        String newText = TaskDialog.showEditDialog(parentComponent, task.getTitle(), "Edit task");
-
-        if (newText != null && !newText.isBlank()) {
-            task.setTitle(newText.trim());
+        if (result != null && !result.title().isBlank()) {
+            task.setTitle(result.title());
+            task.setImportance(result.importance());
             task.setUpdatedAt(LocalDateTime.now());
 
             controller.editTask(task.getId(), task);

@@ -9,7 +9,8 @@ public enum SortOrderOption {
     BY_STATUS("By Status"),
     BY_CREATED("By Creation Date"),
     BY_EDITED("By Modification Date"),
-    BY_COMPLETED("By Completion Date");
+    BY_COMPLETED("By Completion Date"),
+    BY_IMPORTANCE("By Importance");
 
     private final String description;
 
