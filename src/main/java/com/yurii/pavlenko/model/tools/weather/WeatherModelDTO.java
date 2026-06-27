@@ -10,7 +10,7 @@ public class WeatherModelDTO {
     private double temperature;
     private int humidity;
     private double windSpeed;
-    private int windDirection; // Новое поле для градусов направления ветра
+    private int windDirection;
     private int weatherCode;
 
     public WeatherModelDTO() {}

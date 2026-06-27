@@ -119,7 +119,7 @@ public class WeatherPanel extends JPanel {
         String directionName = WindConverter.getCompassDirectionName(data.getWindDirection());
 
         lblLocation.setText("Location: " + englishCity + ", " + data.getCountryCode());
-        lblCondition.setText(WeatherServiceImpl.mapCodeToText(data.getWeatherCode()));
+        lblCondition.setText(WeatherCodeMapper.getText(data.getWeatherCode()));
         lblTemp.setText(String.format("Temperature: %.0f °C", data.getTemperature()));
         lblWind.setIcon(WeatherIconPainter.createCompassIcon(data.getWindDirection()));
         lblWind.setText(String.format("Wind: %.1f m/s (%d° %s)", data.getWindSpeed(), data.getWindDirection(), directionName));

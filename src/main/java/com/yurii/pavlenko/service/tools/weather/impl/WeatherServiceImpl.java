@@ -3,6 +3,7 @@ package com.yurii.pavlenko.service.tools.weather.impl;
 import com.yurii.pavlenko.model.tools.weather.WeatherModelDTO;
 import com.yurii.pavlenko.service.tools.weather.WeatherService;
 import com.yurii.pavlenko.utils.WeatherApiConfig;
+import com.yurii.pavlenko.utils.WeatherCodeMapper;
 import com.yurii.pavlenko.utils.WindConverter;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -58,20 +59,6 @@ public class WeatherServiceImpl implements WeatherService {
         dto.setWeatherCode(current.get("weathercode").getAsInt());
 
         return dto;
-    }
-
-    public static String mapCodeToText(int code) {
-        return switch (code) {
-            case 0 -> "Clear Sky";
-            case 1, 2, 3 -> "Partly Cloudy";
-            case 45, 48 -> "Foggy";
-            case 51, 53, 55 -> "Drizzle";
-            case 61, 63, 65 -> "Rainy";
-            case 71, 73, 75 -> "Snowy";
-            case 80, 81, 82 -> "Rain Showers";
-            case 95, 96, 99 -> "Thunderstorm";
-            default -> "Cloudy";
-        };
     }
 
     private String sendGet(String url) throws Exception {
