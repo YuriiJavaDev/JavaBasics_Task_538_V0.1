@@ -14,13 +14,19 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-/**
- * JSON-backed implementation of the TaskRepository using Jackson for object serialization.
- */
 public class JsonTaskRepositoryImpl implements TaskRepository {
     private static final Logger logger = LoggerFactory.getLogger(JsonTaskRepositoryImpl.class);
-    private final File file = new File("tasks.json");
+    private File file;
     private final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
+
+    public JsonTaskRepositoryImpl() {
+        this(new File("tasks.json"));
+    }
+
+    // For tests
+    public JsonTaskRepositoryImpl(File file) {
+        this.file = file;
+    }
 
     @Override
     public List<Task> findAll() {
@@ -41,14 +47,7 @@ public class JsonTaskRepositoryImpl implements TaskRepository {
     @Override
     public void delete(UUID id) {
         if (id == null) return;
-        executeUpdate("Delete task with ID: " + id, tasks -> {
-            boolean removed = tasks.removeIf(task -> id.equals(task.getId()));
-            if (removed) {
-                logger.info("DEBUG: Task with ID {} successfully removed from the temporary list.", id);
-            } else {
-                logger.error("DEBUG: ERROR: Task with ID {} not found for deletion.", id);
-            }
-        });
+        executeUpdate("Delete task with ID: " + id, tasks -> tasks.removeIf(task -> id.equals(task.getId())));
     }
 
     @Override
@@ -65,17 +64,11 @@ public class JsonTaskRepositoryImpl implements TaskRepository {
     public void update(UUID id, Task updatedTask) {
         if (id == null || updatedTask == null) return;
         executeUpdate("Update task with ID: " + id, tasks -> {
-            boolean found = false;
             for (int i = 0; i < tasks.size(); i++) {
                 if (id.equals(tasks.get(i).getId())) {
                     tasks.set(i, updatedTask);
-                    logger.info("DEBUG: The task in the list has been replaced. New status: {}", updatedTask.isCompleted());
-                    found = true;
                     break;
                 }
-            }
-            if (!found) {
-                logger.error("DEBUG: ERROR: Task with ID {} not found for updating operations.", id);
             }
         });
     }
