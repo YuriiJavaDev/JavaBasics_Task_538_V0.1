@@ -19,10 +19,15 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
 public class WeatherServiceImpl implements WeatherService {
+    private final HttpClient httpClient;
 
-    private final HttpClient httpClient = HttpClient.newBuilder()
-            .connectTimeout(Duration.ofSeconds(5))
-            .build();
+    public WeatherServiceImpl() {
+        this(HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build());
+    }
+
+    public WeatherServiceImpl(HttpClient httpClient) {
+        this.httpClient = httpClient;
+    }
 
     @Override
     public WeatherModelDTO getWeather(String city) throws Exception {

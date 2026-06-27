@@ -25,7 +25,7 @@ public final class CalculatorHotkeyConfigurator {
         InputMap inputMap = panel.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         ActionMap actionMap = panel.getActionMap();
 
-        // 1. Цифры основного ряда и правого блока Numpad
+        // Main Row and Right Block Numpad Numbers
         for (int i = 0; i <= 9; i++) {
             String strNum = String.valueOf(i);
             inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + i, 0), "press_" + strNum);
@@ -33,7 +33,7 @@ public final class CalculatorHotkeyConfigurator {
             actionMap.put("press_" + strNum, createTriggerAction(buttonMap, strNum));
         }
 
-        // 2. Арифметические операции (Основной блок + Numpad)
+        // Arithmetic Operations (Main Block + Numpad)
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, 0), "press_plus");
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ADD, 0), "press_plus");
         actionMap.put("press_plus", createTriggerAction(buttonMap, "+"));
@@ -50,7 +50,7 @@ public final class CalculatorHotkeyConfigurator {
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DIVIDE, 0), "press_divide");
         actionMap.put("press_divide", createTriggerAction(buttonMap, "/"));
 
-        // 3. Специальные знаки и управляющие клавиши
+        // Special characters and control keys
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_PERIOD, 0), "press_dot");
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_COMMA, 0), "press_dot");
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DECIMAL, 0), "press_dot");
@@ -65,11 +65,10 @@ public final class CalculatorHotkeyConfigurator {
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, 0), "press_backspace");
         actionMap.put("press_backspace", createTriggerAction(buttonMap, "Back"));
 
-        // Shift + 5 (знак % на основной клавиатуре)
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_5, KeyEvent.SHIFT_DOWN_MASK), "press_percent");
         actionMap.put("press_percent", createTriggerAction(buttonMap, "%"));
 
-        // 4. Блок работы с памятью (Ctrl + M / R / L)
+        // Memory Management Block (Ctrl + M / R / L)
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_M, KeyEvent.CTRL_DOWN_MASK), "press_MPlus");
         actionMap.put("press_MPlus", createTriggerAction(buttonMap, "M+"));
 
@@ -79,7 +78,7 @@ public final class CalculatorHotkeyConfigurator {
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.CTRL_DOWN_MASK), "press_MC");
         actionMap.put("press_MC", createTriggerAction(buttonMap, "MC"));
 
-        // 5. Инженерные функции: Скобки и базовые степени
+        // Engineering Functions: Parentheses and Base Powers
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_9, KeyEvent.SHIFT_DOWN_MASK), "press_open_bracket");
         actionMap.put("press_open_bracket", createTriggerAction(buttonMap, "("));
 
@@ -104,7 +103,7 @@ public final class CalculatorHotkeyConfigurator {
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_5, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK), "press_mod");
         actionMap.put("press_mod", createTriggerAction(buttonMap, "mod"));
 
-        // 6. Тригонометрия, логарифмы и константные значения
+        // Trigonometry, logarithms and constant values
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK), "press_sin");
         actionMap.put("press_sin", createTriggerAction(buttonMap, "sin"));
 
@@ -147,7 +146,7 @@ public final class CalculatorHotkeyConfigurator {
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.CTRL_DOWN_MASK), "press_ans");
         actionMap.put("press_ans", createTriggerAction(buttonMap, "Ans"));
 
-        // РЕФАКТОРИНГ: Переключение радиокнопок одной комбинацией Ctrl + D
+        // Toggle radio buttons with one combination Ctrl + D
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.CTRL_DOWN_MASK), "toggle_angle");
         actionMap.put("toggle_angle", new AbstractAction() {
             @Override
@@ -162,7 +161,7 @@ public final class CalculatorHotkeyConfigurator {
             }
         });
 
-        // Автоматически навешиваем контекстные подсказки для сложных кнопок и радиокомпонентов
+        // Automatically attach contextual hints to complex buttons and radio components
         configureButtonToolTips(panel, buttonMap);
     }
 
@@ -172,14 +171,14 @@ public final class CalculatorHotkeyConfigurator {
     private static void configureButtonToolTips(JPanel panel, Map<String, JButton> buttonMap) {
         Map<String, String> hints = new HashMap<>();
 
-        // Кнопки управления и памяти
+        // Control and memory buttons
         hints.put("C", "Hotkey: ESC");
         hints.put("Back", "Hotkey: Backspace");
         hints.put("M+", "Hotkey: Ctrl + M");
         hints.put("MR", "Hotkey: Ctrl + R");
         hints.put("MC", "Hotkey: Ctrl + L");
 
-        // Инженерный блок
+        // Engineering block
         hints.put("sin", "Hotkey: Ctrl + S");
         hints.put("cos", "Hotkey: Ctrl + C");
         hints.put("tan", "Hotkey: Ctrl + T");
@@ -204,7 +203,6 @@ public final class CalculatorHotkeyConfigurator {
         hints.put("(", "Hotkey: Shift + 9");
         hints.put(")", "Hotkey: Shift + 0");
 
-        // Применяем тултипы только к тем кнопкам, которые есть на панели
         hints.forEach((btnKey, tipText) -> {
             JButton button = buttonMap.get(btnKey);
             if (button != null) {
@@ -212,7 +210,6 @@ public final class CalculatorHotkeyConfigurator {
             }
         });
 
-        // Навешиваем подсказку горячей клавиши на радиокнопки переключателя
         if (panel instanceof CalculatorPanel calcPanel) {
             String angleTip = "Angle metric mode. Hotkey to toggle: Ctrl + D";
             if (calcPanel.getDegRadio() != null) calcPanel.getDegRadio().setToolTipText(angleTip);

@@ -142,4 +142,9 @@ public class WeatherPanel extends JPanel {
     public String getCityInput() { return txtCity.getText().trim(); }
     public void setButtonsEnabled(boolean enabled) { btnSearch.setEnabled(enabled); }
     public void registerController(java.awt.event.ActionListener controller) { btnSearch.addActionListener(controller); }
+
+    // For tests
+    public String getLocationText() { return lblLocation.getText(); }
+    public String getConditionText() { return lblCondition.getText(); }
+    public String getTempText() { return lblTemp.getText(); }
 }

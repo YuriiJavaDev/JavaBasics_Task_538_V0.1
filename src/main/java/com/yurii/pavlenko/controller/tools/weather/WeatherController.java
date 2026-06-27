@@ -28,14 +28,18 @@ public class WeatherController implements ActionListener {
         final String cityToFetch = (inputCity == null || inputCity.isEmpty()) ? "Rishon LeZion" : inputCity;
 
         view.setButtonsEnabled(false);
-        // Додано індикацію завантаження
         view.displayError("Loading...");
 
-        new SwingWorker<WeatherModelDTO, Void>() {
+        createWeatherWorker(cityToFetch).execute();
+    }
+
+    protected SwingWorker<WeatherModelDTO, Void> createWeatherWorker(String city) {
+        return new SwingWorker<>() {
             @Override
             protected WeatherModelDTO doInBackground() throws Exception {
-                return service.getWeather(cityToFetch);
+                return service.getWeather(city);
             }
+
             @Override
             protected void done() {
                 try {
@@ -51,6 +55,6 @@ public class WeatherController implements ActionListener {
                     view.setButtonsEnabled(true);
                 }
             }
-        }.execute();
+        };
     }
 }

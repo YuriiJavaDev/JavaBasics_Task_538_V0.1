@@ -9,14 +9,11 @@ import java.time.temporal.ChronoUnit;
 public class MoonPhaseCalculator {
 
     private static final double LUNAR_MONTH_DAYS = 29.530588853;
-
-    // Known base New Moon date (January 6, 2000)
     private static final LocalDate BASE_NEW_MOON = LocalDate.of(2000, 1, 6);
 
     public static String getMoonPhase(LocalDate date) {
         double currentAge = getMoonAge(date);
 
-        // Формируем строку: сначала эмодзи, потом название фазы и в конце процент освещенности
         String percentageStr = getMoonIlluminationPercentage(currentAge);
 
         if (currentAge < 1.845)   return "🌑 Moon Phase: New Moon " + percentageStr;
@@ -35,15 +32,12 @@ public class MoonPhaseCalculator {
      * Calculates the calculated illumination percentage formatted as a string.
      */
     public static String getMoonIlluminationPercentage(double currentAge) {
-        // Половина лунного цикла (от новолуния до полнолуния)
         double halfCycle = LUNAR_MONTH_DAYS / 2.0;
         double illumination;
 
         if (currentAge <= halfCycle) {
-            // Луна растет: от 0% до 100%
             illumination = (currentAge / halfCycle) * 100.0;
         } else {
-            // Луна убывает: от 100% обратно до 0%
             illumination = ((LUNAR_MONTH_DAYS - currentAge) / halfCycle) * 100.0;
         }
 
