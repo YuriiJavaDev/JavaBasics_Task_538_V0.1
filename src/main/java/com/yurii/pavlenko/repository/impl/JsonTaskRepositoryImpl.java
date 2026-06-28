@@ -16,16 +16,42 @@ import java.util.function.Consumer;
 
 public class JsonTaskRepositoryImpl implements TaskRepository {
     private static final Logger logger = LoggerFactory.getLogger(JsonTaskRepositoryImpl.class);
-    private File file;
+    private final File file;
     private final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     public JsonTaskRepositoryImpl() {
-        this(new File("tasks.json"));
+        this(resolveStorageFile());
     }
 
     // For tests
     public JsonTaskRepositoryImpl(File file) {
         this.file = file;
+    }
+
+    /**
+     * This means a safe way to save data from the payment system.
+     */
+    private static File resolveStorageFile() {
+        String appDataPath = System.getenv("APPDATA") + "\\MyAssistant";
+        File directory = new File(appDataPath);
+
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+
+        File newFile = new File(directory, "tasks.json");
+        File oldFile = new File("tasks.json");
+
+        if (!newFile.exists() && oldFile.exists()) {
+            try {
+                java.nio.file.Files.move(oldFile.toPath(), newFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                logger.info("Migration successful: tasks.json moved to AppData");
+            } catch (IOException e) {
+                logger.error("Failed to migrate tasks.json: {}", e.getMessage());
+            }
+        }
+
+        return newFile;
     }
 
     @Override
