@@ -1,85 +1,158 @@
-# Advanced Task Viewports: Custom List Renderers and Statistics Footers (JavaBasics_Task_537_V0.1)
-
+# My Assistant: Comprehensive Personal Productivity Suite (JavaBasics_Task_538_V0.1)
 ## 📖 Description
-Enhancing user interaction patterns requires advanced component specialization within the presentation layer. This project building directly on top of the composite navigation architecture established in **JavaBasics_Task_536_V0.1**. It introduces a highly customized **`ListCellRenderer`** backed by a **`JCheckBox`** element to track completion flags directly within the main task catalog viewport. Additionally, the lower window section is augmented with a dedicated, isolated structural sub-panel named **`TaskFooterPanel`**. This component encapsulates aggregate task tracking labels (Total, Completed, Left, Progress metrics) and couples them with centralized workflow action buttons, maintaining a strict non-designer, pure Java modular architecture.
+My Assistant is a multi-functional desktop application built upon principles of clean architecture and modularity. The project integrates task management capabilities with a specialized utility suite for daily computations, including a calculator, currency converter, and weather monitoring. Developed using Java Swing, the application adheres to strict separation of concerns—Service Layer for business logic, Repository Pattern for data access, and an MVP/MVC structure for the presentation layer—ensuring high stability and comprehensive testability.
 
 ## 📋 Requirements Compliance
-- **Custom Viewport Renderer Isolation**: Created a dedicated `TaskCellRenderer` in a separate `ui.renderers` package to overlay checkboxes onto list entries.
-- **Isolated Statistics Footer**: Extracted the bottom metric panel into a standalone `TaskFooterPanel` within the `ui.components` package domain.
-- **Strict Interface Localization**: Enforced standard assets across all newly injected labels, tooltips, and interactive buttons.
-- **Zero Designer Workspace Alignment**: Constructed all modular UI layout adapters manually without dependencies on IntelliJ IDEA GUI Form layouts.
+Custom Viewport Renderer Isolation: Implemented a dedicated TaskCellRenderer in the ui.renderers package to support advanced list element interaction.
+
+Isolated Statistics Footer: Extracted the bottom metric panel into a standalone TaskFooterPanel within the ui.components package.
+
+Strict Interface Localization: Enforced standard assets across all labels, tooltips, and interactive components.
+
+Zero Designer Workspace Alignment: Constructed all modular UI layout adapters manually, avoiding dependency on GUI Form builders.
+
+Testing: Achieved full unit test coverage for the business logic and service layers.
 
 ## 🚀 Architectural Stack
-- Java 17+ (Java Swing Custom Renderers, AWT Grid and Flow Layouts, Layout Cohesion Frameworks)
+Language: Java 23+
+
+UI Framework: Java Swing (Manual Layout Management)
+
+Data Persistence: Jackson (JSON serialization)
+
+Testing: JUnit 5 (Unit testing suite)
+
+Build Tool: Maven
 
 ## 🏗️ Implementation Details
-- **TaskCellRenderer**: Structural view configuration engine rendering individual JList cells as specialized JCheckBox blocks.
-- **TaskFooterPanel**: Isolated dashboard wrapper updating task counters and mounting batch management anchors.
-- **TaskPanel**: Core screen interface embedding both the updated task list viewer and the newly isolated footer panel.
+Clean Architecture: All business processes are encapsulated within the service.impl package and verified by comprehensive unit tests.
+
+UI-Logic Separation: Presentation logic (filtering, sorting, rendering) is strictly decoupled from the UI components, enabling high modularity.
+
+Scalability: The application utilizes Repository and Factory patterns, allowing for seamless integration of new data sources or task types.
+
+AI Chat (Experimental): This module is reserved for future integrations. The current architecture allows for the implementation of external LLM service wrappers or local model clients. Development is currently deferred to prioritize high-value user features over standard web-based AI interfaces.
 
 ## 📋 Expected result
-- Running the program opens the multi-tab layout where the "Tasks" screen contains a distinct checkable list view.
-- The footer section aligns symmetrically at the bottom, rendering localized buttons and dynamic placeholder calculations for statistics.
+Upon launching the application, the user is presented with a tabbed interface providing quick access to tasks and integrated tools. The UI supports dynamic state updates, ensuring that filtering configurations and task management actions are reflected instantly in the viewport.
 
 ## 📚 UML Diagram:
 ![MyAssistantDiagram](src/main/resources/images/MyAssistantDiagram.png)
 
-## 💻 Code Example
-
 ### Project Structure:
 
     JavaBasics_Task_538/
-    ├── src/main/
-    │       └── com/yurii/pavlenko/
-    │                     ├── app/
-    │                     │   └── MyAssistantApp.java
-    │                     │
-    │                     ├── ui/
-    │                     │   ├── frames/
-    │                     │   │   └── TaskFrame.java
-    │                     │   ├── panels/
-    │                     │   │   ├── TaskPanel.java
-    │                     │   │   └── MainTabbedPanel.java
-    │                     │   ├── renderers/
-    │                     │   │   └── TaskCellRenderer.java
-    │                     │   ├── components/
-    │                     │   │   └── TaskFooterPanel.java
-    │                     │   ├── dialogs/
-    │                     │   │   └── TaskDialog.java
-    │                     │   └── actions/
-    │                     │       ├── AddTaskAction.java
-    │                     │       ├── DeleteTaskAction.java
-    │                     │       ├── DeleteCompletedTasksAction.java
-    │                     │       ├── ClearAllTasksAction.java
-    │                     │       └── EditTaskAction.java
-    │                     │
-    │                     ├── controller/
-    │                     │   └── TaskController.java
-    │                     │
-    │                     ├── service/
-    │                     │   ├── impl/
-    │                     │   │   └── TaskServiceImpl.java
-    │                     │   └── TaskService.java
-    │                     │
-    │                     ├── repository/
-    │                     │   ├── impl/
-    │                     │   │   ├── InMemoryTaskRepositoryImpl.java
-    │                     │   │   ├── JsonTaskRepositoryImpl.java
-    │                     │   │   └── DatabaseTaskRepositoryImpl.java
-    │                     │   └── TaskRepository.java
-    │                     │
-    │                     ├── model/
-    │                     │   └── Task.java
-    │                     │
-    │                     └── util/
-    │                         └── Util.java
-    │
+    ├─ src/main/java/
+    │  │   │    └──────────────────────────────────────────── com/yurii/pavlenko/
+    │  │   └── resources/images/                                        ├── app/
+    │  │       │         ├── assistant.png                              │   └── MyAssistantApp.java
+    │  │       │         └── MyAssistantDiagram.png                     ├── controller/ 
+    │  │       └── simplelogger.properties                              │   ├─ tools/
+    │  └─ test/                                                         │   │  ├─ calculator/
+    │     └─ java/                                                      │   │  │  ├─ BackspaceProcessor.java
+    │        └─ com/                                                    │   │  │  ├─ CalculatorController.java
+    │           └─ yurii/                                               │   │  │  ├─ ExecutionProcessor.java
+    │              └─ pavlenko/                                         │   │  │  ├─ InputProcessor.java
+    │                 ├─ controller/                                    │   │  │  ├─ MemoryProcessor.java
+    │                 │  ├─ tools/                                      │   │  │  ├─ OperatorProcessor.java
+    │                 │  │  ├─ calculator/                              │   │  │  ├─ ResultFormatter.java
+    │                 │  │  │  ├─ BackspaceProcessorTest.java           │   │  │  └─ UnaryOperatorProcessor.java
+    │                 │  │  │  ├─ CalculatorControllerTest.java         │   │  ├─ currency/
+    │                 │  │  │  ├─ ExecutionProcessorTest.java           │   │  │  └─ CurrencyController.java
+    │                 │  │  │  ├─ InputProcessorTest.java               │   │  └─ weather/
+    │                 │  │  │  ├─ MemoryProcessorTest.java              │   │     └─ WeatherController.java
+    │                 │  │  │  ├─ OperatorProcessorTest.java            │   └── TaskController.java
+    │                 │  │  │  ├─ ResultFormatterTest.java              ├── model/   
+    │                 │  │  │  └─ UnaryOperatorProcessorTest.java       │   ├─ tools/     
+    │                 │  │  ├─ currency/                                │   │  ├─ calculator/
+    │                 │  │  │  └─ CurrencyControllerTest.java           │   │  │  └─ CalculatorModel.java
+    │                 │  │  └─ weather/                                 │   │  ├─ currency/
+    │                 │  │     └─ WeatherControllerTest.java            │   │  │  └─ CurrencyModelDTO.java
+    │                 │  └── TaskControllerTest.java                    │   │  └─ weather/
+    │                 ├─ repository/                                    │   │     └─ WeatherModelDTO.java
+    │                 │  └─ impl/                                       │   └── Task.java
+    │                 │     └─ JsonTaskRepositoryImplTest.java          ├─ repository/
+    │                 ├─ service/impl/                                  │  ├─ impl/ 
+    │                 │  │       └─ TaskServiceImplTest.java            │  │  ├─ DatabaseTaskRepositoryImpl.java
+    │                 │  └─ tools/                                      │  │  ├─ InMemoryTaskRepositoryImpl.java
+    │                 │      ├─ calculator/                             │  │  └─ JsonTaskRepositoryImpl.java
+    │                 │      │  ├─ CalculatorMemoryTest.java            │  └─ TaskRepository.java
+    │                 │      │  ├─ CalculatorServiceImplTest.java       ├─ service/
+    │                 │      │  ├─ ExpressionParserTest.java            │  ├─ impl/ 
+    │                 │      │  └─ MathOperationEvaluatorTest.java      │  │  └─ TaskServiceImpl.java
+    │                 │      ├─ currency/                               │  ├─ tools/
+    │                 │      │  └─ CurrencyServiceImplTest.java         │  │  ├─ calculator/
+    │                 │      └─ weather/                                │  │  │  ├─ impl/
+    │                 │         └─ WeatherServiceImplTest.java          │  │  │  │  ├─ CalculatorMemory.java
+    │                 ├── ui/actions/                                   │  │  │  │  ├─ CalculatorServiceImpl.java
+    │                 │   │  ├─ filtration/                             │  │  │  │  ├─ ExpressionParser.java
+    │                 │   │  │  └─ TaskFilterServiceTest.java           │  │  │  │  └─ MathOperationEvaluator.java
+    │                 │   │  └─ sorting/                                │  │  │  └─ CalculatorService.java
+    │                 │   │     └─ TaskComparatorFactoryTest.java       │  │  ├─ currency/
+    │                 │   └─ panels/tools/                              │  │  │  ├─ impl/ 
+    │                 │             └─ WeatherPanelTest.java            │  │  │  │  └─ CurrencyServiceImpl.java
+    │                 └── utils/                                        │  │  │  └─ CurrencyService.java
+    │                     ├─ CityTranslitUtilTest.java                  │  │  └─ weather/
+    │                     ├─ DateFormatterUtilTest.java                 │  │     ├─ impl/
+    │                     ├─ MoonPhaseCalculatorTest.java               │  │     │  └─ WeatherServiceImpl.java
+    │                     ├─ WeatherCodeMapperTest.java                 │  │     └─ WeatherService.java
+    │                     ├─ WeatherIconPainterTest.java                │  └─ TaskService.java
+    │                     └─ WindConverterTest.java                     ├── ui/
+    │                                                                   │   ├─ actions/
+    │                                                                   │   │  ├─ filtration/
+    │                                                                   │   │  │  └─ TaskFilterService.java
+    │                                                                   │   │  ├─ pressingbuttons/
+    │                                                                   │   │  │  ├─ AddTaskAction.java
+    │                                                                   │   │  │  ├─ ClearAllTasksAction.java
+    │                                                                   │   │  │  ├─ DeleteCompletedTasksAction.java
+    │                                                                   │   │  │  ├─ DeleteTaskAction.java
+    │                                                                   │   │  │  └─ EditTaskAction.java
+    │                                                                   │   │  └─ sorting/
+    │                                                                   │   │     └─ TaskComparatorFactory.java
+    │                                                                   │   ├─ components/
+    │                                                                   │   │  └─ TaskFooterPanel.java
+    │                                                                   │   ├─ dialogs/
+    │                                                                   │   │  ├─ DialogHelperDelete.java
+    │                                                                   │   │  └─ TaskDialog.java
+    │                                                                   │   ├─ frames/
+    │                                                                   │   │  └─ TaskFrame.java
+    │                                                                   │   ├─ listeners/
+    │                                                                   │   │  ├─ TaskEventListener.java
+    │                                                                   │   │  └─ TaskMouseHandler.java
+    │                                                                   │   ├─ panels/
+    │                                                                   │   │  ├─ tools/
+    │                                                                   │   │  │  ├─ CalculatorDisplay.java
+    │                                                                   │   │  │  ├─ CalculatorPanel.java
+    │                                                                   │   │  │  ├─ CurrencyConverterPanel.java
+    │                                                                   │   │  │  └─ WeatherPanel.java
+    │                                                                   │   │  ├─ MainTabbedPanel.java
+    │                                                                   │   │  ├─ TaskPanel.java
+    │                                                                   │   │  └─ ToolsPanel.java
+    │                                                                   │   └─ renderers/
+    │                                                                   │      ├─ SortComboBoxRenderer.java
+    │                                                                   │      └─ TaskCellRenderer.java
+    │                                                                   └── utils/
+    │                                                                       ├─ CalculatorHotkeyConfigurator.java
+    │                                                                       ├─ CityTranslitUtil.java
+    │                                                                       ├─ ConfigureUtil.java
+    │                                                                       ├─ CurrencyApiConfig.java
+    │                                                                       ├─ DateFormatterUtil.java
+    │                                                                       ├─ FilterStatus.java
+    │                                                                       ├─ MoonPhaseCalculator.java
+    │                                                                       ├─ SortOrderOption.java
+    │                                                                       ├─ WeatherApiConfig.java
+    │                                                                       ├─ WeatherCodeMapper.java
+    │                                                                       ├─ WeatherIconPainter.java
+    │                                                                       └─ WindConverter.java
+    ├── logger.txt
+    ├── tasks.json
+    ├── pom.xml
     ├── LICENSE
     ├── TASK.md
     ├── THEORY.md
     └── README.md
 
-Code
+## 💻 Code Example
 
 ```java
 package com.yurii.pavlenko.app;
