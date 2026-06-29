@@ -58,3 +58,9 @@ logger.txt
 application-local.properties
 config.json
 .env
+
+/installer/
+target/
+.settings/
+.project
+.classpath
